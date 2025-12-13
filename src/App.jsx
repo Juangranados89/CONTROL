@@ -14,7 +14,9 @@ import {
   Calendar,
   ClipboardList,
   Database,
-  PieChart
+  PieChart,
+  Clock,
+  TrendingUp
 } from 'lucide-react';
 import { INITIAL_FLEET, MAINTENANCE_ROUTINES } from './data';
 
@@ -293,14 +295,73 @@ const generatePDF = async (workOrder) => {
 
 // --- Components ---
 
-const PlanningView = ({ fleet, onCreateOT, workOrders = [], variableHistory = [], routines = MAINTENANCE_ROUTINES }) => {
+const PlanningView = ({ fleet, setFleet, onCreateOT, workOrders = [], setWorkOrders, variableHistory = [], routines = MAINTENANCE_ROUTINES }) => {
   const [selectedVehicle, setSelectedVehicle] = useState(null);
   const [workshop, setWorkshop] = useState('');
   const [viewingHistoryVehicle, setViewingHistoryVehicle] = useState(null);
   const [showWeeklyPlan, setShowWeeklyPlan] = useState(false);
+  const [showManualUpdate, setShowManualUpdate] = useState(false);
+  const [showBulkLoad, setShowBulkLoad] = useState(false);
+  const [bulkData, setBulkData] = useState('');
+  const [manualData, setManualData] = useState({ code: '', plate: '', lastDate: '', lastKm: '' });
+  const [statusFilter, setStatusFilter] = useState('ALL'); // ALL, VENCIDO, PROXIMO, OK
+
+  const handleBulkLoad = () => {
+    const rows = bulkData.trim().split('\n');
+    const newFleet = [...fleet];
+    let updatesCount = 0;
+
+    rows.forEach(row => {
+      const cols = row.split(/\t/);
+      if (cols.length < 9) return; // Need at least 9 columns
+
+      // #INTERNO | PLACA | DESCRIPCION | FRECUENCIA | CLASE | MARCA | UBICACIÓN | FECHA ACT. | HR ULTIMA EJEC. | FECHA ULTIMA EJEC.
+      // Index:  0       1            2            3         4       5          6             7                 8                    9
+      const code = cols[0]?.trim();
+      const plate = cols[1]?.trim();
+      const lastExecValRaw = cols[8]?.trim(); // HR ULTIMA EJECUCION (índice 8)
+      const lastExecDateRaw = cols[9]?.trim(); // FECHA ULTIMA EJECUCION (índice 9)
+
+      if (!code && !plate) return;
+
+      // Search by code OR plate
+      const vehicleIndex = newFleet.findIndex(v => 
+        (code && v.code.toUpperCase() === code.toUpperCase()) || 
+        (plate && v.plate.toUpperCase() === plate.toUpperCase())
+      );
+      
+      if (vehicleIndex !== -1) {
+        const lastExecVal = parseInt(lastExecValRaw?.replace(/,/g, '').replace(/\./g, '')) || 0;
+        
+        // Parse date (handles DD/MM/YYYY format)
+        let lastExecDate = null;
+        if (lastExecDateRaw && lastExecDateRaw !== '#N/D') {
+          const dateParts = lastExecDateRaw.split('/');
+          if (dateParts.length === 3) {
+            // Convert DD/MM/YYYY to YYYY-MM-DD
+            lastExecDate = `${dateParts[2]}-${dateParts[1].padStart(2, '0')}-${dateParts[0].padStart(2, '0')}`;
+          }
+        }
+        
+        if (lastExecVal > 0) {
+          newFleet[vehicleIndex] = {
+            ...newFleet[vehicleIndex],
+            lastMaintenance: lastExecVal,
+            lastMaintenanceDate: lastExecDate // Store the date too
+          };
+          updatesCount++;
+        }
+      }
+    });
+
+    setFleet(newFleet);
+    alert(`Se actualizaron ${updatesCount} vehículos con información de último mantenimiento.`);
+    setShowBulkLoad(false);
+    setBulkData('');
+  };
 
   // Helper to get next routine using the passed routines prop
-  const getNextRoutineLocal = (mileage, vehicleModel = '') => {
+  const getNextRoutineLocal = (mileage, vehicleModel = '', lastMaintenance = 0) => {
     let intervals = Object.keys(routines).map(Number).sort((a, b) => a - b);
 
     // Filter intervals based on model availability
@@ -314,15 +375,54 @@ const PlanningView = ({ fleet, onCreateOT, workOrders = [], variableHistory = []
         });
     }
 
-    // Find the first interval greater than current mileage
-    const nextInterval = intervals.find(interval => interval > mileage);
+    if (intervals.length === 0) return { km: 5000, name: 'Mantenimiento Estándar', items: [], supplies: [] };
+
+    const cycle = intervals[0]; // Assume smallest interval is the cycle (e.g. 5000 or 7000)
+    let targetKm;
+
+    // 1. Calculate Target KM
+    if (lastMaintenance > 0) {
+        // If we have last maintenance, next is Last + Cycle
+        targetKm = lastMaintenance + cycle;
+        
+        // Logic to prevent "High Negatives" (e.g. Last=100k, Current=236k -> Target=107k -> Remaining=-129k)
+        // If the calculated target is way behind current mileage (more than 1 cycle),
+        // we assume the schedule should "catch up" to the current mileage.
+        // We find the most recent standard interval that was passed.
+        if (targetKm < mileage - cycle) {
+             // Snap to the nearest previous multiple of cycle
+             targetKm = Math.floor(mileage / cycle) * cycle;
+        }
+    } else {
+        // No history: Find next interval > mileage
+        const next = intervals.find(interval => interval > mileage);
+        if (next) {
+            targetKm = next;
+        } else {
+            // Mileage exceeds all defined intervals: Calculate next multiple
+            targetKm = Math.ceil((mileage + 1) / cycle) * cycle;
+        }
+    }
     
-    // Fallback if no higher interval is found (use the highest one)
-    const targetInterval = nextInterval || intervals[intervals.length - 1];
+    // 2. Find Routine Definition (Content)
+    // Try exact match first
+    let baseRoutine = routines[targetKm];
     
-    const baseRoutine = routines[targetInterval] || { name: 'Mantenimiento Estándar', items: [], supplies: [], variants: {} };
+    // If exact match not found (e.g. targetKm = 245,000 but routines only go to 120,000)
+    if (!baseRoutine) {
+        // Fallback logic:
+        // Try to find a matching cycle in the defined intervals
+        // For now, we'll default to the basic cycle routine (e.g. 5000 or 7000) 
+        // assuming it's a standard maintenance.
+        const fallbackRoutine = routines[cycle] || { name: 'Mantenimiento Estándar', items: [], supplies: [], variants: {} };
+        // Clone and rename to reflect the actual target KM
+        baseRoutine = { 
+            ...fallbackRoutine,
+            name: `Mantenimiento ${targetKm.toLocaleString()} KM`
+        };
+    }
     
-    // Check for variants
+    // Check for variants (RAM/JMC)
     let finalRoutine = baseRoutine;
     if (vehicleModel) {
         const modelUpper = vehicleModel.toUpperCase();
@@ -334,7 +434,7 @@ const PlanningView = ({ fleet, onCreateOT, workOrders = [], variableHistory = []
     }
 
     return {
-      km: targetInterval,
+      km: targetKm,
       ...finalRoutine
     };
   };
@@ -356,7 +456,7 @@ const PlanningView = ({ fleet, onCreateOT, workOrders = [], variableHistory = []
   const confirmGeneration = () => {
     if (!selectedVehicle) return;
     
-    const routine = getNextRoutineLocal(selectedVehicle.mileage, selectedVehicle.model);
+    const routine = getNextRoutineLocal(selectedVehicle.mileage, selectedVehicle.model, selectedVehicle.lastMaintenance);
     
     // Generate consecutive ID
     const maxId = workOrders.length > 0 
@@ -406,6 +506,12 @@ const PlanningView = ({ fleet, onCreateOT, workOrders = [], variableHistory = []
   };
 
   const getLastMaintenanceDate = (vehicle) => {
+    // First check if we have it from bulk load
+    if (vehicle.lastMaintenanceDate) {
+      return vehicle.lastMaintenanceDate;
+    }
+    
+    // Fallback: Check closed OTs
     const closedOTs = workOrders
       .filter(ot => (ot.vehicleCode === vehicle.code || ot.plate === vehicle.plate) && ot.status === 'CERRADA')
       .sort((a, b) => new Date(b.closingDate) - new Date(a.closingDate));
@@ -417,10 +523,9 @@ const PlanningView = ({ fleet, onCreateOT, workOrders = [], variableHistory = []
   const weeklyPlan = useMemo(() => {
     // 1. Identify candidates (Remaining < 3000km or Vencido)
     const candidates = pickups.map(v => {
-        const next = getNextRoutineLocal(v.mileage, v.model);
-        const remaining = next.km - v.mileage;
-        return { ...v, remaining, nextRoutine: next };
-    }).filter(v => v.remaining < 3000).sort((a, b) => a.remaining - b.remaining);
+        const next = getNextRoutineLocal(v.mileage, v.model, v.lastMaintenance);
+        return { ...v, nextRoutine: next, remaining: next.km - v.mileage };
+    }).filter(v => v.remaining < 3000);
 
     // 2. Distribute Mon-Fri
     const days = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes'];
@@ -434,8 +539,161 @@ const PlanningView = ({ fleet, onCreateOT, workOrders = [], variableHistory = []
     return plan;
   }, [pickups, routines]);
 
+  const handleManualUpdateSubmit = () => {
+    const { code, plate, lastDate, lastKm } = manualData;
+    if (!code && !plate) return alert('Debe ingresar Placa o Código para identificar el vehículo');
+    
+    // Find vehicle
+    const vehicleIndex = fleet.findIndex(v => 
+      (code && v.code.toUpperCase() === code.toUpperCase()) || (plate && v.plate.toUpperCase() === plate.toUpperCase())
+    );
+
+    if (vehicleIndex === -1) return alert('Vehículo no encontrado en la flota');
+    const vehicle = fleet[vehicleIndex];
+
+    // 1. Update Fleet Mileage if provided
+    if (lastKm) {
+      const newFleet = [...fleet];
+      newFleet[vehicleIndex] = { ...vehicle, mileage: parseInt(lastKm) };
+      if (setFleet) setFleet(newFleet);
+    }
+
+    // 2. Create Historical OT if date provided
+    if (lastDate) {
+      const newOT = {
+        id: Math.floor(Math.random() * 10000) + 90000, // High ID for manual
+        vehicleCode: vehicle.code,
+        vehicleModel: vehicle.model,
+        plate: vehicle.plate,
+        routineName: `MANTENIMIENTO REGISTRADO MANUALMENTE (${lastKm || vehicle.mileage} KM)`,
+        mileage: lastKm || vehicle.mileage,
+        items: [],
+        supplies: [],
+        workshop: 'EXTERNO (HISTÓRICO)',
+        status: 'CERRADA',
+        creationDate: lastDate,
+        closingDate: lastDate
+      };
+      if (setWorkOrders) setWorkOrders(prev => [newOT, ...prev]);
+    }
+
+    setShowManualUpdate(false);
+    setManualData({ code: '', plate: '', lastDate: '', lastKm: '' });
+    alert('Datos actualizados correctamente');
+  };
+
   return (
     <div className="p-6 space-y-6 relative">
+      {/* Modal for Manual Update */}
+      {showManualUpdate && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded-lg shadow-xl w-96">
+            <h3 className="text-lg font-bold mb-4 flex items-center gap-2">
+              <Upload size={20} className="text-blue-600"/> Cargar Datos Históricos
+            </h3>
+            <p className="text-sm text-slate-600 mb-4">
+              Actualice manualmente el último mantenimiento conocido.
+            </p>
+            
+            <div className="space-y-3">
+              <div>
+                <label className="block text-xs font-bold text-slate-700 mb-1">Código Interno</label>
+                <input 
+                  type="text" 
+                  className="w-full p-2 border rounded text-sm"
+                  placeholder="Ej: PVHC001"
+                  value={manualData.code}
+                  onChange={e => setManualData({...manualData, code: e.target.value})}
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-bold text-slate-700 mb-1">Placa</label>
+                <input 
+                  type="text" 
+                  className="w-full p-2 border rounded text-sm"
+                  placeholder="Ej: ABC-123"
+                  value={manualData.plate}
+                  onChange={e => setManualData({...manualData, plate: e.target.value})}
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-2">
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 mb-1">Fecha Último Mtto</label>
+                  <input 
+                    type="date" 
+                    className="w-full p-2 border rounded text-sm"
+                    value={manualData.lastDate}
+                    onChange={e => setManualData({...manualData, lastDate: e.target.value})}
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 mb-1">KM Último Mtto</label>
+                  <input 
+                    type="number" 
+                    className="w-full p-2 border rounded text-sm"
+                    placeholder="KM"
+                    value={manualData.lastKm}
+                    onChange={e => setManualData({...manualData, lastKm: e.target.value})}
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div className="flex justify-end gap-2 mt-6">
+              <button 
+                onClick={() => setShowManualUpdate(false)}
+                className="px-4 py-2 text-slate-600 hover:bg-slate-100 rounded text-sm"
+              >
+                Cancelar
+              </button>
+              <button 
+                onClick={handleManualUpdateSubmit}
+                className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 font-bold text-sm"
+              >
+                Guardar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal for Bulk Load (Plan) */}
+      {showBulkLoad && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded-lg shadow-xl w-[700px]">
+            <h3 className="text-lg font-bold mb-4 flex items-center gap-2">
+              <Database size={20} className="text-blue-600"/> Carga Masiva de Plan (Último Mantenimiento)
+            </h3>
+            <p className="text-xs text-slate-600 mb-4">
+              Pegue la tabla de Excel con las columnas (10 columnas):<br/>
+              <strong>#INTERNO | PLACA | DESCRIPCION | FRECUENCIA | CLASE | MARCA | UBICACIÓN | FECHA ACT. | HR ULTIMA EJEC. | FECHA ULTIMA EJEC.</strong>
+            </p>
+            
+            <textarea 
+              className="w-full h-64 p-4 border rounded-lg font-mono text-xs bg-slate-50 whitespace-pre mb-4"
+              placeholder={`PVHC001\tKFZ321\tCAMIONETA DOBLE CABINA\t5000\tKM\tToyota Hilux\tMAQUINARIA\t10/12/2025\t231200\t18/11/2025`}
+              value={bulkData}
+              onChange={e => setBulkData(e.target.value)}
+            />
+
+            <div className="flex justify-end gap-2">
+              <button 
+                onClick={() => setShowBulkLoad(false)}
+                className="px-4 py-2 text-slate-600 hover:bg-slate-100 rounded text-sm"
+              >
+                Cancelar
+              </button>
+              <button 
+                onClick={handleBulkLoad}
+                className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 font-bold text-sm"
+              >
+                Procesar y Actualizar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Modal for Workshop Selection */}
       {selectedVehicle && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
@@ -586,107 +844,352 @@ const PlanningView = ({ fleet, onCreateOT, workOrders = [], variableHistory = []
         </div>
       )}
 
-      <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-bold text-slate-800 flex items-center gap-2">
-          <Calendar className="text-blue-600" />
-          Planeación de Mantenimientos (Camionetas)
-        </h2>
-        <div className="flex gap-2">
-          <button 
-            onClick={() => setShowWeeklyPlan(true)}
-            className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 text-sm flex items-center gap-2 shadow-sm"
-          >
-            <Calendar size={16} /> Planeación Semanal
-          </button>
-          <button className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 text-sm flex items-center gap-2 shadow-sm">
-            <FileText size={16} /> Exportar Excel
-          </button>
+      <div className="flex flex-col gap-4">
+        <div className="flex justify-between items-center">
+          <h2 className="text-2xl font-bold text-slate-800 flex items-center gap-2">
+            <Calendar className="text-blue-600" />
+            Planeación de Mantenimientos (Camionetas)
+          </h2>
+          <div className="flex gap-2">
+            <button 
+              onClick={() => setShowManualUpdate(true)}
+              className="bg-white border border-slate-300 text-slate-700 px-4 py-2 rounded hover:bg-slate-50 text-sm flex items-center gap-2 shadow-sm"
+            >
+              <Upload size={16} /> Cargar Datos Mtto
+            </button>
+            <button 
+              onClick={() => setShowBulkLoad(true)}
+              className="bg-white border border-slate-300 text-slate-700 px-4 py-2 rounded hover:bg-slate-50 text-sm flex items-center gap-2 shadow-sm"
+            >
+              <Database size={16} /> Carga Masiva Plan
+            </button>
+            <button 
+              onClick={() => setShowWeeklyPlan(true)}
+              className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 text-sm flex items-center gap-2 shadow-sm"
+            >
+              <Calendar size={16} /> Planeación Semanal
+            </button>
+            <button className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 text-sm flex items-center gap-2 shadow-sm">
+              <FileText size={16} /> Exportar Excel
+            </button>
+          </div>
+        </div>
+
+        {/* Mini Metrics Cards */}
+        {(() => {
+          // Calculate metrics
+          const today = new Date();
+          const fiveDaysAgo = new Date(today);
+          fiveDaysAgo.setDate(today.getDate() - 5);
+          
+          const metrics = pickups.reduce((acc, v) => {
+            const nextRoutine = getNextRoutineLocal(v.mileage, v.model, v.lastMaintenance);
+            const kmRemaining = nextRoutine.km - v.mileage;
+            
+            // Check if variable is outdated (more than 3 days old)
+            const lastVarDate = getLastVariableDate(v);
+            const varDate = new Date(lastVarDate);
+            const isOutdated = varDate < fiveDaysAgo || v.mileage === 0;
+            
+            if (isOutdated) acc.outdated++;
+            if (kmRemaining < 0) acc.overdue++;
+            else if (kmRemaining < 1000) acc.upcoming++;
+            else if (kmRemaining < 3000) acc.inRange++;
+            else acc.ok++;
+            
+            return acc;
+          }, { outdated: 0, overdue: 0, upcoming: 0, inRange: 0, ok: 0 });
+
+          return (
+            <div className="grid grid-cols-5 gap-3">
+              {/* Sin Actualizar */}
+              <div 
+                onClick={() => setStatusFilter('OUTDATED')}
+                className={`bg-white rounded-xl p-4 shadow-sm border-2 cursor-pointer transition-all hover:shadow-md ${statusFilter === 'OUTDATED' ? 'border-purple-500 ring-2 ring-purple-200' : 'border-slate-200 hover:border-purple-300'}`}
+              >
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-xs text-slate-500 font-medium">Sin Actualizar</p>
+                    <p className="text-2xl font-black text-purple-600">{metrics.outdated}</p>
+                  </div>
+                  <div className="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center">
+                    <AlertTriangle size={20} className="text-purple-600" />
+                  </div>
+                </div>
+                <p className="text-[10px] text-slate-400 mt-1">Variable &gt;5 días o sin datos</p>
+              </div>
+
+              {/* Vencidos */}
+              <div 
+                onClick={() => setStatusFilter('VENCIDO')}
+                className={`bg-white rounded-xl p-4 shadow-sm border-2 cursor-pointer transition-all hover:shadow-md ${statusFilter === 'VENCIDO' ? 'border-red-500 ring-2 ring-red-200' : 'border-slate-200 hover:border-red-300'}`}
+              >
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-xs text-slate-500 font-medium">Vencidos</p>
+                    <p className="text-2xl font-black text-red-600">{metrics.overdue}</p>
+                  </div>
+                  <div className="w-10 h-10 rounded-full bg-red-100 flex items-center justify-center">
+                    <AlertTriangle size={20} className="text-red-600" />
+                  </div>
+                </div>
+                <p className="text-[10px] text-slate-400 mt-1">Mtto. pasado</p>
+              </div>
+
+              {/* Próximos */}
+              <div 
+                onClick={() => setStatusFilter('PROXIMO')}
+                className={`bg-white rounded-xl p-4 shadow-sm border-2 cursor-pointer transition-all hover:shadow-md ${statusFilter === 'PROXIMO' ? 'border-amber-500 ring-2 ring-amber-200' : 'border-slate-200 hover:border-amber-300'}`}
+              >
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-xs text-slate-500 font-medium">Próximos</p>
+                    <p className="text-2xl font-black text-amber-600">{metrics.upcoming}</p>
+                  </div>
+                  <div className="w-10 h-10 rounded-full bg-amber-100 flex items-center justify-center">
+                    <Clock size={20} className="text-amber-600" />
+                  </div>
+                </div>
+                <p className="text-[10px] text-slate-400 mt-1">&lt;1,000 KM restantes</p>
+              </div>
+
+              {/* En Rango */}
+              <div 
+                onClick={() => setStatusFilter('INRANGE')}
+                className={`bg-white rounded-xl p-4 shadow-sm border-2 cursor-pointer transition-all hover:shadow-md ${statusFilter === 'INRANGE' ? 'border-blue-500 ring-2 ring-blue-200' : 'border-slate-200 hover:border-blue-300'}`}
+              >
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-xs text-slate-500 font-medium">En Rango</p>
+                    <p className="text-2xl font-black text-blue-600">{metrics.inRange}</p>
+                  </div>
+                  <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center">
+                    <TrendingUp size={20} className="text-blue-600" />
+                  </div>
+                </div>
+                <p className="text-[10px] text-slate-400 mt-1">1,000 - 3,000 KM</p>
+              </div>
+
+              {/* Al Día */}
+              <div 
+                onClick={() => setStatusFilter('OK')}
+                className={`bg-white rounded-xl p-4 shadow-sm border-2 cursor-pointer transition-all hover:shadow-md ${statusFilter === 'OK' ? 'border-green-500 ring-2 ring-green-200' : 'border-slate-200 hover:border-green-300'}`}
+              >
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-xs text-slate-500 font-medium">Al Día</p>
+                    <p className="text-2xl font-black text-green-600">{metrics.ok}</p>
+                  </div>
+                  <div className="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center">
+                    <CheckCircle size={20} className="text-green-600" />
+                  </div>
+                </div>
+                <p className="text-[10px] text-slate-400 mt-1">&gt;3,000 KM restantes</p>
+              </div>
+            </div>
+          );
+        })()}
+
+        {/* Filter Buttons Row */}
+        <div className="flex items-center gap-4">
+          <div className="flex gap-2 bg-white p-2 rounded-lg shadow-sm border border-slate-200">
+            <button 
+              onClick={() => setStatusFilter('ALL')}
+              className={`px-4 py-1.5 rounded-md text-sm font-bold transition-colors ${statusFilter === 'ALL' ? 'bg-slate-800 text-white' : 'text-slate-600 hover:bg-slate-100'}`}
+            >
+              Todos ({pickups.length})
+            </button>
+          </div>
+          
+          {statusFilter !== 'ALL' && (
+            <button 
+              onClick={() => setStatusFilter('ALL')}
+              className="text-sm text-slate-500 hover:text-slate-700 flex items-center gap-1"
+            >
+              <X size={14} /> Limpiar filtro
+            </button>
+          )}
         </div>
       </div>
 
-      <div className="bg-white rounded-lg shadow overflow-hidden border border-slate-200">
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm text-left">
-            <thead className="bg-slate-100 text-slate-700 uppercase font-bold">
-              <tr>
-                <th className="p-4 border-b">Estado</th>
-                <th className="p-4 border-b">Vehículo</th>
-                <th className="p-4 border-b">Modelo</th>
-                <th className="p-4 border-b">F. Última Var.</th>
-                <th className="p-4 border-b">Variable</th>
-                <th className="p-4 border-b">F. Último Mtto</th>
-                <th className="p-4 border-b">Var. Último Mtto</th>
-                <th className="p-4 border-b">Próxima Rutina</th>
-                <th className="p-4 border-b">Falta (KM)</th>
-                <th className="p-4 border-b">Acción</th>
+      {/* Clean Minimal Table */}
+      <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+        <div className="overflow-auto max-h-[calc(100vh-320px)]">
+          <table className="w-full text-sm border-collapse">
+            {/* Clean Header */}
+            <thead className="sticky top-0 z-10 bg-slate-50">
+              <tr className="text-slate-500 text-xs uppercase tracking-wide border-b border-slate-200">
+                <th className="px-4 py-3 text-left font-semibold w-24 border-r border-slate-100">Estado</th>
+                <th className="px-4 py-3 text-right font-semibold w-20 border-r border-slate-100">Falta</th>
+                <th className="px-4 py-3 text-left font-semibold border-r border-slate-100">Código</th>
+                <th className="px-4 py-3 text-left font-semibold border-r border-slate-100">Placa</th>
+                <th className="px-4 py-3 text-left font-semibold border-r border-slate-100">Modelo</th>
+                <th className="px-4 py-3 text-right font-semibold border-r border-slate-100">Variable</th>
+                <th className="px-4 py-3 text-center font-semibold border-r border-slate-100">F. Variable</th>
+                <th className="px-4 py-3 text-right font-semibold border-r border-slate-100">Últ. Mtto</th>
+                <th className="px-4 py-3 text-center font-semibold border-r border-slate-100">F. Últ. Mtto</th>
+                <th className="px-4 py-3 text-right font-semibold border-r border-slate-100">Próx. Rutina</th>
+                <th className="px-4 py-3 text-center font-semibold w-28">Acción</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-200">
-              {pickups.map((vehicle) => {
-                const nextRoutine = getNextRoutineLocal(vehicle.mileage, vehicle.model);
-                const kmRemaining = nextRoutine.km - vehicle.mileage;
-                
-                let statusColor = "bg-green-100 text-green-800";
-                let statusText = "OK";
-                
-                if (kmRemaining < 0) {
-                  statusColor = "bg-red-100 text-red-800";
-                  statusText = "VENCIDO";
-                } else if (kmRemaining < 1000) {
-                  statusColor = "bg-yellow-100 text-yellow-800";
-                  statusText = "PRÓXIMO";
-                }
+            <tbody>
+              {pickups
+                .map(vehicle => {
+                  const nextRoutine = getNextRoutineLocal(vehicle.mileage, vehicle.model, vehicle.lastMaintenance);
+                  const kmRemaining = nextRoutine.km - vehicle.mileage;
+                  
+                  // Check if variable is outdated
+                  const today = new Date();
+                  const fiveDaysAgo = new Date(today);
+                  fiveDaysAgo.setDate(today.getDate() - 5);
+                  const lastVarDate = getLastVariableDate(vehicle);
+                  const varDate = new Date(lastVarDate);
+                  const isOutdated = varDate < fiveDaysAgo || vehicle.mileage === 0;
+                  
+                  return { ...vehicle, nextRoutine, kmRemaining, isOutdated };
+                })
+                .filter(vehicle => {
+                  if (statusFilter === 'ALL') return true;
+                  if (statusFilter === 'OUTDATED') return vehicle.isOutdated;
+                  if (statusFilter === 'VENCIDO') return vehicle.kmRemaining < 0;
+                  if (statusFilter === 'PROXIMO') return vehicle.kmRemaining >= 0 && vehicle.kmRemaining < 1000;
+                  if (statusFilter === 'INRANGE') return vehicle.kmRemaining >= 1000 && vehicle.kmRemaining < 3000;
+                  if (statusFilter === 'OK') return vehicle.kmRemaining >= 3000;
+                  return true;
+                })
+                .sort((a, b) => a.kmRemaining - b.kmRemaining)
+                .map((vehicle, index) => {
+                  const { nextRoutine, kmRemaining, isOutdated } = vehicle;
+                  
+                  // Minimal status styling
+                  let statusColor = "text-emerald-600 bg-emerald-50";
+                  let statusText = "OK";
+                  let faltaColor = "text-emerald-600";
+                  
+                  if (kmRemaining < 0) {
+                    statusColor = "text-red-600 bg-red-50";
+                    statusText = "VENCIDO";
+                    faltaColor = "text-red-600";
+                  } else if (kmRemaining < 1000) {
+                    statusColor = "text-amber-600 bg-amber-50";
+                    statusText = "PRÓXIMO";
+                    faltaColor = "text-amber-600";
+                  } else if (kmRemaining < 3000) {
+                    statusColor = "text-blue-600 bg-blue-50";
+                    statusText = "EN RANGO";
+                    faltaColor = "text-blue-600";
+                  }
 
-                return (
-                  <tr 
-                    key={vehicle.id} 
-                    className="hover:bg-blue-50 cursor-pointer transition-colors"
-                    onClick={() => setViewingHistoryVehicle(vehicle)}
-                  >
-                    <td className="p-4">
-                      <span className={`px-2 py-1 rounded-full text-xs font-bold ${statusColor}`}>
-                        {statusText}
-                      </span>
-                    </td>
-                    <td className="p-4">
-                      <div className="font-bold text-slate-800">{vehicle.plate}</div>
-                      <div className="text-xs text-blue-600">{vehicle.code}</div>
-                    </td>
-                    <td className="p-4 text-slate-600 text-xs">
-                      {vehicle.model}
-                    </td>
-                    <td className="p-4 text-slate-600">
-                      {getLastVariableDate(vehicle)}
-                    </td>
-                    <td className="p-4 font-mono font-bold">
-                      {vehicle.mileage.toLocaleString()}
-                    </td>
-                    <td className="p-4 text-slate-600">
-                      {getLastMaintenanceDate(vehicle)}
-                    </td>
-                    <td className="p-4 text-slate-500">
-                      {vehicle.lastMaintenance.toLocaleString()}
-                    </td>
-                    <td className="p-4">
-                      <div className="font-semibold text-blue-700">{nextRoutine.km.toLocaleString()} km</div>
-                      <div className="text-xs text-slate-500">{nextRoutine.name}</div>
-                    </td>
-                    <td className={`p-4 font-bold ${kmRemaining < 0 ? 'text-red-600' : 'text-slate-700'}`}>
-                      {kmRemaining.toLocaleString()}
-                    </td>
-                    <td className="p-4">
-                      <button 
-                        onClick={(e) => handleQuickGenerateClick(e, vehicle)}
-                        className="text-blue-600 hover:underline font-medium flex items-center gap-1 z-10 relative"
-                      >
-                        <FileText size={14} /> Generar OT
-                      </button>
-                    </td>
-                  </tr>
-                );
-              })}
+                  return (
+                    <tr 
+                      key={vehicle.id} 
+                      className="hover:bg-slate-50 cursor-pointer transition-colors border-b border-slate-100"
+                      onClick={() => setViewingHistoryVehicle(vehicle)}
+                    >
+                      {/* Estado */}
+                      <td className="px-4 py-3 border-r border-slate-100">
+                        <div className="flex flex-col gap-1">
+                          <span className={`inline-flex items-center justify-center px-2 py-0.5 rounded text-[10px] font-semibold ${statusColor}`}>
+                            {statusText}
+                          </span>
+                          {isOutdated && (
+                            <span className="inline-flex items-center justify-center px-1.5 py-0.5 rounded text-[9px] font-medium text-purple-600 bg-purple-50">
+                              Sin Act.
+                            </span>
+                          )}
+                        </div>
+                      </td>
+                      
+                      {/* Falta KM */}
+                      <td className={`px-4 py-3 border-r border-slate-100 ${faltaColor}`}>
+                        <div className="flex items-center justify-end gap-1.5">
+                          {kmRemaining < 0 && <X size={14} className="text-red-500" />}
+                          {kmRemaining >= 0 && kmRemaining < 1000 && <AlertTriangle size={14} className="text-amber-500" />}
+                          {kmRemaining >= 1000 && kmRemaining < 3000 && <Clock size={14} className="text-blue-500" />}
+                          {kmRemaining >= 3000 && <CheckCircle size={14} className="text-emerald-500" />}
+                          <span className="font-mono font-bold">{kmRemaining.toLocaleString()}</span>
+                        </div>
+                      </td>
+                      
+                      {/* Código */}
+                      <td className="px-4 py-3 border-r border-slate-100">
+                        <span className="font-mono text-slate-600">{vehicle.code}</span>
+                      </td>
+                      
+                      {/* Placa */}
+                      <td className="px-4 py-3 font-semibold text-slate-800 border-r border-slate-100">
+                        {vehicle.plate}
+                      </td>
+                      
+                      {/* Modelo */}
+                      <td className="px-4 py-3 text-slate-500 text-xs truncate max-w-[180px] border-r border-slate-100" title={vehicle.model}>
+                        {vehicle.model}
+                      </td>
+                      
+                      {/* Variable Actual */}
+                      <td className="px-4 py-3 text-right font-mono text-slate-700 border-r border-slate-100">
+                        {vehicle.mileage.toLocaleString()}
+                      </td>
+                      
+                      {/* Fecha Variable */}
+                      <td className="px-4 py-3 text-center text-slate-400 text-xs border-r border-slate-100">
+                        {getLastVariableDate(vehicle)}
+                      </td>
+                      
+                      {/* Último Mtto KM */}
+                      <td className="px-4 py-3 text-right font-mono text-slate-500 border-r border-slate-100">
+                        {vehicle.lastMaintenance > 0 ? vehicle.lastMaintenance.toLocaleString() : '—'}
+                      </td>
+                      
+                      {/* Fecha Último Mtto */}
+                      <td className="px-4 py-3 text-center text-slate-400 text-xs border-r border-slate-100">
+                        {getLastMaintenanceDate(vehicle)}
+                      </td>
+                      
+                      {/* Próxima Rutina */}
+                      <td className="px-4 py-3 text-right border-r border-slate-100">
+                        <div className="font-mono font-semibold text-slate-700">{nextRoutine.km.toLocaleString()}</div>
+                        <div className="text-[10px] text-slate-400 truncate max-w-[100px]" title={nextRoutine.name}>
+                          {nextRoutine.name}
+                        </div>
+                      </td>
+                      
+                      {/* Acción */}
+                      <td className="px-4 py-3 text-center">
+                        <button 
+                          onClick={(e) => handleQuickGenerateClick(e, vehicle)}
+                          className="bg-slate-800 text-white px-3 py-1.5 rounded-md text-xs font-medium hover:bg-slate-700 transition-colors"
+                        >
+                          Generar OT
+                        </button>
+                      </td>
+                    </tr>
+                  );
+                })}
             </tbody>
           </table>
+        </div>
+        
+        {/* Minimal Footer */}
+        <div className="bg-slate-50 px-4 py-2 border-t border-slate-100 flex justify-between items-center text-xs text-slate-400">
+          <div className="flex gap-4">
+            <span className="flex items-center gap-1.5">
+              <span className="w-2 h-2 rounded-full bg-red-400"></span> Vencido
+            </span>
+            <span className="flex items-center gap-1.5">
+              <span className="w-2 h-2 rounded-full bg-amber-400"></span> Próximo
+            </span>
+            <span className="flex items-center gap-1.5">
+              <span className="w-2 h-2 rounded-full bg-blue-400"></span> En Rango
+            </span>
+            <span className="flex items-center gap-1.5">
+              <span className="w-2 h-2 rounded-full bg-emerald-400"></span> OK
+            </span>
+            <span className="flex items-center gap-1.5">
+              <span className="w-2 h-2 rounded-full bg-purple-400"></span> Sin Act.
+            </span>
+          </div>
+          <span>Total: {pickups.length} camionetas</span>
         </div>
       </div>
     </div>
@@ -1479,13 +1982,21 @@ const WorkOrders = ({ fleet }) => {
 const DriverAssignment = ({ fleet, setFleet }) => {
   const [searchTerm, setSearchTerm] = useState('');
 
+  // Filter for Pickups (Camionetas) only - PVHC codes
+  const pickups = useMemo(() => {
+    return fleet.filter(v => 
+      v.code.startsWith('PVHC') || 
+      v.model.toUpperCase().includes('CAMIONETA')
+    );
+  }, [fleet]);
+
   const handleDriverChange = (vehicleId, newDriver) => {
     setFleet(prev => prev.map(v => 
       v.id === vehicleId ? { ...v, driver: newDriver } : v
     ));
   };
 
-  const filteredFleet = fleet.filter(v => 
+  const filteredFleet = pickups.filter(v => 
     v.plate.toLowerCase().includes(searchTerm.toLowerCase()) ||
     v.driver.toLowerCase().includes(searchTerm.toLowerCase()) ||
     v.code.toLowerCase().includes(searchTerm.toLowerCase())
@@ -1494,10 +2005,10 @@ const DriverAssignment = ({ fleet, setFleet }) => {
   return (
     <div className="p-6 space-y-6">
       <h2 className="text-2xl font-bold text-slate-800 flex items-center gap-2">
-        <Car className="text-blue-600" /> Asignación de Conductores
+        <Car className="text-blue-600" /> Asignación de Conductores (Camionetas)
       </h2>
 
-      <div className="bg-white p-4 rounded-lg shadow flex gap-4">
+      <div className="bg-white p-4 rounded-lg shadow flex gap-4 items-center">
         <div className="relative flex-1">
           <Search className="absolute left-3 top-3 text-slate-400" size={20} />
           <input 
@@ -1508,37 +2019,42 @@ const DriverAssignment = ({ fleet, setFleet }) => {
             onChange={e => setSearchTerm(e.target.value)}
           />
         </div>
+        <span className="text-sm text-slate-500 bg-slate-100 px-3 py-2 rounded-lg">
+          {filteredFleet.length} de {pickups.length} camionetas
+        </span>
       </div>
 
       <div className="bg-white rounded-lg shadow overflow-hidden">
-        <table className="w-full text-sm text-left">
-          <thead className="bg-slate-100 text-slate-700 uppercase font-bold">
-            <tr>
-              <th className="p-4">Código</th>
-              <th className="p-4">Placa</th>
-              <th className="p-4">Modelo</th>
-              <th className="p-4">Conductor Asignado</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-slate-200">
-            {filteredFleet.map(vehicle => (
-              <tr key={vehicle.id} className="hover:bg-slate-50">
-                <td className="p-4 font-mono text-blue-600">{vehicle.code}</td>
-                <td className="p-4 font-bold">{vehicle.plate}</td>
-                <td className="p-4 text-slate-500">{vehicle.model}</td>
-                <td className="p-4">
-                  <input 
-                    type="text" 
-                    value={vehicle.driver}
-                    onChange={(e) => handleDriverChange(vehicle.id, e.target.value)}
-                    className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500"
-                    placeholder="Sin Asignar"
-                  />
-                </td>
+        <div className="overflow-auto max-h-[calc(100vh-250px)]">
+          <table className="w-full text-sm text-left">
+            <thead className="bg-slate-700 text-white uppercase font-bold sticky top-0">
+              <tr>
+                <th className="p-4">Código</th>
+                <th className="p-4">Placa</th>
+                <th className="p-4">Modelo</th>
+                <th className="p-4">Conductor Asignado</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody className="divide-y divide-slate-200">
+              {filteredFleet.map(vehicle => (
+                <tr key={vehicle.id} className="hover:bg-blue-50 transition-colors">
+                  <td className="p-4 font-mono text-blue-600 font-bold">{vehicle.code}</td>
+                  <td className="p-4 font-bold text-slate-800">{vehicle.plate}</td>
+                  <td className="p-4 text-slate-500 text-xs">{vehicle.model}</td>
+                  <td className="p-4">
+                    <input 
+                      type="text" 
+                      value={vehicle.driver}
+                      onChange={(e) => handleDriverChange(vehicle.id, e.target.value)}
+                      className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      placeholder="Sin Asignar"
+                    />
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   );
@@ -1552,43 +2068,73 @@ const DataLoad = ({ fleet, setFleet, setVariableHistory }) => {
   const parseData = () => {
     const rows = pasteData.trim().split('\n');
     let errorFound = false;
+    const latestRecords = {};
 
-    const parsed = rows.map(row => {
-      // Expecting: Date | KM | Code | Plate (Tab or comma separated)
-      const cols = row.split(/\t|,/);
-      const newKm = parseInt(cols[1]?.trim()) || 0;
-      const code = cols[2]?.trim();
-      const plate = cols[3]?.trim();
+    // 1. Parse and Deduplicate (Keep latest date per plate)
+    rows.forEach(row => {
+      // Expecting: Date | KM | Plate | Code (Tab separated)
+      // Example: 12/12/2025 08:20:25 | 33.394,000 | NTW668 | (empty)
+      const cols = row.split(/\t/);
+      if (cols.length < 3) return;
+
+      const dateRaw = cols[0]?.trim();
+      const kmRaw = cols[1]?.trim();
+      const plate = cols[2]?.trim();
       
-      // Find current vehicle data
-      const currentVehicle = fleet.find(v => v.code === code || v.plate === plate);
+      // Parse KM: "33.394,000" -> 33394
+      // Remove dots (thousands), split by comma (decimals)
+      const kmClean = kmRaw?.split(',')[0].replace(/\./g, '');
+      const newKm = parseInt(kmClean) || 0;
+
+      // Parse Date for comparison
+      // "12/12/2025 08:20:25" -> Date Object
+      const [d, t] = dateRaw.split(' ');
+      const [day, month, year] = d.split('/');
+      const isoDate = `${year}-${month}-${day}T${t}`;
+      const dateObj = new Date(isoDate);
+
+      if (!latestRecords[plate] || dateObj > latestRecords[plate].dateObj) {
+        latestRecords[plate] = {
+          dateRaw,
+          dateObj,
+          km: newKm,
+          plate,
+          originalRow: row
+        };
+      }
+    });
+
+    // 2. Validate against Fleet
+    const parsed = Object.values(latestRecords).map(record => {
+      // Find current vehicle data by Plate
+      const currentVehicle = fleet.find(v => v.plate === record.plate);
       
       let status = 'VALID';
       let message = 'OK';
+      let code = currentVehicle?.code || '---';
 
       if (!currentVehicle) {
         status = 'ERROR';
-        message = 'Vehículo no encontrado';
+        message = 'Vehículo no encontrado por Placa';
         errorFound = true;
       } else {
         const currentKm = currentVehicle.mileage;
         
-        if (newKm < currentKm) {
+        if (record.km < currentKm) {
           status = 'ERROR';
           message = `KM Menor al actual (${currentKm})`;
           errorFound = true;
-        } else if (currentKm > 0 && newKm > currentKm + 30000) { // Max jump threshold (only if vehicle has history)
-          status = 'ERROR';
-          message = `Salto de KM excesivo (>30k)`;
-          errorFound = true;
+        } else if (currentKm > 0 && record.km > currentKm + 30000) { 
+          status = 'WARNING';
+          message = `Salto de KM alto (>30k)`;
         }
       }
 
       return {
-        date: cols[0]?.trim(),
-        km: newKm,
+        date: record.dateRaw,
+        km: record.km,
         code: code,
-        plate: plate,
+        plate: record.plate,
         status,
         message
       };
@@ -1599,21 +2145,31 @@ const DataLoad = ({ fleet, setFleet, setVariableHistory }) => {
   };
 
   const applyChanges = () => {
+    let recordsToProcess = preview;
+
     if (hasErrors) {
-      alert("Por favor corrija los errores antes de aplicar.");
-      return;
+      if (!window.confirm("Hay errores en algunos registros. ¿Desea omitirlos y cargar SOLO los registros válidos (OK)?")) {
+        return;
+      }
+      // Filter only valid records
+      recordsToProcess = preview.filter(p => p.status !== 'ERROR');
+      
+      if (recordsToProcess.length === 0) {
+        alert("No hay registros válidos para procesar.");
+        return;
+      }
     }
 
-    // 1. Update Fleet (Reprogramming)
+    // 1. Update Fleet (Only mileage, NOT lastMaintenance)
     setFleet(prev => {
       const newFleet = [...prev];
-      preview.forEach(update => {
+      recordsToProcess.forEach(update => {
         const index = newFleet.findIndex(v => v.code === update.code || v.plate === update.plate);
         if (index !== -1) {
           newFleet[index] = {
             ...newFleet[index],
-            mileage: update.km,
-            lastMaintenance: update.km // Reset cycle based on new reading
+            mileage: update.km
+            // Do NOT update lastMaintenance here - it should only change when a maintenance OT is closed
           };
         }
       });
@@ -1621,12 +2177,12 @@ const DataLoad = ({ fleet, setFleet, setVariableHistory }) => {
     });
 
     // 2. Save to History
-    setVariableHistory(prev => [...prev, ...preview.map(p => ({
+    setVariableHistory(prev => [...prev, ...recordsToProcess.map(p => ({
       ...p,
       uploadDate: new Date().toISOString()
     }))]);
 
-    alert('Datos actualizados correctamente y guardados en historial.');
+    alert(`Se procesaron ${recordsToProcess.length} registros correctamente.`);
     setPasteData('');
     setPreview([]);
     setHasErrors(false);
@@ -1641,10 +2197,13 @@ const DataLoad = ({ fleet, setFleet, setVariableHistory }) => {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div className="bg-white p-6 rounded-lg shadow">
           <h3 className="font-semibold mb-4">1. Pegar Datos (Excel)</h3>
-          <p className="text-sm text-slate-500 mb-2">Formato: Fecha | KM | Código | Placa</p>
+          <p className="text-sm text-slate-500 mb-2">
+            Formato esperado: <strong>Fecha | Kilometraje | Placa | Código</strong><br/>
+            <span className="text-xs italic">El sistema tomará automáticamente el registro más reciente por placa.</span>
+          </p>
           <textarea 
-            className="w-full h-64 p-4 border rounded-lg font-mono text-sm bg-slate-50"
-            placeholder={`2023-10-27\t15000\tPVHC001\tABC-123\n2023-10-28\t15500\tPVHC002\tXYZ-789`}
+            className="w-full h-64 p-4 border rounded-lg font-mono text-sm bg-slate-50 whitespace-pre"
+            placeholder={`12/12/2025 08:20:25\t33.394,000\tNTW668\t\n12/12/2025 08:13:40\t28.577,000\tNNL597\t`}
             value={pasteData}
             onChange={e => setPasteData(e.target.value)}
           />
@@ -1699,10 +2258,10 @@ const DataLoad = ({ fleet, setFleet, setVariableHistory }) => {
           </div>
           <button 
             onClick={applyChanges}
-            disabled={preview.length === 0 || hasErrors}
-            className="mt-4 bg-green-600 text-white px-6 py-2 rounded hover:bg-green-700 w-full disabled:opacity-50 disabled:cursor-not-allowed"
+            disabled={preview.length === 0}
+            className={`mt-4 text-white px-6 py-2 rounded w-full disabled:opacity-50 disabled:cursor-not-allowed font-bold ${hasErrors ? 'bg-yellow-600 hover:bg-yellow-700' : 'bg-green-600 hover:bg-green-700'}`}
           >
-            {hasErrors ? 'Corrija los errores para continuar' : 'Aplicar Cambios a la Flota'}
+            {hasErrors ? 'Omitir Errores y Cargar Válidos' : 'Aplicar Cambios a la Flota'}
           </button>
         </div>
       </div>
@@ -1894,11 +2453,46 @@ const DatabaseView = ({ fleet, setFleet }) => {
 
 function App() {
   const [currentView, setCurrentView] = useState('planning'); // Default to planning view
-  const [fleet, setFleet] = useState(INITIAL_FLEET);
-  const [workOrders, setWorkOrders] = useState([]); // Store OTs
-  const [variableHistory, setVariableHistory] = useState([]); // Store variable history
-  const [routines, setRoutines] = useState(MAINTENANCE_ROUTINES); // Store routines
+  
+  // Initialize state from localStorage or defaults
+  const [fleet, setFleet] = useState(() => {
+    const saved = localStorage.getItem('fleet_data');
+    return saved ? JSON.parse(saved) : INITIAL_FLEET;
+  });
+  
+  const [workOrders, setWorkOrders] = useState(() => {
+    const saved = localStorage.getItem('work_orders');
+    return saved ? JSON.parse(saved) : [];
+  });
+  
+  const [variableHistory, setVariableHistory] = useState(() => {
+    const saved = localStorage.getItem('variable_history');
+    return saved ? JSON.parse(saved) : [];
+  });
+  
+  const [routines, setRoutines] = useState(() => {
+    const saved = localStorage.getItem('maintenance_routines');
+    return saved ? JSON.parse(saved) : MAINTENANCE_ROUTINES;
+  });
+  
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+
+  // Persist data to localStorage when it changes
+  useEffect(() => {
+    localStorage.setItem('fleet_data', JSON.stringify(fleet));
+  }, [fleet]);
+
+  useEffect(() => {
+    localStorage.setItem('work_orders', JSON.stringify(workOrders));
+  }, [workOrders]);
+
+  useEffect(() => {
+    localStorage.setItem('variable_history', JSON.stringify(variableHistory));
+  }, [variableHistory]);
+
+  useEffect(() => {
+    localStorage.setItem('maintenance_routines', JSON.stringify(routines));
+  }, [routines]);
 
   const handleCreateOT = (newOT) => {
     setWorkOrders(prev => [newOT, ...prev]);
@@ -1906,7 +2500,7 @@ function App() {
 
   const renderView = () => {
     switch(currentView) {
-      case 'planning': return <PlanningView fleet={fleet} onCreateOT={handleCreateOT} workOrders={workOrders} variableHistory={variableHistory} routines={routines} />;
+      case 'planning': return <PlanningView fleet={fleet} setFleet={setFleet} onCreateOT={handleCreateOT} workOrders={workOrders} setWorkOrders={setWorkOrders} variableHistory={variableHistory} routines={routines} />;
       case 'maintenance-admin': return <MaintenanceAdminView workOrders={workOrders} setWorkOrders={setWorkOrders} setFleet={setFleet} routines={routines} setRoutines={setRoutines} />;
       case 'work-orders': return <WorkOrders fleet={fleet} />;
       case 'drivers': return <DriverAssignment fleet={fleet} setFleet={setFleet} />;
