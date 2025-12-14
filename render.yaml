@@ -1,0 +1,37 @@
+## Render configuration (static site)
+# Replace <REPO_URL> with your repository (e.g. github.com/owner/repo)
+# You can also leave `repo` empty and connect the site in the Render dashboard.
+static_sites:
+  - name: fleet-manager-pro
+    repo: <REPO_URL>
+    branch: main
+    buildCommand: npm install && npm run build
+    publishPath: dist
+    plan: free
+    healthCheckPath: /index.html
+    env:
+      # Optional: pin Node version used by Render build image
+      - key: NODE_VERSION
+        value: "18"
+
+# Notes:
+# - Build command installs dependencies and builds the app to `dist/` (Vite).
+# - On Render: create a new Static Site, or use this file for Infrastructure as Code.
+# - Ensure `public/logo.png` exists if you rely on PDF generation with the logo.
+
+# Web service (API) using Node + Prisma
+services:
+  - type: web
+    name: fleet-manager-pro-api
+    env: node
+    plan: free
+    repo: <REPO_URL>
+    branch: main
+    buildCommand: cd server && npm install && npx prisma generate && npm run prisma:migrate
+    startCommand: cd server && npm start
+    envVars:
+      - key: DATABASE_URL
+        sync: false
+      - key: JWT_SECRET
+        sync: false
+

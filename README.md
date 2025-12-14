@@ -1,1 +1,32 @@
 # CONTROL
+
+Deploy & Backend setup (Render + PostgreSQL + Prisma)
+
+1) Create a managed PostgreSQL in Render (or external). Copy the `DATABASE_URL`.
+
+2) Add two services in Render or use `render.yaml` (this repo includes a `render.yaml`):
+	- Static Site: build `npm install && npm run build`, publish `dist`
+	- Web Service (Node): build `cd server && npm install && npx prisma generate && npm run prisma:migrate`, start `cd server && npm start`
+
+3) In the Render Dashboard for the web service, set environment variables:
+	- `DATABASE_URL` = your postgres connection string (postgres://...)
+	- `JWT_SECRET` = a secure random string
+
+4) Local testing (from repo root):
+
+```bash
+# frontend
+npm install
+npm run dev
+
+# server (in new terminal)
+cd server
+npm install
+# create DB and run migrations on production: use `npx prisma migrate dev` locally or `npx prisma migrate deploy` on Render
+npx prisma generate
+npx prisma migrate dev --name init
+node src/seed.js   # creates admin@example.com and user@example.com
+node src/index.js
+```
+
+5) Login endpoint: `POST /api/login` (server port default 4000). Body: `{ "email": "admin@example.com", "password": "AdminPass123!" }`. Returns JWT.
