@@ -10,7 +10,8 @@ export const INITIAL_FLEET = [
     "mileage": 12,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "CAT00D6TCSMC02212"
   },
   {
     "id": 11,
@@ -21,7 +22,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "CAT00D6TPSMC02231"
   },
   {
     "id": 12,
@@ -32,7 +34,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "CAT00D6TTSMC02213"
   },
   {
     "id": 13,
@@ -43,7 +46,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "CAT00D6TKSMC02215"
   },
   {
     "id": 14,
@@ -54,7 +58,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "CAT00D6TESMC02211"
   },
   {
     "id": 15,
@@ -65,7 +70,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "SINIESTRADA",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "CAT00D6THSMC02210"
   },
   {
     "id": 16,
@@ -76,7 +82,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "CAT000D8CAE800684"
   },
   {
     "id": 17,
@@ -87,7 +94,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "CAT00D6TPSMC02214"
   },
   {
     "id": 18,
@@ -98,7 +106,8 @@ export const INITIAL_FLEET = [
     "mileage": 11,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "CAT000D8CAE800675"
   },
   {
     "id": 19,
@@ -109,7 +118,8 @@ export const INITIAL_FLEET = [
     "mileage": 9,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "CAT000D8VAE800676"
   },
   {
     "id": 20,
@@ -120,7 +130,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "CAT000D8JAE800674"
   },
   {
     "id": 21,
@@ -131,7 +142,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "ALVARO J. CARRILLO PERTUZ"
+    "driver": "ALVARO J. CARRILLO PERTUZ",
+    "vin": "CAT00D6THSMC02207"
   },
   {
     "id": 22,
@@ -142,7 +154,8 @@ export const INITIAL_FLEET = [
     "mileage": 11905,
     "status": "REPARACIONES",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "NCF216045"
   },
   {
     "id": 23,
@@ -153,7 +166,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "REPARACIONES",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "CAT0950HKM1G02201"
   },
   {
     "id": 24,
@@ -164,7 +178,8 @@ export const INITIAL_FLEET = [
     "mileage": 9,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "DXCCWLDEAR0010562"
   },
   {
     "id": 25,
@@ -175,7 +190,8 @@ export const INITIAL_FLEET = [
     "mileage": 8,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "DXCCWLDEER0010565"
   },
   {
     "id": 26,
@@ -186,7 +202,8 @@ export const INITIAL_FLEET = [
     "mileage": 8,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "DXCCWLDECR0010566"
   },
   {
     "id": 27,
@@ -197,7 +214,8 @@ export const INITIAL_FLEET = [
     "mileage": 7,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "DXCCWLDETR0010567"
   },
   {
     "id": 28,
@@ -208,7 +226,8 @@ export const INITIAL_FLEET = [
     "mileage": 9,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "DXCCWLDEPR0010568"
   },
   {
     "id": 29,
@@ -219,7 +238,8 @@ export const INITIAL_FLEET = [
     "mileage": 8,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "DXCCWLDEKR0010569"
   },
   {
     "id": 30,
@@ -230,7 +250,8 @@ export const INITIAL_FLEET = [
     "mileage": 8,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "DXCCWLDETR0010570"
   },
   {
     "id": 31,
@@ -241,7 +262,8 @@ export const INITIAL_FLEET = [
     "mileage": 8,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "DXCCWLDEKR0010572"
   },
   {
     "id": 32,
@@ -252,7 +274,8 @@ export const INITIAL_FLEET = [
     "mileage": 9,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "DXCCWLDEJR0010573"
   },
   {
     "id": 33,
@@ -263,7 +286,8 @@ export const INITIAL_FLEET = [
     "mileage": 11,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "DXCCWLDECR0010574"
   },
   {
     "id": 34,
@@ -274,7 +298,8 @@ export const INITIAL_FLEET = [
     "mileage": 9,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "DXCCWLDEVR0010575"
   },
   {
     "id": 35,
@@ -285,7 +310,8 @@ export const INITIAL_FLEET = [
     "mileage": 16,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "DXCCWLDEEP0010515"
   },
   {
     "id": 36,
@@ -296,7 +322,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "PENDIENTE FABRICACI\u00d3N",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "XLRAEL370PL525203"
   },
   {
     "id": 37,
@@ -307,7 +334,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "PENDIENTE FABRICACI\u00d3N",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "XLRAEL370PL525204"
   },
   {
     "id": 38,
@@ -318,7 +346,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "PROCESO DE MATRICULA",
     "lastMaintenance": 0,
-    "driver": "nan"
+    "driver": "nan",
+    "vin": "XLRATM410RG453324"
   },
   {
     "id": 41,
@@ -329,7 +358,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "PROCESO DE MATRICULA",
     "lastMaintenance": 0,
-    "driver": "nan"
+    "driver": "nan",
+    "vin": "XLRATM410RG453543"
   },
   {
     "id": 44,
@@ -340,7 +370,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "PROCESO DE MATRICULA",
     "lastMaintenance": 0,
-    "driver": "nan"
+    "driver": "nan",
+    "vin": "XLRATM410RG455305"
   },
   {
     "id": 47,
@@ -351,7 +382,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "PROCESO DE MATRICULA",
     "lastMaintenance": 0,
-    "driver": "nan"
+    "driver": "nan",
+    "vin": "XLRATM410RG456281"
   },
   {
     "id": 50,
@@ -362,7 +394,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "PROCESO DE MATRICULA",
     "lastMaintenance": 0,
-    "driver": "nan"
+    "driver": "nan",
+    "vin": "XLRATM410RG455476"
   },
   {
     "id": 53,
@@ -373,7 +406,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "PROCESO DE MATRICULA",
     "lastMaintenance": 0,
-    "driver": "nan"
+    "driver": "nan",
+    "vin": "XLRATM410RG455616"
   },
   {
     "id": 56,
@@ -384,7 +418,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "PROCESO DE MATRICULA",
     "lastMaintenance": 0,
-    "driver": "nan"
+    "driver": "nan",
+    "vin": "XLRATM410RG455532"
   },
   {
     "id": 59,
@@ -395,7 +430,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "XLRAEL3G0PL518228"
   },
   {
     "id": 60,
@@ -406,7 +442,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "XLRAEL3G0PL518363"
   },
   {
     "id": 61,
@@ -417,7 +454,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "PENDIENTE FABRICACI\u00d3N",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "P0CI003"
   },
   {
     "id": 62,
@@ -428,7 +466,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "PENDIENTE FABRICACI\u00d3N",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "P0CI004"
   },
   {
     "id": 63,
@@ -439,7 +478,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "PENDIENTE FABRICACI\u00d3N",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "P0CI005"
   },
   {
     "id": 67,
@@ -450,7 +490,8 @@ export const INITIAL_FLEET = [
     "mileage": 2,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "WGH0H249KHAA00421"
   },
   {
     "id": 68,
@@ -461,7 +502,8 @@ export const INITIAL_FLEET = [
     "mileage": 2,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "WGH0H249CHAA00429"
   },
   {
     "id": 69,
@@ -472,7 +514,8 @@ export const INITIAL_FLEET = [
     "mileage": 2,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "WGH0H249KHAA00435"
   },
   {
     "id": 70,
@@ -483,7 +526,8 @@ export const INITIAL_FLEET = [
     "mileage": 3,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "WGH0H249EHAA00431"
   },
   {
     "id": 71,
@@ -494,7 +538,8 @@ export const INITIAL_FLEET = [
     "mileage": 2555,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "nan"
+    "driver": "nan",
+    "vin": "WGH0H249PHAA00207"
   },
   {
     "id": 72,
@@ -505,7 +550,8 @@ export const INITIAL_FLEET = [
     "mileage": 2,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "WGH0H258JHAA00457"
   },
   {
     "id": 73,
@@ -516,7 +562,8 @@ export const INITIAL_FLEET = [
     "mileage": 2,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "WGH0H258KHAA00456"
   },
   {
     "id": 74,
@@ -527,7 +574,8 @@ export const INITIAL_FLEET = [
     "mileage": 7664,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "10000107P0A009900"
   },
   {
     "id": 75,
@@ -538,7 +586,8 @@ export const INITIAL_FLEET = [
     "mileage": 6221,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "10000107JOA009964"
   },
   {
     "id": 76,
@@ -549,7 +598,8 @@ export const INITIAL_FLEET = [
     "mileage": 2,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "WGH0H255AHAA00131"
   },
   {
     "id": 77,
@@ -560,7 +610,8 @@ export const INITIAL_FLEET = [
     "mileage": 2,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "WGH0H255LHAA00132"
   },
   {
     "id": 78,
@@ -571,7 +622,8 @@ export const INITIAL_FLEET = [
     "mileage": 2,
     "status": "SINIESTRADA",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "WGH0H255HHAA00133"
   },
   {
     "id": 79,
@@ -582,7 +634,8 @@ export const INITIAL_FLEET = [
     "mileage": 2,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "WGH0H255EHAA00134"
   },
   {
     "id": 80,
@@ -593,7 +646,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "WGH0H255KHAA00138"
   },
   {
     "id": 81,
@@ -604,7 +658,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "WGH0H255PHAA00140"
   },
   {
     "id": 82,
@@ -615,7 +670,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "WGH0H255THAA00136"
   },
   {
     "id": 83,
@@ -626,7 +682,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "WGH0H255PHAA00137"
   },
   {
     "id": 84,
@@ -637,7 +694,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "WGH0H255JHAA00142"
   },
   {
     "id": 85,
@@ -648,7 +706,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "WGH0H255KHAA00141"
   },
   {
     "id": 86,
@@ -659,7 +718,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "WGH0H255CHAA00135"
   },
   {
     "id": 87,
@@ -670,7 +730,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "WGH0H255JHAA00139"
   },
   {
     "id": 88,
@@ -681,7 +742,8 @@ export const INITIAL_FLEET = [
     "mileage": 501,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "nan"
+    "driver": "nan",
+    "vin": "WGH0H257LHAA00004"
   },
   {
     "id": 89,
@@ -692,7 +754,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "nan"
+    "driver": "nan",
+    "vin": "WGH0H176VHAA03822"
   },
   {
     "id": 90,
@@ -703,7 +766,8 @@ export const INITIAL_FLEET = [
     "mileage": 3250,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "nan"
+    "driver": "nan",
+    "vin": "WGH0H258AHAA00253"
   },
   {
     "id": 91,
@@ -714,7 +778,8 @@ export const INITIAL_FLEET = [
     "mileage": 2326,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "nan"
+    "driver": "nan",
+    "vin": "WGH0H258CHAA00251"
   },
   {
     "id": 92,
@@ -725,7 +790,8 @@ export const INITIAL_FLEET = [
     "mileage": 1939,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "nan"
+    "driver": "nan",
+    "vin": "WGH0H258CHAA00260"
   },
   {
     "id": 93,
@@ -736,7 +802,8 @@ export const INITIAL_FLEET = [
     "mileage": 2261,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "nan"
+    "driver": "nan",
+    "vin": "WGH0H262LHAA02497"
   },
   {
     "id": 94,
@@ -747,7 +814,8 @@ export const INITIAL_FLEET = [
     "mileage": 1993,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "nan"
+    "driver": "nan",
+    "vin": "WGH0H262CHAA02477"
   },
   {
     "id": 95,
@@ -758,7 +826,8 @@ export const INITIAL_FLEET = [
     "mileage": 2022,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "nan"
+    "driver": "nan",
+    "vin": "WGH0H262HHAA02730"
   },
   {
     "id": 96,
@@ -769,7 +838,8 @@ export const INITIAL_FLEET = [
     "mileage": 928,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "nan"
+    "driver": "nan",
+    "vin": "961880423055"
   },
   {
     "id": 97,
@@ -780,7 +850,8 @@ export const INITIAL_FLEET = [
     "mileage": 1060,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "nan"
+    "driver": "nan",
+    "vin": "961880423056"
   },
   {
     "id": 98,
@@ -791,7 +862,8 @@ export const INITIAL_FLEET = [
     "mileage": 1156,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "nan"
+    "driver": "nan",
+    "vin": "961880423057"
   },
   {
     "id": 99,
@@ -802,7 +874,8 @@ export const INITIAL_FLEET = [
     "mileage": 508,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "nan"
+    "driver": "nan",
+    "vin": "961880423058"
   },
   {
     "id": 100,
@@ -813,7 +886,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "NOVEDAD HURTO",
     "lastMaintenance": 0,
-    "driver": "MARLON OJEDA"
+    "driver": "MARLON OJEDA",
+    "vin": "XLRATM410RG449093"
   },
   {
     "id": 101,
@@ -824,7 +898,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "HECTOR MURALLA"
+    "driver": "HECTOR MURALLA",
+    "vin": "XLRATM410RG447310"
   },
   {
     "id": 102,
@@ -835,7 +910,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "XLRATM410RG452619"
   },
   {
     "id": 103,
@@ -846,7 +922,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "XLRATM410RG455008"
   },
   {
     "id": 104,
@@ -857,7 +934,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "XLRATM410RG454277"
   },
   {
     "id": 105,
@@ -868,7 +946,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "XLRATM410RG452589"
   },
   {
     "id": 106,
@@ -879,7 +958,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "XLRATM410RG451828"
   },
   {
     "id": 107,
@@ -890,7 +970,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "XLRATM410RG451804"
   },
   {
     "id": 108,
@@ -901,7 +982,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "XLRATM410RG450635"
   },
   {
     "id": 109,
@@ -912,7 +994,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "XLRATM410RG449346"
   },
   {
     "id": 110,
@@ -923,7 +1006,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "XLRATM410RG449310"
   },
   {
     "id": 111,
@@ -934,7 +1018,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "XLRATM410RG449288"
   },
   {
     "id": 112,
@@ -945,7 +1030,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "NOVEDAD HURTO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "XLRATM410RG451084"
   },
   {
     "id": 113,
@@ -956,7 +1042,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "PENDIENTE FABRICACI\u00d3N",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "P0CT014"
   },
   {
     "id": 114,
@@ -967,7 +1054,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "PENDIENTE FABRICACI\u00d3N",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "P0CT015"
   },
   {
     "id": 115,
@@ -978,7 +1066,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "PENDIENTE FABRICACI\u00d3N",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "P0CT016"
   },
   {
     "id": 116,
@@ -989,7 +1078,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "PENDIENTE FABRICACI\u00d3N",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "P0CT017"
   },
   {
     "id": 117,
@@ -1000,7 +1090,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "PENDIENTE FABRICACI\u00d3N",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "P0CT018"
   },
   {
     "id": 118,
@@ -1011,7 +1102,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "PENDIENTE FABRICACI\u00d3N",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "P0CT019"
   },
   {
     "id": 119,
@@ -1022,7 +1114,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "WGV01582LJVA00702"
   },
   {
     "id": 120,
@@ -1033,7 +1126,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "WGV01582VJVA00700"
   },
   {
     "id": 121,
@@ -1044,7 +1138,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "REPARACIONES",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "8500T-51151"
   },
   {
     "id": 122,
@@ -1055,7 +1150,8 @@ export const INITIAL_FLEET = [
     "mileage": 506,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "WGV01411JJVA00639"
   },
   {
     "id": 123,
@@ -1066,7 +1162,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "WGW02120AWIA00775"
   },
   {
     "id": 124,
@@ -1077,7 +1174,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "WGW02120CWIA00779"
   },
   {
     "id": 125,
@@ -1088,7 +1186,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "PENDIENTE FABRICACI\u00d3N",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "P0FR003"
   },
   {
     "id": 156,
@@ -1099,7 +1198,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "CAT0236DED8R00162"
   },
   {
     "id": 157,
@@ -1110,7 +1210,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "DANNY ALEXANDER OSORIO"
+    "driver": "DANNY ALEXANDER OSORIO",
+    "vin": "CAT0236DEF9C01405"
   },
   {
     "id": 158,
@@ -1121,7 +1222,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "CAT0236DED8R00159"
   },
   {
     "id": 159,
@@ -1132,7 +1234,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "CAT0236DHD8R00161"
   },
   {
     "id": 162,
@@ -1143,7 +1246,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "REPARACIONES",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "NCAF01357"
   },
   {
     "id": 163,
@@ -1154,7 +1258,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "REPARACIONES",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "NCAF01253"
   },
   {
     "id": 164,
@@ -1165,7 +1270,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "CAT00120JE9201596"
   },
   {
     "id": 165,
@@ -1176,7 +1282,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "CAT00120CE9201597"
   },
   {
     "id": 166,
@@ -1187,7 +1294,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "CAT00120VE9201598"
   },
   {
     "id": 167,
@@ -1198,7 +1306,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "SINIESTRADA",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "CAT00120KE9201600"
   },
   {
     "id": 168,
@@ -1209,7 +1318,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "CAT00120AE9201604"
   },
   {
     "id": 169,
@@ -1220,7 +1330,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "CAT00120LE9201605"
   },
   {
     "id": 170,
@@ -1231,7 +1342,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "CAT00120EE9201607"
   },
   {
     "id": 171,
@@ -1242,7 +1354,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "CAT00120HE9201606"
   },
   {
     "id": 177,
@@ -1253,7 +1366,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "JOSE QUINTERO"
+    "driver": "JOSE QUINTERO",
+    "vin": "9F9S3EVLTRF385136"
   },
   {
     "id": 178,
@@ -1264,7 +1378,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "9F9S3EVLTRF385131"
   },
   {
     "id": 179,
@@ -1275,7 +1390,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "Ricardo Cardona"
+    "driver": "Ricardo Cardona",
+    "vin": "9F9S3EVLTRF385134"
   },
   {
     "id": 180,
@@ -1286,7 +1402,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "Hernando Jimenez Lopez"
+    "driver": "Hernando Jimenez Lopez",
+    "vin": "9F9S3EVLTRF385128"
   },
   {
     "id": 181,
@@ -1297,7 +1414,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "9F9S3EVLTRF385139"
   },
   {
     "id": 182,
@@ -1308,7 +1426,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "Rubernel Pati\u00f1o"
+    "driver": "Rubernel Pati\u00f1o",
+    "vin": "9F9S3EVLTRF385138"
   },
   {
     "id": 183,
@@ -1319,7 +1438,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "Adrian Guevara"
+    "driver": "Adrian Guevara",
+    "vin": "9F9S3EVLTRF385132"
   },
   {
     "id": 184,
@@ -1330,7 +1450,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "Edwin Galvis Quiroga"
+    "driver": "Edwin Galvis Quiroga",
+    "vin": "9F9S3EVLTRF385137"
   },
   {
     "id": 185,
@@ -1341,7 +1462,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "Oscar Jimenez"
+    "driver": "Oscar Jimenez",
+    "vin": "9F9S3EVLTRF385135"
   },
   {
     "id": 186,
@@ -1352,7 +1474,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "Efrain Gonzalez"
+    "driver": "Efrain Gonzalez",
+    "vin": "9F9S3EVLTRF385130"
   },
   {
     "id": 187,
@@ -1363,7 +1486,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "Diego Rangel"
+    "driver": "Diego Rangel",
+    "vin": "9F9S3EVLTRF385129"
   },
   {
     "id": 188,
@@ -1374,7 +1498,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "9F9S3EVLTRF385133"
   },
   {
     "id": 189,
@@ -1385,7 +1510,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "Deiver David Ipaz Marin"
+    "driver": "Deiver David Ipaz Marin",
+    "vin": "9F9S3EVLTRF385140"
   },
   {
     "id": 190,
@@ -1396,7 +1522,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "EDINSON BOLIVAR"
+    "driver": "EDINSON BOLIVAR",
+    "vin": "9F9S3EVLTRF385142"
   },
   {
     "id": 191,
@@ -1407,7 +1534,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "9F9S3EVLTRF385143"
   },
   {
     "id": 192,
@@ -1418,7 +1546,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "VARADO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "9F9S3EVLTRF385144"
   },
   {
     "id": 193,
@@ -1429,7 +1558,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "9F9S3EVLTRF385145"
   },
   {
     "id": 194,
@@ -1440,7 +1570,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "9F9S3EVLTRF385146"
   },
   {
     "id": 195,
@@ -1451,7 +1582,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "9F9S3EVLTRF385147"
   },
   {
     "id": 196,
@@ -1462,7 +1594,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "VARADO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "9F9S3EVLTRF385148"
   },
   {
     "id": 197,
@@ -1473,7 +1606,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "9F9S3EVLTRF385149"
   },
   {
     "id": 198,
@@ -1484,7 +1618,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "9F9S3EVLTRF385150"
   },
   {
     "id": 199,
@@ -1495,7 +1630,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "9F9S3EVLTRF385151"
   },
   {
     "id": 200,
@@ -1506,7 +1642,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "9F9S3EVLTRF385152"
   },
   {
     "id": 201,
@@ -1517,7 +1654,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "9F9S3EVLTRF385153"
   },
   {
     "id": 202,
@@ -1528,7 +1666,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "9F9S3EVLTRF385154"
   },
   {
     "id": 203,
@@ -1539,7 +1678,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "9F9S3EVLTRF385156"
   },
   {
     "id": 204,
@@ -1550,7 +1690,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "9F9S3EVLTRF385155"
   },
   {
     "id": 205,
@@ -1561,7 +1702,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "9F9S3EVLTRF385157"
   },
   {
     "id": 206,
@@ -1572,7 +1714,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "9F9S3EVLTRF385158"
   },
   {
     "id": 207,
@@ -1583,7 +1726,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "9F9S3EVLTRF385159"
   },
   {
     "id": 208,
@@ -1594,7 +1738,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "9F9S3EVLTRF385160"
   },
   {
     "id": 209,
@@ -1605,7 +1750,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "9F9S3EVLTRF385161"
   },
   {
     "id": 210,
@@ -1616,7 +1762,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "9F9S3EVLTRF385162"
   },
   {
     "id": 211,
@@ -1627,7 +1774,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "9F9S3EVLTRF385171"
   },
   {
     "id": 212,
@@ -1638,7 +1786,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "9F9S3EVLTRF385172"
   },
   {
     "id": 213,
@@ -1649,7 +1798,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "9F9S3EVLTRF385173"
   },
   {
     "id": 214,
@@ -1660,7 +1810,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "9F9S3EVLTRF385174"
   },
   {
     "id": 215,
@@ -1671,7 +1822,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "9F9S3EVLTRF385175"
   },
   {
     "id": 216,
@@ -1682,7 +1834,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "9F9S3EVLTRF385176"
   },
   {
     "id": 217,
@@ -1693,7 +1846,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "9F9S3EVLTRF385177"
   },
   {
     "id": 218,
@@ -1704,7 +1858,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "9F9S3EVLTRF385178"
   },
   {
     "id": 219,
@@ -1715,7 +1870,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "9F9S3EVLTRF385179"
   },
   {
     "id": 220,
@@ -1726,7 +1882,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "9F9S3EVLTRF385180"
   },
   {
     "id": 221,
@@ -1737,7 +1894,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "9F9S3EVLTRF385181"
   },
   {
     "id": 222,
@@ -1748,7 +1906,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "9F9S3EVLTRF385182"
   },
   {
     "id": 223,
@@ -1759,7 +1918,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "9F9S3EVLTRF385183"
   },
   {
     "id": 224,
@@ -1770,7 +1930,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "9F9S3EVLTRF385184"
   },
   {
     "id": 225,
@@ -1781,7 +1942,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "9F9S3EVLTRF385185"
   },
   {
     "id": 226,
@@ -1792,7 +1954,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "9F9S3EVLTRF385186"
   },
   {
     "id": 227,
@@ -1803,7 +1966,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "9F9S3EVLTRF385187"
   },
   {
     "id": 228,
@@ -1814,7 +1978,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "9F9S3EVLTRF385188"
   },
   {
     "id": 229,
@@ -1825,7 +1990,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "9F9S3EVLTRF385189"
   },
   {
     "id": 230,
@@ -1836,7 +2002,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "9F9S3EVLTRF385190"
   },
   {
     "id": 231,
@@ -1847,7 +2014,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "9F9S3EVLTRF385191"
   },
   {
     "id": 232,
@@ -1858,7 +2026,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "9F9S3EVLTRF385192"
   },
   {
     "id": 233,
@@ -1869,7 +2038,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "9F9S3EVLTRF385193"
   },
   {
     "id": 234,
@@ -1880,7 +2050,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "9F9S3EVLTRF385194"
   },
   {
     "id": 235,
@@ -1891,7 +2062,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "9F9S3EVLTRF385195"
   },
   {
     "id": 236,
@@ -1902,7 +2074,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "9F9S3EVLTRF385196"
   },
   {
     "id": 237,
@@ -1913,7 +2086,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "9F9S3EVLTRF385197"
   },
   {
     "id": 238,
@@ -1924,7 +2098,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "9F9S3EVLTRF385198"
   },
   {
     "id": 239,
@@ -1935,7 +2110,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "9F9S3EVLTRF385199"
   },
   {
     "id": 240,
@@ -1946,7 +2122,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "9F9S3EVLTRF385200"
   },
   {
     "id": 241,
@@ -1957,7 +2134,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "9F9S3EVLTRF385201"
   },
   {
     "id": 242,
@@ -1968,7 +2146,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "9F9S3EVLTRF385202"
   },
   {
     "id": 243,
@@ -1979,7 +2158,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "9F9S3EVLTRF385203"
   },
   {
     "id": 244,
@@ -1990,7 +2170,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "9F9S3EVLTRF385204"
   },
   {
     "id": 245,
@@ -2001,7 +2182,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "9F9S3EVLTRF385205"
   },
   {
     "id": 246,
@@ -2012,7 +2194,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "9F9S3EVLTRF385206"
   },
   {
     "id": 247,
@@ -2023,7 +2206,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "9F9S3EVLTRF385207"
   },
   {
     "id": 248,
@@ -2034,7 +2218,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "9F9S3EVLTRF385208"
   },
   {
     "id": 249,
@@ -2045,7 +2230,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "9F9S3EVLTRF385209"
   },
   {
     "id": 250,
@@ -2056,7 +2242,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "9F9S3EVLTRF385210"
   },
   {
     "id": 251,
@@ -2067,7 +2254,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "9F9S3EVLTRF385211"
   },
   {
     "id": 252,
@@ -2078,7 +2266,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "9F9S3EVLTRF385212"
   },
   {
     "id": 253,
@@ -2089,7 +2278,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "9F9S3EVLTRF385213"
   },
   {
     "id": 254,
@@ -2100,7 +2290,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "9F9S3EVLTRF385214"
   },
   {
     "id": 255,
@@ -2111,7 +2302,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "9F9S3EVLTRF385215"
   },
   {
     "id": 256,
@@ -2122,7 +2314,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "9F9S3EVLTRF385216"
   },
   {
     "id": 257,
@@ -2133,7 +2326,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "VARADO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "9F9S3EVLTRF385217"
   },
   {
     "id": 258,
@@ -2144,7 +2338,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "9F9S3EVLTRF385218"
   },
   {
     "id": 259,
@@ -2155,7 +2350,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "9F9S3EVLTRF385219"
   },
   {
     "id": 260,
@@ -2166,7 +2362,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "9F9S3EVLTRF385220"
   },
   {
     "id": 261,
@@ -2177,7 +2374,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "9F9S3EVLTRF385221"
   },
   {
     "id": 262,
@@ -2188,7 +2386,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "9F9S3EVLTRF385222"
   },
   {
     "id": 263,
@@ -2199,7 +2398,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "9F9S3EVLTRF385223"
   },
   {
     "id": 264,
@@ -2210,7 +2410,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "9F9S3EVLTRF385224"
   },
   {
     "id": 265,
@@ -2221,7 +2422,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "9F9S3EVLTRF385127"
   },
   {
     "id": 266,
@@ -2232,7 +2434,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "9F9S3EVLTRF385163"
   },
   {
     "id": 267,
@@ -2243,7 +2446,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "9F9S3EVLTRF385241"
   },
   {
     "id": 268,
@@ -2254,7 +2458,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "9F9S3EVLTRF385242"
   },
   {
     "id": 269,
@@ -2265,7 +2470,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "9F9S3EVLTRF385243"
   },
   {
     "id": 270,
@@ -2276,7 +2482,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "9F9S3EVLTRF385141"
   },
   {
     "id": 271,
@@ -2287,7 +2494,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "9F9S3EVLTRF385225"
   },
   {
     "id": 272,
@@ -2298,7 +2506,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "POR RECOGER EN PROVEEDOR",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "9F9S3EVLTRF385226"
   },
   {
     "id": 273,
@@ -2309,7 +2518,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "9F9S3EVLTRF385227"
   },
   {
     "id": 274,
@@ -2320,7 +2530,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "9F9S3EVLTRF385228"
   },
   {
     "id": 275,
@@ -2331,7 +2542,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "9F9S3EVLTRF385229"
   },
   {
     "id": 276,
@@ -2342,7 +2554,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "9F9S3EVLTRF385230"
   },
   {
     "id": 277,
@@ -2353,7 +2566,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "9F9S3EVLTRF385231"
   },
   {
     "id": 278,
@@ -2364,7 +2578,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "9F9S3EVLTRF385232"
   },
   {
     "id": 279,
@@ -2375,7 +2590,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "9F9S3EVLTRF385233"
   },
   {
     "id": 280,
@@ -2386,7 +2602,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "9F9S3EVLTRF385234"
   },
   {
     "id": 281,
@@ -2397,7 +2614,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "9F9S3EVLTRF385235"
   },
   {
     "id": 282,
@@ -2408,7 +2626,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "POR RECOGER EN PROVEEDOR",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "9F9S3EVLTRF385236"
   },
   {
     "id": 283,
@@ -2419,7 +2638,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "9F9S3EVLTRF385237"
   },
   {
     "id": 284,
@@ -2430,7 +2650,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "POR RECOGER EN PROVEEDOR",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "9F9S3EVLTRF385238"
   },
   {
     "id": 285,
@@ -2441,7 +2662,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "POR RECOGER EN PROVEEDOR",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "9F9S3EVLTRF385239"
   },
   {
     "id": 286,
@@ -2452,7 +2674,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "9F9S3EVLTRF385240"
   },
   {
     "id": 300,
@@ -2463,7 +2686,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "JOSE QUINTERO"
+    "driver": "JOSE QUINTERO",
+    "vin": "98PTTH430PB129816"
   },
   {
     "id": 301,
@@ -2474,7 +2698,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "98PTTH430PB129817"
   },
   {
     "id": 302,
@@ -2485,7 +2710,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "Ricardo Cardona"
+    "driver": "Ricardo Cardona",
+    "vin": "98PTTH430PB127823"
   },
   {
     "id": 303,
@@ -2496,7 +2722,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "Hernando Jimenez Lopez"
+    "driver": "Hernando Jimenez Lopez",
+    "vin": "98PTTH430PB129835"
   },
   {
     "id": 304,
@@ -2507,7 +2734,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "98PTTH430PB131444"
   },
   {
     "id": 305,
@@ -2518,7 +2746,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "Rubernel Pati\u00f1o"
+    "driver": "Rubernel Pati\u00f1o",
+    "vin": "98PTTH430PB131786"
   },
   {
     "id": 306,
@@ -2529,7 +2758,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "Adrian Guevara"
+    "driver": "Adrian Guevara",
+    "vin": "98PTTH430PB129853"
   },
   {
     "id": 307,
@@ -2540,7 +2770,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "Edwin Galvis Quiroga"
+    "driver": "Edwin Galvis Quiroga",
+    "vin": "98PTTH430PB131450"
   },
   {
     "id": 308,
@@ -2551,7 +2782,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "Oscar Jimenez"
+    "driver": "Oscar Jimenez",
+    "vin": "98PTTH430PB129856"
   },
   {
     "id": 309,
@@ -2562,7 +2794,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "Efrain Gonzalez"
+    "driver": "Efrain Gonzalez",
+    "vin": "98PTTH430PB129810"
   },
   {
     "id": 310,
@@ -2573,7 +2806,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "Diego Rangel"
+    "driver": "Diego Rangel",
+    "vin": "98PTTH430PB129812"
   },
   {
     "id": 311,
@@ -2584,7 +2818,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "VARADO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "98PTTH430PB127895"
   },
   {
     "id": 312,
@@ -2595,7 +2830,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "Deiver David Ipaz Marin"
+    "driver": "Deiver David Ipaz Marin",
+    "vin": "98PTTH430PB131437"
   },
   {
     "id": 313,
@@ -2606,7 +2842,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "EDINSON BOLIVAR"
+    "driver": "EDINSON BOLIVAR",
+    "vin": "98PTTH430PB129813"
   },
   {
     "id": 314,
@@ -2617,7 +2854,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "98PTTH430PB127891"
   },
   {
     "id": 315,
@@ -2628,7 +2866,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "VARADO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "98PTTH430PB131439"
   },
   {
     "id": 316,
@@ -2639,7 +2878,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "98PTTH430PB131441"
   },
   {
     "id": 317,
@@ -2650,7 +2890,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "98PTTH430PB127797"
   },
   {
     "id": 318,
@@ -2661,7 +2902,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "98PTTH430PB127832"
   },
   {
     "id": 319,
@@ -2672,7 +2914,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "VARADO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "98PTTH430PB131796"
   },
   {
     "id": 320,
@@ -2683,7 +2926,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "98PTTH430PB127788"
   },
   {
     "id": 321,
@@ -2694,7 +2938,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "98PTTH430PB131784"
   },
   {
     "id": 322,
@@ -2705,7 +2950,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "98PTTH430PB131447"
   },
   {
     "id": 323,
@@ -2716,7 +2962,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "98PTTH430PB131421"
   },
   {
     "id": 324,
@@ -2727,7 +2974,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "98PTTH430PB131430"
   },
   {
     "id": 325,
@@ -2738,7 +2986,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "98PTTH430PB131432"
   },
   {
     "id": 326,
@@ -2749,7 +2998,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "98PTTH430PB131448"
   },
   {
     "id": 327,
@@ -2760,7 +3010,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "98PTTH430PB127830"
   },
   {
     "id": 328,
@@ -2771,7 +3022,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "98PTTH430PB127912"
   },
   {
     "id": 329,
@@ -2782,7 +3034,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "98PTTH430PB129782"
   },
   {
     "id": 330,
@@ -2793,7 +3046,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "98PTTH430PB127802"
   },
   {
     "id": 331,
@@ -2804,7 +3058,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "98PTTH430PB127828"
   },
   {
     "id": 332,
@@ -2815,7 +3070,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "98PTTH430PB129778"
   },
   {
     "id": 333,
@@ -2826,7 +3082,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "98PTTH430PB131445"
   },
   {
     "id": 334,
@@ -2837,7 +3094,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "98PTTH430PB127887"
   },
   {
     "id": 335,
@@ -2848,7 +3106,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "98PTTH430PB127897"
   },
   {
     "id": 336,
@@ -2859,7 +3118,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "98PTTH430PB127908"
   },
   {
     "id": 337,
@@ -2870,7 +3130,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "98PTTH430PB127916"
   },
   {
     "id": 338,
@@ -2881,7 +3142,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "98PTTH430PB129760"
   },
   {
     "id": 339,
@@ -2892,7 +3154,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "98PTTH430PB129761"
   },
   {
     "id": 340,
@@ -2903,7 +3166,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "98PTTH430PB129762"
   },
   {
     "id": 341,
@@ -2914,7 +3178,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "98PTTH430PB129764"
   },
   {
     "id": 342,
@@ -2925,7 +3190,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "98PTTH430PB129765"
   },
   {
     "id": 343,
@@ -2936,7 +3202,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "98PTTH430PB129766"
   },
   {
     "id": 344,
@@ -2947,7 +3214,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "98PTTH430PB129767"
   },
   {
     "id": 345,
@@ -2958,7 +3226,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "98PTTH430PB129768"
   },
   {
     "id": 346,
@@ -2969,7 +3238,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "98PTTH430PB129769"
   },
   {
     "id": 347,
@@ -2980,7 +3250,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "98PTTH430PB129771"
   },
   {
     "id": 348,
@@ -2991,7 +3262,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "98PTTH430PB129772"
   },
   {
     "id": 349,
@@ -3002,7 +3274,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "98PTTH430PB129775"
   },
   {
     "id": 350,
@@ -3013,7 +3286,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "98PTTH430PB129776"
   },
   {
     "id": 351,
@@ -3024,7 +3298,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "98PTTH430PB129784"
   },
   {
     "id": 352,
@@ -3035,7 +3310,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "98PTTH430PB129788"
   },
   {
     "id": 353,
@@ -3046,7 +3322,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "98PTTH430PB129790"
   },
   {
     "id": 354,
@@ -3057,7 +3334,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "98PTTH430PB129795"
   },
   {
     "id": 355,
@@ -3068,7 +3346,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "98PTTH430PB129797"
   },
   {
     "id": 356,
@@ -3079,7 +3358,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "98PTTH430PB129800"
   },
   {
     "id": 357,
@@ -3090,7 +3370,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "98PTTH430PB129805"
   },
   {
     "id": 358,
@@ -3101,7 +3382,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "98PTTH430PB129807"
   },
   {
     "id": 359,
@@ -3112,7 +3394,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "98PTTH430PB129808"
   },
   {
     "id": 360,
@@ -3123,7 +3406,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "98PTTH430PB129811"
   },
   {
     "id": 361,
@@ -3134,7 +3418,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "98PTTH430PB129825"
   },
   {
     "id": 362,
@@ -3145,7 +3430,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "98PTTH430PB129852"
   },
   {
     "id": 363,
@@ -3156,7 +3442,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "98PTTH430PB129855"
   },
   {
     "id": 364,
@@ -3167,7 +3454,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "98PTTH430PB131423"
   },
   {
     "id": 365,
@@ -3178,7 +3466,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "98PTTH430PB131425"
   },
   {
     "id": 366,
@@ -3189,7 +3478,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "98PTTH430PB131426"
   },
   {
     "id": 367,
@@ -3200,7 +3490,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "98PTTH430PB131429"
   },
   {
     "id": 368,
@@ -3211,7 +3502,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "98PTTH430PB131434"
   },
   {
     "id": 369,
@@ -3222,7 +3514,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "98PTTH430PB131436"
   },
   {
     "id": 370,
@@ -3233,7 +3526,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "98PTTH430PB131449"
   },
   {
     "id": 371,
@@ -3244,7 +3538,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "98PTTH430PB127893"
   },
   {
     "id": 372,
@@ -3255,7 +3550,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "98PTTH430PB127894"
   },
   {
     "id": 373,
@@ -3266,7 +3562,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "98PTTH430PB127896"
   },
   {
     "id": 374,
@@ -3277,7 +3574,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "98PTTH430PB127898"
   },
   {
     "id": 375,
@@ -3288,7 +3586,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "98PTTH430PB127899"
   },
   {
     "id": 376,
@@ -3299,7 +3598,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "98PTTH430PB127900"
   },
   {
     "id": 377,
@@ -3310,7 +3610,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "98PTTH430PB127901"
   },
   {
     "id": 378,
@@ -3321,7 +3622,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "98PTTH430PB127902"
   },
   {
     "id": 379,
@@ -3332,7 +3634,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "98PTTH430PB127903"
   },
   {
     "id": 380,
@@ -3343,7 +3646,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "VARADO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "98PTTH430PB127904"
   },
   {
     "id": 381,
@@ -3354,7 +3658,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "98PTTH430PB127905"
   },
   {
     "id": 382,
@@ -3365,7 +3670,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "98PTTH430PB127906"
   },
   {
     "id": 383,
@@ -3376,7 +3682,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "98PTTH430PB127907"
   },
   {
     "id": 384,
@@ -3387,7 +3694,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "98PTTH430PB127909"
   },
   {
     "id": 385,
@@ -3398,7 +3706,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "98PTTH430PB127910"
   },
   {
     "id": 386,
@@ -3409,7 +3718,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "98PTTH430PB127913"
   },
   {
     "id": 387,
@@ -3420,7 +3730,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "98PTTH430PB127915"
   },
   {
     "id": 388,
@@ -3431,7 +3742,8 @@ export const INITIAL_FLEET = [
     "mileage": 1850,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "98PTTH430PB129846"
   },
   {
     "id": 389,
@@ -3442,7 +3754,8 @@ export const INITIAL_FLEET = [
     "mileage": 2091,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "98PTTH430PB127892"
   },
   {
     "id": 390,
@@ -3453,7 +3766,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "98PTTH430PB131435"
   },
   {
     "id": 391,
@@ -3464,7 +3778,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "98PTTH430PB129814"
   },
   {
     "id": 392,
@@ -3475,7 +3790,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "98PTTH430PB129793"
   },
   {
     "id": 393,
@@ -3486,7 +3802,8 @@ export const INITIAL_FLEET = [
     "mileage": 2121,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "98PTTH430PB129809"
   },
   {
     "id": 394,
@@ -3497,7 +3814,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "98PTTH430PB131794"
   },
   {
     "id": 395,
@@ -3508,7 +3826,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "POR RECOGER EN PROVEEDOR",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "98PTTH430PB131793"
   },
   {
     "id": 396,
@@ -3519,7 +3838,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "98PTTH430PB131792"
   },
   {
     "id": 397,
@@ -3530,7 +3850,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "98PTTH430PB131446"
   },
   {
     "id": 398,
@@ -3541,7 +3862,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "98PTTH430PB131433"
   },
   {
     "id": 399,
@@ -3552,7 +3874,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "98PTTH430PB131431"
   },
   {
     "id": 400,
@@ -3563,7 +3886,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "98PTTH430PB131424"
   },
   {
     "id": 401,
@@ -3574,7 +3898,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "98PTTH430PB131422"
   },
   {
     "id": 402,
@@ -3585,7 +3910,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "98PTTH430PB129794"
   },
   {
     "id": 403,
@@ -3596,7 +3922,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "98PTTH430PB129851"
   },
   {
     "id": 404,
@@ -3607,7 +3934,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "98PTTH430PB129815"
   },
   {
     "id": 405,
@@ -3618,7 +3946,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "POR RECOGER EN PROVEEDOR",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "98PTTH430PB129774"
   },
   {
     "id": 406,
@@ -3629,7 +3958,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "98PTTH430PB129773"
   },
   {
     "id": 407,
@@ -3640,7 +3970,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "POR RECOGER EN PROVEEDOR",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "98PTTH430PB127911"
   },
   {
     "id": 408,
@@ -3651,7 +3982,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "POR RECOGER EN PROVEEDOR",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "98PTTH430PB131443"
   },
   {
     "id": 409,
@@ -3662,7 +3994,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "98PTTH430PB131440"
   },
   {
     "id": 410,
@@ -3673,7 +4006,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "nan"
+    "driver": "nan",
+    "vin": "9F9CBST3ESF385312"
   },
   {
     "id": 411,
@@ -3684,7 +4018,8 @@ export const INITIAL_FLEET = [
     "mileage": 2049,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "98PTTH430PB127914"
   },
   {
     "id": 412,
@@ -3695,7 +4030,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "9F9CBST3ESF385313"
   },
   {
     "id": 413,
@@ -3706,7 +4042,8 @@ export const INITIAL_FLEET = [
     "mileage": 1856,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "98PTTH430PB131442"
   },
   {
     "id": 414,
@@ -3717,7 +4054,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "nan"
+    "driver": "nan",
+    "vin": "9F9CBST3ESF385317"
   },
   {
     "id": 415,
@@ -3728,7 +4066,8 @@ export const INITIAL_FLEET = [
     "mileage": 2059,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "98PTTH430PB129824"
   },
   {
     "id": 416,
@@ -3739,7 +4078,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "nan"
+    "driver": "nan",
+    "vin": "9F9CBST3ESF385315"
   },
   {
     "id": 417,
@@ -3750,7 +4090,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "98PTTH430PB131791"
   },
   {
     "id": 418,
@@ -3761,7 +4102,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "nan"
+    "driver": "nan",
+    "vin": "9F9CBST3ESF385314"
   },
   {
     "id": 419,
@@ -3772,7 +4114,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "XLRTTM430TG543321"
   },
   {
     "id": 420,
@@ -3783,7 +4126,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "nan"
+    "driver": "nan",
+    "vin": "9F9CBST3ESF385318"
   },
   {
     "id": 421,
@@ -3794,7 +4138,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "XLRTTM430TG543478"
   },
   {
     "id": 422,
@@ -3805,7 +4150,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "nan"
+    "driver": "nan",
+    "vin": "9F9CBST3ESF385316"
   },
   {
     "id": 423,
@@ -3816,7 +4162,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "XLRTTM439TG543477"
   },
   {
     "id": 450,
@@ -3827,7 +4174,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "POR RECOGER EN PROVEEDOR",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "XLRAEL370PL525151"
   },
   {
     "id": 452,
@@ -3838,7 +4186,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "POR RECOGER EN PROVEEDOR",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "XLRAEL370PL525097"
   },
   {
     "id": 454,
@@ -3849,7 +4198,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "POR RECOGER EN PROVEEDOR",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "XLRAEL370PL525092"
   },
   {
     "id": 456,
@@ -3860,7 +4210,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "POR RECOGER EN PROVEEDOR",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "XLRAEL370PL525198"
   },
   {
     "id": 459,
@@ -3871,7 +4222,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "CONCRETOS"
+    "driver": "CONCRETOS",
+    "vin": "XLRATM412SG529439"
   },
   {
     "id": 460,
@@ -3882,7 +4234,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "XLRATM414SG529331"
   },
   {
     "id": 461,
@@ -3893,7 +4246,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "XLRATM41XSG529334"
   },
   {
     "id": 462,
@@ -3904,7 +4258,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "PENDIENTE FABRICACI\u00d3N",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "PCMX004"
   },
   {
     "id": 463,
@@ -3915,7 +4270,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "PENDIENTE FABRICACI\u00d3N",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "PCMX005"
   },
   {
     "id": 464,
@@ -3926,7 +4282,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "PENDIENTE FABRICACI\u00d3N",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "PCMX006"
   },
   {
     "id": 465,
@@ -3937,7 +4294,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "PENDIENTE FABRICACI\u00d3N",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "PCMX007"
   },
   {
     "id": 466,
@@ -3948,7 +4306,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "PENDIENTE FABRICACI\u00d3N",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "PCMX008"
   },
   {
     "id": 467,
@@ -3959,7 +4318,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "PENDIENTE FABRICACI\u00d3N",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "PCMX009"
   },
   {
     "id": 468,
@@ -3970,7 +4330,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "PENDIENTE FABRICACI\u00d3N",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "PCMX010"
   },
   {
     "id": 469,
@@ -3981,7 +4342,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "1M2AL03C97M006198"
   },
   {
     "id": 470,
@@ -3992,7 +4354,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "PENDIENTE FABRICACI\u00d3N",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "PCTC001"
   },
   {
     "id": 471,
@@ -4003,7 +4366,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "PENDIENTE FABRICACI\u00d3N",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "PCTC002"
   },
   {
     "id": 474,
@@ -4014,7 +4378,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "CAT00333LTJT10243"
   },
   {
     "id": 475,
@@ -4025,7 +4390,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "CAT00333ATJT10158"
   },
   {
     "id": 476,
@@ -4036,7 +4402,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "CAT00333LTJT10162"
   },
   {
     "id": 477,
@@ -4047,7 +4414,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "CAT00333ATJT10242"
   },
   {
     "id": 478,
@@ -4058,7 +4426,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "CAT00333KTJT10168"
   },
   {
     "id": 479,
@@ -4069,7 +4438,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "Oscar Caicedo"
+    "driver": "Oscar Caicedo",
+    "vin": "CAT00320VSYW30852"
   },
   {
     "id": 480,
@@ -4080,7 +4450,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "CAT00320ESYW30856"
   },
   {
     "id": 481,
@@ -4091,7 +4462,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "CAT00320VSYW30849"
   },
   {
     "id": 482,
@@ -4102,7 +4474,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "SINIESTRADA",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "CAT00320KSYW30846"
   },
   {
     "id": 483,
@@ -4113,7 +4486,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "CAT00333HTJT10244"
   },
   {
     "id": 484,
@@ -4124,7 +4498,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "NOVEDAD HURTO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "CAT00333VTJT20025"
   },
   {
     "id": 485,
@@ -4135,7 +4510,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "Fredy Ayazo"
+    "driver": "Fredy Ayazo",
+    "vin": "CAT00333KTJT20022"
   },
   {
     "id": 486,
@@ -4146,7 +4522,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "CAT00333HTJT20028"
   },
   {
     "id": 487,
@@ -4157,7 +4534,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "CAT00333KTJT20036"
   },
   {
     "id": 488,
@@ -4168,7 +4546,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "JHON F. MARTINEZ MENESES"
+    "driver": "JHON F. MARTINEZ MENESES",
+    "vin": "CAT00333JTJT20037"
   },
   {
     "id": 489,
@@ -4179,7 +4558,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "CAT00333KTJT20019"
   },
   {
     "id": 490,
@@ -4190,7 +4570,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "CAT00333LTJT20030"
   },
   {
     "id": 491,
@@ -4201,7 +4582,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "VARADO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "CAT00333ETJT20029"
   },
   {
     "id": 492,
@@ -4212,7 +4594,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "Dairo Clavijo"
+    "driver": "Dairo Clavijo",
+    "vin": "CAT00333ATJT20026"
   },
   {
     "id": 493,
@@ -4223,7 +4606,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "CAT00333CTJT20038"
   },
   {
     "id": 494,
@@ -4234,7 +4618,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "CAT00333ETJT20032"
   },
   {
     "id": 495,
@@ -4245,7 +4630,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "CAT00333VTJT20039"
   },
   {
     "id": 496,
@@ -4256,7 +4642,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "CAT00333CTJT20033"
   },
   {
     "id": 497,
@@ -4267,7 +4654,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "CAT00333PTJT20035"
   },
   {
     "id": 498,
@@ -4278,7 +4666,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "CAT00333TTJT20034"
   },
   {
     "id": 499,
@@ -4289,7 +4678,8 @@ export const INITIAL_FLEET = [
     "mileage": 8330,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "nan"
+    "driver": "nan",
+    "vin": "DHKCEWAZSL5005688"
   },
   {
     "id": 500,
@@ -4300,7 +4690,8 @@ export const INITIAL_FLEET = [
     "mileage": 8606,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "nan"
+    "driver": "nan",
+    "vin": "DHKCEWAZPL5005689"
   },
   {
     "id": 501,
@@ -4311,7 +4702,8 @@ export const INITIAL_FLEET = [
     "mileage": 5442,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "nan"
+    "driver": "nan",
+    "vin": "HHKHZ616TE0002099"
   },
   {
     "id": 502,
@@ -4322,7 +4714,8 @@ export const INITIAL_FLEET = [
     "mileage": 4963,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "nan"
+    "driver": "nan",
+    "vin": "HHKHZ616AE0002063"
   },
   {
     "id": 503,
@@ -4333,7 +4726,8 @@ export const INITIAL_FLEET = [
     "mileage": 8,
     "status": "PROCESO DE MATRICULA",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "10002172CSG005301"
   },
   {
     "id": 504,
@@ -4344,7 +4738,8 @@ export const INITIAL_FLEET = [
     "mileage": 8,
     "status": "PROCESO DE MATRICULA",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "10002172KSG005304"
   },
   {
     "id": 505,
@@ -4355,7 +4750,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "PENDIENTE FABRICACI\u00d3N",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "PENDIENTE"
   },
   {
     "id": 510,
@@ -4366,7 +4762,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "PENDIENTE FABRICACI\u00d3N",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "PTIA001"
   },
   {
     "id": 511,
@@ -4377,7 +4774,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "PENDIENTE FABRICACI\u00d3N",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "PTIA002"
   },
   {
     "id": 512,
@@ -4388,7 +4786,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "ROBINSON GUANEME - TALLER 33"
+    "driver": "ROBINSON GUANEME - TALLER 33",
+    "vin": "8AJKB8CD4K1680089"
   },
   {
     "id": 513,
@@ -4399,7 +4798,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PROYECTO BARRANQUILLA"
+    "driver": "PROYECTO BARRANQUILLA",
+    "vin": "WV1ZZZ2HZJA0102202"
   },
   {
     "id": 514,
@@ -4410,7 +4810,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "TALLER NISSAN BOGOT\u00c1"
+    "driver": "TALLER NISSAN BOGOT\u00c1",
+    "vin": "8AJFB8CD9H15820241"
   },
   {
     "id": 515,
@@ -4421,7 +4822,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "CRISTIA N TAFUR - MAQUINARIA"
+    "driver": "CRISTIA N TAFUR - MAQUINARIA",
+    "vin": "3N6PD23YXZK922861"
   },
   {
     "id": 516,
@@ -4432,7 +4834,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "ROBINSON GUANEME - TALLER 33"
+    "driver": "ROBINSON GUANEME - TALLER 33",
+    "vin": "9FBHSRAJND022978"
   },
   {
     "id": 517,
@@ -4443,7 +4846,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "JULIO BARRANTES (desde 26 junio)"
+    "driver": "JULIO BARRANTES (desde 26 junio)",
+    "vin": "8AJKB3CD1N1641323"
   },
   {
     "id": 518,
@@ -4454,7 +4858,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "SINIESTRADA - PERDIDA TOTAL",
     "lastMaintenance": 0,
-    "driver": "nan"
+    "driver": "nan",
+    "vin": "8AJKB3CDXN1643975"
   },
   {
     "id": 519,
@@ -4465,7 +4870,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "CONDUCTOR COMBUSTIBLE"
+    "driver": "CONDUCTOR COMBUSTIBLE",
+    "vin": "3N6CD33B3ZK446890"
   },
   {
     "id": 520,
@@ -4476,7 +4882,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "CONDUCTOR BOGOT\u00c1"
+    "driver": "CONDUCTOR BOGOT\u00c1",
+    "vin": "JTEBH9FJ1D5045846"
   },
   {
     "id": 521,
@@ -4487,7 +4894,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "LUIS PI\u00d1A"
+    "driver": "LUIS PI\u00d1A",
+    "vin": "9BD281F65T9909394"
   },
   {
     "id": 522,
@@ -4498,7 +4906,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "JORGE ADRIAN GARCIA OBANDO"
+    "driver": "JORGE ADRIAN GARCIA OBANDO",
+    "vin": "9BD281F65T9909381"
   },
   {
     "id": 523,
@@ -4509,7 +4918,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "ADRIANO SILVA"
+    "driver": "ADRIANO SILVA",
+    "vin": "9BD281F65T9910293"
   },
   {
     "id": 524,
@@ -4520,7 +4930,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "ROBINSON CATA\u00d1O"
+    "driver": "ROBINSON CATA\u00d1O",
+    "vin": "9BD281F65T9909479"
   },
   {
     "id": 525,
@@ -4531,7 +4942,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "MANUEL RICARDO"
+    "driver": "MANUEL RICARDO",
+    "vin": "9BD281F65T9916768"
   },
   {
     "id": 526,
@@ -4542,7 +4954,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "CAMILO POVEDA"
+    "driver": "CAMILO POVEDA",
+    "vin": "9BD281F65T9909380"
   },
   {
     "id": 527,
@@ -4553,7 +4966,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "FRANCISCO RODRIGUEZ"
+    "driver": "FRANCISCO RODRIGUEZ",
+    "vin": "9BD281F65T9909397"
   },
   {
     "id": 528,
@@ -4564,7 +4978,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "WILLIAM CARDENAS"
+    "driver": "WILLIAM CARDENAS",
+    "vin": "9BD281F65T9918259"
   },
   {
     "id": 529,
@@ -4575,7 +4990,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "ROMAN CACERES"
+    "driver": "ROMAN CACERES",
+    "vin": "9BD281F65T9916763"
   },
   {
     "id": 530,
@@ -4586,7 +5002,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "CRISTIAN PE\u00d1A"
+    "driver": "CRISTIAN PE\u00d1A",
+    "vin": "9BD281F65T9916900"
   },
   {
     "id": 531,
@@ -4597,7 +5014,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "ELKIN FERNANDO PIMIENTO"
+    "driver": "ELKIN FERNANDO PIMIENTO",
+    "vin": "9BD281F65T9909434"
   },
   {
     "id": 532,
@@ -4608,7 +5026,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "JOHSON LOPEZ"
+    "driver": "JOHSON LOPEZ",
+    "vin": "9BD281F65T9916733"
   },
   {
     "id": 533,
@@ -4619,7 +5038,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "ALBERT BARBOZA"
+    "driver": "ALBERT BARBOZA",
+    "vin": "9BD281F65T9908652"
   },
   {
     "id": 534,
@@ -4630,7 +5050,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "IVAN ORTIZ"
+    "driver": "IVAN ORTIZ",
+    "vin": "9BD281F65T9916734"
   },
   {
     "id": 535,
@@ -4641,7 +5062,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "MIGUEL ANGEL PRADA"
+    "driver": "MIGUEL ANGEL PRADA",
+    "vin": "9BD281F65T9916952"
   },
   {
     "id": 536,
@@ -4652,7 +5074,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "JORGE GOMEZ"
+    "driver": "JORGE GOMEZ",
+    "vin": "9BD281F65T9917661"
   },
   {
     "id": 537,
@@ -4663,7 +5086,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "JOSE QUINTERO VELAZQUEZ"
+    "driver": "JOSE QUINTERO VELAZQUEZ",
+    "vin": "9BD281F65T9916781"
   },
   {
     "id": 538,
@@ -4674,7 +5098,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "DANIEL MENDEZ (CAPATAZ)"
+    "driver": "DANIEL MENDEZ (CAPATAZ)",
+    "vin": "9BD281F65T9916737"
   },
   {
     "id": 539,
@@ -4685,7 +5110,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "NESTO CAMILO REY"
+    "driver": "NESTO CAMILO REY",
+    "vin": "9BD281F65T9910120"
   },
   {
     "id": 540,
@@ -4696,7 +5122,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "YEISON CONTRERAS"
+    "driver": "YEISON CONTRERAS",
+    "vin": "9BD281F65T9909393"
   },
   {
     "id": 541,
@@ -4707,7 +5134,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "DOUGLAS MORENO"
+    "driver": "DOUGLAS MORENO",
+    "vin": "9BD281F65T9909375"
   },
   {
     "id": 542,
@@ -4718,7 +5146,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "SANDRA QUEMBA"
+    "driver": "SANDRA QUEMBA",
+    "vin": "9BD281F65T9918803"
   },
   {
     "id": 543,
@@ -4729,7 +5158,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "DUVER GOMEZ"
+    "driver": "DUVER GOMEZ",
+    "vin": "9BD281F65T9908253"
   },
   {
     "id": 544,
@@ -4740,7 +5170,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "DAVID LOURDUY"
+    "driver": "DAVID LOURDUY",
+    "vin": "9BD281F65T9908281"
   },
   {
     "id": 545,
@@ -4751,7 +5182,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "DANIEL MENDEZ (RESIDENTE)"
+    "driver": "DANIEL MENDEZ (RESIDENTE)",
+    "vin": "9BD281F65T9909371"
   },
   {
     "id": 546,
@@ -4762,7 +5194,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "CARLOS ANDRES VELASCO"
+    "driver": "CARLOS ANDRES VELASCO",
+    "vin": "9BD281F65T9909374"
   },
   {
     "id": 547,
@@ -4773,7 +5206,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "DIEGO PEREZ SABOGAL"
+    "driver": "DIEGO PEREZ SABOGAL",
+    "vin": "9BD281F65T9908265"
   },
   {
     "id": 548,
@@ -4784,7 +5218,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "NIDIA LEON"
+    "driver": "NIDIA LEON",
+    "vin": "9BD281F65T9909367"
   },
   {
     "id": 549,
@@ -4795,7 +5230,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "ARMANDO RODRIGUEZ"
+    "driver": "ARMANDO RODRIGUEZ",
+    "vin": "9BD281F65T9908350"
   },
   {
     "id": 550,
@@ -4806,7 +5242,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "FERNANDO SARMIENTO"
+    "driver": "FERNANDO SARMIENTO",
+    "vin": "9BD281F65T9908328"
   },
   {
     "id": 551,
@@ -4817,7 +5254,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "GABRIEL PEREA"
+    "driver": "GABRIEL PEREA",
+    "vin": "9BD281F65T9919325"
   },
   {
     "id": 552,
@@ -4828,7 +5266,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "SALIM ABDALA"
+    "driver": "SALIM ABDALA",
+    "vin": "9BD281F65T9908392"
   },
   {
     "id": 553,
@@ -4839,7 +5278,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "DUVAN CORTES"
+    "driver": "DUVAN CORTES",
+    "vin": "9BD281F65T9908306"
   },
   {
     "id": 554,
@@ -4850,7 +5290,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "EDUARDO MARTIN"
+    "driver": "EDUARDO MARTIN",
+    "vin": "9BD281F65T9908313"
   },
   {
     "id": 555,
@@ -4861,7 +5302,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "SALIM ABDALA"
+    "driver": "SALIM ABDALA",
+    "vin": "9BD281F65TYH00765"
   },
   {
     "id": 556,
@@ -4872,7 +5314,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "JAHIR FUENTES"
+    "driver": "JAHIR FUENTES",
+    "vin": "LEFEDDE14STP00206"
   },
   {
     "id": 557,
@@ -4883,7 +5326,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "ELKIN QUI\u00d1ONES"
+    "driver": "ELKIN QUI\u00d1ONES",
+    "vin": "LEFEDDE14STP01064"
   },
   {
     "id": 558,
@@ -4894,7 +5338,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "YEISON ZAPATA"
+    "driver": "YEISON ZAPATA",
+    "vin": "LEFEDDE15STP01073"
   },
   {
     "id": 559,
@@ -4905,7 +5350,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "RONALD GARZON"
+    "driver": "RONALD GARZON",
+    "vin": "LEFEDDE17STP01074"
   },
   {
     "id": 560,
@@ -4916,7 +5362,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "NILSON CADENA CHACON"
+    "driver": "NILSON CADENA CHACON",
+    "vin": "LEFEDDE13STP01072"
   },
   {
     "id": 561,
@@ -4927,7 +5374,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "DIEGO CASTRO MOMERO"
+    "driver": "DIEGO CASTRO MOMERO",
+    "vin": "LEFEDDE13STP01069"
   },
   {
     "id": 562,
@@ -4938,7 +5386,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "ARLEY BUSTAMANTE"
+    "driver": "ARLEY BUSTAMANTE",
+    "vin": "LEFEDDE18STP01066"
   },
   {
     "id": 563,
@@ -4949,7 +5398,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "ALFONSO PELAEZ"
+    "driver": "ALFONSO PELAEZ",
+    "vin": "LEFEDDE14STP00190"
   },
   {
     "id": 564,
@@ -4960,7 +5410,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "LINA RODRIGUEZ"
+    "driver": "LINA RODRIGUEZ",
+    "vin": "LEFEDDE10STP01076"
   },
   {
     "id": 565,
@@ -4971,7 +5422,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "LUIS LUNA"
+    "driver": "LUIS LUNA",
+    "vin": "LEFEDDE13STP00262"
   },
   {
     "id": 566,
@@ -4982,7 +5434,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "LEINER LADEUS"
+    "driver": "LEINER LADEUS",
+    "vin": "LEFEDDE1XSTP01070"
   },
   {
     "id": 567,
@@ -4993,7 +5446,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "CARLOS BUGALLO"
+    "driver": "CARLOS BUGALLO",
+    "vin": "LEFEDDE11STP01071"
   },
   {
     "id": 568,
@@ -5004,7 +5458,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "ANGEL DELGADO CASTRO"
+    "driver": "ANGEL DELGADO CASTRO",
+    "vin": "LEFEDDE13STP00259"
   },
   {
     "id": 569,
@@ -5015,7 +5470,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "CARLOS GUTIERREZ"
+    "driver": "CARLOS GUTIERREZ",
+    "vin": "LEFEDDE19STP01075"
   },
   {
     "id": 570,
@@ -5026,7 +5482,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "JOSE QUINTERO VELAZQUEZ"
+    "driver": "JOSE QUINTERO VELAZQUEZ",
+    "vin": "LEFEDDE11STP01068"
   },
   {
     "id": 571,
@@ -5037,7 +5494,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "ANGEL MIRANDA"
+    "driver": "ANGEL MIRANDA",
+    "vin": "9BD281F65T9935566"
   },
   {
     "id": 572,
@@ -5048,7 +5506,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "FREDY AYAZO"
+    "driver": "FREDY AYAZO",
+    "vin": "9BD281F65T9923637"
   },
   {
     "id": 573,
@@ -5059,7 +5518,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "CHARLY ARIEL AGUILAR MOSQUERA"
+    "driver": "CHARLY ARIEL AGUILAR MOSQUERA",
+    "vin": "9BD281F65T9935875"
   },
   {
     "id": 574,
@@ -5070,7 +5530,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "JEFFERSON CARPIO"
+    "driver": "JEFFERSON CARPIO",
+    "vin": "9BD281F65T9935462"
   },
   {
     "id": 575,
@@ -5081,7 +5542,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "JUAN SEPULVEDA (CAPATAZ)"
+    "driver": "JUAN SEPULVEDA (CAPATAZ)",
+    "vin": "9BD281F65T9936286"
   },
   {
     "id": 576,
@@ -5092,7 +5554,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "ANDRES LLORENTE"
+    "driver": "ANDRES LLORENTE",
+    "vin": "9BD281F65T9943876"
   },
   {
     "id": 577,
@@ -5103,7 +5566,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "EDWIN QUINTERO"
+    "driver": "EDWIN QUINTERO",
+    "vin": "9BD281F65T9935477"
   },
   {
     "id": 578,
@@ -5114,7 +5578,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "JUAN SEPULVEDA (RESIDENTE)"
+    "driver": "JUAN SEPULVEDA (RESIDENTE)",
+    "vin": "9BD281F65T9935472"
   },
   {
     "id": 579,
@@ -5125,7 +5590,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "LUIS CARLOS ALBOLEDA"
+    "driver": "LUIS CARLOS ALBOLEDA",
+    "vin": "9BD281F65T9935575"
   },
   {
     "id": 580,
@@ -5136,7 +5602,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "LUIS FERNANDO LOPEZ"
+    "driver": "LUIS FERNANDO LOPEZ",
+    "vin": "9BD281F65T9935390"
   },
   {
     "id": 581,
@@ -5147,7 +5614,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "XLRATM410RG445369"
   },
   {
     "id": 582,
@@ -5158,7 +5626,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "VARADO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "XLRATM410RG455025"
   },
   {
     "id": 583,
@@ -5169,7 +5638,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "XLRATM410RG454995"
   },
   {
     "id": 584,
@@ -5180,7 +5650,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "XLRATM410RG454988"
   },
   {
     "id": 585,
@@ -5191,7 +5662,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "VARADO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "XLRATM410RG454974"
   },
   {
     "id": 586,
@@ -5202,7 +5674,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "REPARACIONES",
     "lastMaintenance": 0,
-    "driver": "OSCAR CAICEDO"
+    "driver": "OSCAR CAICEDO",
+    "vin": "XLRATM410RG454800"
   },
   {
     "id": 587,
@@ -5213,7 +5686,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "Juan Carlos Oyola"
+    "driver": "Juan Carlos Oyola",
+    "vin": "XLRATM410RG454735"
   },
   {
     "id": 588,
@@ -5224,7 +5698,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "Jaime Wilfredo Marin"
+    "driver": "Jaime Wilfredo Marin",
+    "vin": "XLRATM410RG454718"
   },
   {
     "id": 589,
@@ -5235,7 +5710,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "Ernesto Sanchez"
+    "driver": "Ernesto Sanchez",
+    "vin": "XLRATM410RG454510"
   },
   {
     "id": 590,
@@ -5246,7 +5722,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "XLRATM410RG454486"
   },
   {
     "id": 591,
@@ -5257,7 +5734,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "XLRATM410RG455038"
   },
   {
     "id": 592,
@@ -5268,7 +5746,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "XLRATM410RG455494"
   },
   {
     "id": 593,
@@ -5279,7 +5758,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "XLRATM410RG455508"
   },
   {
     "id": 594,
@@ -5290,7 +5770,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "XLRATM410RG455574"
   },
   {
     "id": 595,
@@ -5301,7 +5782,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "XLRATM410RG455663"
   },
   {
     "id": 596,
@@ -5312,7 +5794,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "XLRATM410RG455762"
   },
   {
     "id": 597,
@@ -5323,7 +5806,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "XLRATM410RG455785"
   },
   {
     "id": 598,
@@ -5334,7 +5818,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "XLRATM410RG455828"
   },
   {
     "id": 599,
@@ -5345,7 +5830,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "SINIESTRO VIAL",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "XLRATM410RG456026"
   },
   {
     "id": 600,
@@ -5356,7 +5842,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "XLRATM410RG456309"
   },
   {
     "id": 601,
@@ -5367,7 +5854,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "XLRATM410RG462724"
   },
   {
     "id": 602,
@@ -5378,7 +5866,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "XLRATM410RG462844"
   },
   {
     "id": 603,
@@ -5389,7 +5878,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "XLRATM410RG464002"
   },
   {
     "id": 604,
@@ -5400,7 +5890,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "XLRATM410RG464068"
   },
   {
     "id": 605,
@@ -5411,7 +5902,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "SINIESTRO VIAL",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "XLRATM410RG468773"
   },
   {
     "id": 606,
@@ -5422,7 +5914,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "XLRATM410RG469354"
   },
   {
     "id": 607,
@@ -5433,7 +5926,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "XLRATM410RG469398"
   },
   {
     "id": 608,
@@ -5444,7 +5938,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "XLRATM410RG457633"
   },
   {
     "id": 609,
@@ -5455,7 +5950,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "XLRATM410RG458321"
   },
   {
     "id": 610,
@@ -5466,7 +5962,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "XLRATM410RG458387"
   },
   {
     "id": 611,
@@ -5477,7 +5974,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "XLRATM410RG459440"
   },
   {
     "id": 612,
@@ -5488,7 +5986,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "XLRATM410RG459708"
   },
   {
     "id": 613,
@@ -5499,7 +5998,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "XLRATM410RG462117"
   },
   {
     "id": 614,
@@ -5510,7 +6010,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "XLRATM410RG462472"
   },
   {
     "id": 615,
@@ -5521,7 +6022,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "XLRATM410RG461411"
   },
   {
     "id": 616,
@@ -5532,7 +6034,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "XLRATM410RG461315"
   },
   {
     "id": 617,
@@ -5543,7 +6046,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "XLRATM410RG458483"
   },
   {
     "id": 618,
@@ -5554,7 +6058,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "XLRATM410RG462292"
   },
   {
     "id": 619,
@@ -5565,7 +6070,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "XLRATM410RG462197"
   },
   {
     "id": 620,
@@ -5576,7 +6082,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "XLRATM410RG462080"
   },
   {
     "id": 621,
@@ -5587,7 +6094,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "XLRATM410RG461906"
   },
   {
     "id": 622,
@@ -5598,7 +6106,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "XLRATM410RG461457"
   },
   {
     "id": 623,
@@ -5609,7 +6118,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "XLRATM410RG461186"
   },
   {
     "id": 624,
@@ -5620,7 +6130,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "XLRATM410RG460476"
   },
   {
     "id": 625,
@@ -5631,7 +6142,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "XLRATM410RG460510"
   },
   {
     "id": 626,
@@ -5642,7 +6154,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "XLRATM410RG460542"
   },
   {
     "id": 627,
@@ -5653,7 +6166,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "XLRATM410RG460578"
   },
   {
     "id": 628,
@@ -5664,7 +6178,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "VARADO - GARANTIA",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "XLRATM410RG460627"
   },
   {
     "id": 629,
@@ -5675,7 +6190,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "XLRATM410RG460654"
   },
   {
     "id": 630,
@@ -5686,7 +6202,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "XLRATM410RG460822"
   },
   {
     "id": 631,
@@ -5697,7 +6214,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "XLRATM410RG460881"
   },
   {
     "id": 632,
@@ -5708,7 +6226,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "XLRATM410RG459725"
   },
   {
     "id": 633,
@@ -5719,7 +6238,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "XLRATM410RG460010"
   },
   {
     "id": 634,
@@ -5730,7 +6250,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "XLRATM410RG460026"
   },
   {
     "id": 635,
@@ -5741,7 +6262,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "XLRATM410RG460228"
   },
   {
     "id": 636,
@@ -5752,7 +6274,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "XLRATM410RG460233"
   },
   {
     "id": 637,
@@ -5763,7 +6286,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "XLRATM410RG460249"
   },
   {
     "id": 638,
@@ -5774,7 +6298,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "XLRATM410RG460260"
   },
   {
     "id": 639,
@@ -5785,7 +6310,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "XLRATM410RG460309"
   },
   {
     "id": 640,
@@ -5796,7 +6322,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "EDWAR MENA"
+    "driver": "EDWAR MENA",
+    "vin": "XLRATM410RG459166"
   },
   {
     "id": 641,
@@ -5807,7 +6334,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "XLRATM410RG458138"
   },
   {
     "id": 642,
@@ -5818,7 +6346,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "XLRATM410RG458939"
   },
   {
     "id": 643,
@@ -5829,7 +6358,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "XLRATM410RG459424"
   },
   {
     "id": 644,
@@ -5840,7 +6370,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "XLRATM410RG458907"
   },
   {
     "id": 645,
@@ -5851,7 +6382,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "XLRATM410RG458423"
   },
   {
     "id": 646,
@@ -5862,7 +6394,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "XLRATM410RG458925"
   },
   {
     "id": 647,
@@ -5873,7 +6406,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "XLRATM410RG458437"
   },
   {
     "id": 648,
@@ -5884,7 +6418,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "RETIRADO",
     "lastMaintenance": 0,
-    "driver": "nan"
+    "driver": "nan",
+    "vin": "9533R82U3CR216518"
   },
   {
     "id": 649,
@@ -5895,7 +6430,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "RETIRADO",
     "lastMaintenance": 0,
-    "driver": "nan"
+    "driver": "nan",
+    "vin": "3N6CD33B6ZK387107"
   },
   {
     "id": 650,
@@ -5906,7 +6442,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "RETIRADO",
     "lastMaintenance": 0,
-    "driver": "nan"
+    "driver": "nan",
+    "vin": "8AJKB8CD9J1674125"
   },
   {
     "id": 651,
@@ -5917,7 +6454,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "HERNAN ORTA"
+    "driver": "HERNAN ORTA",
+    "vin": "8AJKB8CD3K1675787"
   },
   {
     "id": 652,
@@ -5928,7 +6466,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "RETIRADO",
     "lastMaintenance": 0,
-    "driver": "nan"
+    "driver": "nan",
+    "vin": "3N6CD33B8ZK391501"
   },
   {
     "id": 653,
@@ -5939,7 +6478,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "nan"
+    "driver": "nan",
+    "vin": "LJN0KB523HX200254"
   },
   {
     "id": 654,
@@ -5950,7 +6490,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "LJN0KB52XHX200168"
   },
   {
     "id": 655,
@@ -5961,7 +6502,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "NIDIA LE\u00d3N"
+    "driver": "NIDIA LE\u00d3N",
+    "vin": "LVBV3ABB8HJ003349"
   },
   {
     "id": 656,
@@ -5972,7 +6514,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "nan"
+    "driver": "nan",
+    "vin": "3HTWYAHT4KN352700"
   },
   {
     "id": 657,
@@ -5983,7 +6526,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "RETIRADO",
     "lastMaintenance": 0,
-    "driver": "nan"
+    "driver": "nan",
+    "vin": "9F3MCP3H0K3103969"
   },
   {
     "id": 658,
@@ -5994,7 +6538,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "nan"
+    "driver": "nan",
+    "vin": "9GDNLR776KB005907"
   },
   {
     "id": 659,
@@ -6005,7 +6550,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "RETIRADO",
     "lastMaintenance": 0,
-    "driver": "nan"
+    "driver": "nan",
+    "vin": "93Y9SR5B3KJ597717"
   },
   {
     "id": 660,
@@ -6016,7 +6562,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "RETIRADO",
     "lastMaintenance": 0,
-    "driver": "nan"
+    "driver": "nan",
+    "vin": "3N6CD33B6ZK406668"
   },
   {
     "id": 661,
@@ -6027,7 +6574,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "RETIRADO",
     "lastMaintenance": 0,
-    "driver": "nan"
+    "driver": "nan",
+    "vin": "3N6CD33B7ZK408630"
   },
   {
     "id": 662,
@@ -6038,7 +6586,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "RETIRADO",
     "lastMaintenance": 0,
-    "driver": "nan"
+    "driver": "nan",
+    "vin": "9FBHSR5B3LM827592"
   },
   {
     "id": 663,
@@ -6049,7 +6598,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "RETIRADO",
     "lastMaintenance": 0,
-    "driver": "nan"
+    "driver": "nan",
+    "vin": "9FBHSR5B3LM899814"
   },
   {
     "id": 664,
@@ -6060,7 +6610,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "RETIRADO",
     "lastMaintenance": 0,
-    "driver": "nan"
+    "driver": "nan",
+    "vin": "9FBHSR5B3LM948231"
   },
   {
     "id": 665,
@@ -6071,7 +6622,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "LUIS OVALLOS"
+    "driver": "LUIS OVALLOS",
+    "vin": "3N6CD33B6ZK411647"
   },
   {
     "id": 673,
@@ -6082,7 +6634,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "RETIRADO",
     "lastMaintenance": 0,
-    "driver": "nan"
+    "driver": "nan",
+    "vin": "9BG148PK0LC415197"
   },
   {
     "id": 674,
@@ -6093,7 +6646,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "RETIRADO",
     "lastMaintenance": 0,
-    "driver": "nan"
+    "driver": "nan",
+    "vin": "WV1ZZZ2HZLA001780"
   },
   {
     "id": 675,
@@ -6104,7 +6658,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "RETIRADO",
     "lastMaintenance": 0,
-    "driver": "nan"
+    "driver": "nan",
+    "vin": "3BRCD33B8LK590064"
   },
   {
     "id": 676,
@@ -6115,7 +6670,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "RETIRADO",
     "lastMaintenance": 0,
-    "driver": "nan"
+    "driver": "nan",
+    "vin": "MEC0574PXHP018079"
   },
   {
     "id": 677,
@@ -6126,7 +6682,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "LEFYFCG2XMHN00007"
   },
   {
     "id": 678,
@@ -6137,7 +6694,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "nan"
+    "driver": "nan",
+    "vin": "9BM958174MB171429"
   },
   {
     "id": 679,
@@ -6148,7 +6706,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "LEFYFCG21NHN01967"
   },
   {
     "id": 680,
@@ -6159,7 +6718,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "nan"
+    "driver": "nan",
+    "vin": "LEFYFCG2XPHN01873"
   },
   {
     "id": 681,
@@ -6170,7 +6730,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "nan"
+    "driver": "nan",
+    "vin": "MEC0574P6PP055693"
   },
   {
     "id": 682,
@@ -6181,7 +6742,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "RETIRADO",
     "lastMaintenance": 0,
-    "driver": "nan"
+    "driver": "nan",
+    "vin": "WV1ZZZ2HZLA001685"
   },
   {
     "id": 683,
@@ -6192,7 +6754,8 @@ export const INITIAL_FLEET = [
     "mileage": 49365,
     "status": "RETIRADO",
     "lastMaintenance": 0,
-    "driver": "nan"
+    "driver": "nan",
+    "vin": "8AFAR23LXLJ160499"
   },
   {
     "id": 684,
@@ -6203,7 +6766,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "RETIRADO",
     "lastMaintenance": 0,
-    "driver": "nan"
+    "driver": "nan",
+    "vin": "8AFAR23L5NJ235774"
   },
   {
     "id": 685,
@@ -6214,7 +6778,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PAULA ANDREA VELASCO"
+    "driver": "PAULA ANDREA VELASCO",
+    "vin": "8AFAR23L4MJ205972"
   },
   {
     "id": 686,
@@ -6225,7 +6790,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "RETIRADO",
     "lastMaintenance": 0,
-    "driver": "nan"
+    "driver": "nan",
+    "vin": "KPAX62EESNP150022"
   },
   {
     "id": 687,
@@ -6236,7 +6802,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "RETIRADO",
     "lastMaintenance": 0,
-    "driver": "nan"
+    "driver": "nan",
+    "vin": "9FBHJ406NM893585"
   },
   {
     "id": 688,
@@ -6247,7 +6814,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "RETIRADO",
     "lastMaintenance": 0,
-    "driver": "nan"
+    "driver": "nan",
+    "vin": "3BRCD33B4HK590067"
   },
   {
     "id": 689,
@@ -6258,7 +6826,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "RETIRADO",
     "lastMaintenance": 0,
-    "driver": "nan"
+    "driver": "nan",
+    "vin": "8AJKB8CD6K1681292"
   },
   {
     "id": 690,
@@ -6269,7 +6838,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "RETIRADO",
     "lastMaintenance": 0,
-    "driver": "nan"
+    "driver": "nan",
+    "vin": "3N6CD33B8ZK421161"
   },
   {
     "id": 691,
@@ -6280,7 +6850,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "nan"
+    "driver": "nan",
+    "vin": "LEFYFCC20MHN00667"
   },
   {
     "id": 692,
@@ -6291,7 +6862,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "RETIRADO",
     "lastMaintenance": 0,
-    "driver": "nan"
+    "driver": "nan",
+    "vin": "9FBHSR5B3MM766509"
   },
   {
     "id": 693,
@@ -6302,7 +6874,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "RETIRADO",
     "lastMaintenance": 0,
-    "driver": "nan"
+    "driver": "nan",
+    "vin": "9FBHSR5B3MM766259"
   },
   {
     "id": 694,
@@ -6313,7 +6886,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "RETIRADO",
     "lastMaintenance": 0,
-    "driver": "nan"
+    "driver": "nan",
+    "vin": "9FBHSR5B3MM766508"
   },
   {
     "id": 695,
@@ -6324,7 +6898,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "RETIRADO",
     "lastMaintenance": 0,
-    "driver": "nan"
+    "driver": "nan",
+    "vin": "9FBHSR5B3MM766315"
   },
   {
     "id": 696,
@@ -6335,7 +6910,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "RETIRADO",
     "lastMaintenance": 0,
-    "driver": "nan"
+    "driver": "nan",
+    "vin": "9FBHSR5B3MM766406"
   },
   {
     "id": 697,
@@ -6346,7 +6922,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "RETIRADO",
     "lastMaintenance": 0,
-    "driver": "nan"
+    "driver": "nan",
+    "vin": "3N6CD33B4ZK421528"
   },
   {
     "id": 698,
@@ -6357,7 +6934,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "RETIRADO",
     "lastMaintenance": 0,
-    "driver": "nan"
+    "driver": "nan",
+    "vin": "3BRCD33B4NK590078"
   },
   {
     "id": 699,
@@ -6368,7 +6946,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "JUAN DIEGO PIEDRAHITA"
+    "driver": "JUAN DIEGO PIEDRAHITA",
+    "vin": "3BRCD33B2NK590094"
   },
   {
     "id": 700,
@@ -6379,7 +6958,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "RETIRADO",
     "lastMaintenance": 0,
-    "driver": "nan"
+    "driver": "nan",
+    "vin": "3BRCD33B3NK590461"
   },
   {
     "id": 701,
@@ -6390,7 +6970,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "RETIRADO",
     "lastMaintenance": 0,
-    "driver": "nan"
+    "driver": "nan",
+    "vin": "3BRCD33B4NK590629"
   },
   {
     "id": 702,
@@ -6401,7 +6982,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "RETIRADO",
     "lastMaintenance": 0,
-    "driver": "nan"
+    "driver": "nan",
+    "vin": "9FBHJD408NM169767"
   },
   {
     "id": 703,
@@ -6412,7 +6994,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "RETIRADO",
     "lastMaintenance": 0,
-    "driver": "nan"
+    "driver": "nan",
+    "vin": "LJ11PABD8NC080414"
   },
   {
     "id": 704,
@@ -6423,7 +7006,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "RETIRADO",
     "lastMaintenance": 0,
-    "driver": "nan"
+    "driver": "nan",
+    "vin": "LVBV3ABB2PE001250"
   },
   {
     "id": 705,
@@ -6434,7 +7018,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "RETIRADO",
     "lastMaintenance": 0,
-    "driver": "nan"
+    "driver": "nan",
+    "vin": "3N6CD33B1ZK428517"
   },
   {
     "id": 706,
@@ -6445,7 +7030,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "DAVID ORDUY"
+    "driver": "DAVID ORDUY",
+    "vin": "9BRCD33B6NK590082"
   },
   {
     "id": 707,
@@ -6456,7 +7042,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "RETIRADO",
     "lastMaintenance": 0,
-    "driver": "nan"
+    "driver": "nan",
+    "vin": "93Y9SR333PJ476808"
   },
   {
     "id": 708,
@@ -6467,7 +7054,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "RETIRADO",
     "lastMaintenance": 0,
-    "driver": "nan"
+    "driver": "nan",
+    "vin": "3N6CD33B2ZK433886"
   },
   {
     "id": 709,
@@ -6478,7 +7066,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "RICHAR BENITEZ"
+    "driver": "RICHAR BENITEZ",
+    "vin": "3N6CD33B1ZK437895"
   },
   {
     "id": 710,
@@ -6489,7 +7078,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "JORGE COTES"
+    "driver": "JORGE COTES",
+    "vin": "8AFAR23L3NJ238916"
   },
   {
     "id": 711,
@@ -6500,7 +7090,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "RETIRADO",
     "lastMaintenance": 0,
-    "driver": "nan"
+    "driver": "nan",
+    "vin": "3BRCD33B5NK591052"
   },
   {
     "id": 712,
@@ -6511,7 +7102,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "RETIRADO",
     "lastMaintenance": 0,
-    "driver": "nan"
+    "driver": "nan",
+    "vin": "LEFYFCC2XPHN02463"
   },
   {
     "id": 713,
@@ -6522,7 +7114,8 @@ export const INITIAL_FLEET = [
     "mileage": 68706,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "FERNANDO ROJAS"
+    "driver": "FERNANDO ROJAS",
+    "vin": "8AFAR23L1NJ242902"
   },
   {
     "id": 714,
@@ -6533,7 +7126,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "RETIRADO",
     "lastMaintenance": 0,
-    "driver": "nan"
+    "driver": "nan",
+    "vin": "LJ11PABD5NC083156"
   },
   {
     "id": 715,
@@ -6544,7 +7138,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "RETIRADO",
     "lastMaintenance": 0,
-    "driver": "nan"
+    "driver": "nan",
+    "vin": "3BRCD33B5NK590639"
   },
   {
     "id": 716,
@@ -6555,7 +7150,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "RETIRADO",
     "lastMaintenance": 0,
-    "driver": "nan"
+    "driver": "nan",
+    "vin": "8AFAR23LXPJ280325"
   },
   {
     "id": 717,
@@ -6566,7 +7162,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "RETIRADO",
     "lastMaintenance": 0,
-    "driver": "nan"
+    "driver": "nan",
+    "vin": "3NRCD33B6PK590649"
   },
   {
     "id": 718,
@@ -6577,7 +7174,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "RETIRADO",
     "lastMaintenance": 0,
-    "driver": "nan"
+    "driver": "nan",
+    "vin": "93Y9SR333SJ022169"
   },
   {
     "id": 719,
@@ -6588,7 +7186,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "RETIRADO",
     "lastMaintenance": 0,
-    "driver": "nan"
+    "driver": "nan",
+    "vin": "93Y9SR333SJ043571"
   },
   {
     "id": 720,
@@ -6599,7 +7198,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "RETIRADO",
     "lastMaintenance": 0,
-    "driver": "nan"
+    "driver": "nan",
+    "vin": "93Y9SR333SJ022229"
   },
   {
     "id": 721,
@@ -6610,7 +7210,8 @@ export const INITIAL_FLEET = [
     "mileage": 22314,
     "status": "RETIRADO",
     "lastMaintenance": 0,
-    "driver": "nan"
+    "driver": "nan",
+    "vin": "9FBHJD406RM605585"
   },
   {
     "id": 722,
@@ -6621,7 +7222,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "nan"
+    "driver": "nan",
+    "vin": "LJ11PDBD2R1303677"
   },
   {
     "id": 723,
@@ -6632,7 +7234,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "LJ11PDBD2S1301238"
   },
   {
     "id": 724,
@@ -6643,7 +7246,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "RETIRADO",
     "lastMaintenance": 0,
-    "driver": "nan"
+    "driver": "nan",
+    "vin": "3BRCD33B5PK590660"
   },
   {
     "id": 725,
@@ -6654,7 +7258,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "JHON CALDERON"
+    "driver": "JHON CALDERON",
+    "vin": "LJ11PABD9RC090116"
   },
   {
     "id": 726,
@@ -6665,7 +7270,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "FERROVIAL"
+    "driver": "FERROVIAL",
+    "vin": "9FBHJD400PM344726"
   },
   {
     "id": 727,
@@ -6676,7 +7282,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "RETIRADO",
     "lastMaintenance": 0,
-    "driver": "nan"
+    "driver": "nan",
+    "vin": "9BG148DK0PC419706"
   },
   {
     "id": 728,
@@ -6687,7 +7294,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "HERNAN OSORNO"
+    "driver": "HERNAN OSORNO",
+    "vin": "8AFAR23L6PJ292522"
   },
   {
     "id": 729,
@@ -6698,7 +7306,8 @@ export const INITIAL_FLEET = [
     "mileage": 49354,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "JAIDER PE\u00d1A"
+    "driver": "JAIDER PE\u00d1A",
+    "vin": "8AFAR23L5PJ318365"
   },
   {
     "id": 730,
@@ -6709,7 +7318,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "CESAR HOYOS"
+    "driver": "CESAR HOYOS",
+    "vin": "LVBV3ABB3PE002553"
   },
   {
     "id": 731,
@@ -6720,7 +7330,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "RETIRADO",
     "lastMaintenance": 0,
-    "driver": "nan"
+    "driver": "nan",
+    "vin": "3BRCD33B8PK591365"
   },
   {
     "id": 732,
@@ -6731,7 +7342,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "RETIRADO",
     "lastMaintenance": 0,
-    "driver": "nan"
+    "driver": "nan",
+    "vin": "9FBHJD404RM730052"
   },
   {
     "id": 733,
@@ -6742,7 +7354,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "RETIRADO",
     "lastMaintenance": 0,
-    "driver": "nan"
+    "driver": "nan",
+    "vin": "LJ11RTCE5P1105460"
   },
   {
     "id": 734,
@@ -6753,7 +7366,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "RETIRADO",
     "lastMaintenance": 0,
-    "driver": "nan"
+    "driver": "nan",
+    "vin": "LVAV2MAB6RU007037"
   },
   {
     "id": 735,
@@ -6764,7 +7378,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "RETIRADO",
     "lastMaintenance": 0,
-    "driver": "nan"
+    "driver": "nan",
+    "vin": "8AJKB3CD7P1653866"
   },
   {
     "id": 736,
@@ -6775,7 +7390,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "RETIRADO",
     "lastMaintenance": 0,
-    "driver": "nan"
+    "driver": "nan",
+    "vin": "9FBHJD4040RM729674"
   },
   {
     "id": 737,
@@ -6786,7 +7402,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "RETIRADO",
     "lastMaintenance": 0,
-    "driver": "nan"
+    "driver": "nan",
+    "vin": "LEFEDDE18RTP02146"
   },
   {
     "id": 738,
@@ -6797,7 +7414,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "RETIRADO",
     "lastMaintenance": 0,
-    "driver": "nan"
+    "driver": "nan",
+    "vin": "LEFYFDC27THN00122"
   },
   {
     "id": 739,
@@ -6808,7 +7426,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "RETIRADO",
     "lastMaintenance": 0,
-    "driver": "nan"
+    "driver": "nan",
+    "vin": "U5YPU81DDRL204896"
   },
   {
     "id": 740,
@@ -6819,7 +7438,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "RETIRADO",
     "lastMaintenance": 0,
-    "driver": "nan"
+    "driver": "nan",
+    "vin": "8ANBD33F1RL644971"
   },
   {
     "id": 741,
@@ -6830,7 +7450,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "RETIRADO",
     "lastMaintenance": 0,
-    "driver": "nan"
+    "driver": "nan",
+    "vin": "93Y9SR333SJ802867"
   },
   {
     "id": 742,
@@ -6841,7 +7462,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "RETIRADO",
     "lastMaintenance": 0,
-    "driver": "nan"
+    "driver": "nan",
+    "vin": "93Y9SR333SJ937938"
   },
   {
     "id": 743,
@@ -6852,7 +7474,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "RETIRADO",
     "lastMaintenance": 0,
-    "driver": "nan"
+    "driver": "nan",
+    "vin": "93Y9SR333SJ060202"
   },
   {
     "id": 744,
@@ -6863,7 +7486,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "RETIRADO",
     "lastMaintenance": 0,
-    "driver": "nan"
+    "driver": "nan",
+    "vin": "93Y9SR333SJ937858"
   },
   {
     "id": 745,
@@ -6874,7 +7498,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "RETIRADO",
     "lastMaintenance": 0,
-    "driver": "nan"
+    "driver": "nan",
+    "vin": "93Y9SR333TJ250838"
   },
   {
     "id": 746,
@@ -6885,7 +7510,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "RETIRADO",
     "lastMaintenance": 0,
-    "driver": "nan"
+    "driver": "nan",
+    "vin": "93Y9SR333TJ250839"
   },
   {
     "id": 747,
@@ -6896,7 +7522,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "RETIRADO",
     "lastMaintenance": 0,
-    "driver": "nan"
+    "driver": "nan",
+    "vin": "9BWAL5BZ2ST601695"
   },
   {
     "id": 748,
@@ -6907,7 +7534,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "RETIRADO",
     "lastMaintenance": 0,
-    "driver": "nan"
+    "driver": "nan",
+    "vin": "9BWAL5BZ0ST601646"
   },
   {
     "id": 749,
@@ -6918,7 +7546,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "EDGAR SOLER"
+    "driver": "EDGAR SOLER",
+    "vin": "8ANBD33F0SL906310"
   },
   {
     "id": 750,
@@ -6929,7 +7558,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "RETIRADO",
     "lastMaintenance": 0,
-    "driver": "nan"
+    "driver": "nan",
+    "vin": "8ANBD33F0SL906324"
   },
   {
     "id": 751,
@@ -6940,7 +7570,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "RETIRADO",
     "lastMaintenance": 0,
-    "driver": "nan"
+    "driver": "nan",
+    "vin": "8ANBD33F0SL906307"
   },
   {
     "id": 752,
@@ -6951,7 +7582,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "RETIRADO",
     "lastMaintenance": 0,
-    "driver": "nan"
+    "driver": "nan",
+    "vin": "8ANBD33F0SL906338"
   },
   {
     "id": 753,
@@ -6962,7 +7594,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "RETIRADO",
     "lastMaintenance": 0,
-    "driver": "nan"
+    "driver": "nan",
+    "vin": "8ANBD33F0SL906274"
   },
   {
     "id": 754,
@@ -6973,7 +7606,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "RETIRADO",
     "lastMaintenance": 0,
-    "driver": "nan"
+    "driver": "nan",
+    "vin": "8ANBD33F0SL906291"
   },
   {
     "id": 755,
@@ -6984,7 +7618,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "RAMON BARRERA"
+    "driver": "RAMON BARRERA",
+    "vin": "9FBHJD402SM019665"
   },
   {
     "id": 756,
@@ -6995,7 +7630,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "RETIRADO",
     "lastMaintenance": 0,
-    "driver": "nan"
+    "driver": "nan",
+    "vin": "9FBHJD404SM019666"
   },
   {
     "id": 757,
@@ -7006,7 +7642,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "LEONARDO DE LEON"
+    "driver": "LEONARDO DE LEON",
+    "vin": "8A18SRDD4SL020923"
   },
   {
     "id": 758,
@@ -7017,7 +7654,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "JAVIER HIDALGO"
+    "driver": "JAVIER HIDALGO",
+    "vin": "9FBHJD402SM019942"
   },
   {
     "id": 759,
@@ -7028,7 +7666,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "SALIM ABDALA"
+    "driver": "SALIM ABDALA",
+    "vin": "9FBHJD404SM998976"
   },
   {
     "id": 760,
@@ -7039,7 +7678,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "CARLOS BUGALLO"
+    "driver": "CARLOS BUGALLO",
+    "vin": "9FBHJD406SM998946"
   },
   {
     "id": 761,
@@ -7050,7 +7690,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "ANDERSON SOTO"
+    "driver": "ANDERSON SOTO",
+    "vin": "93Y9SR333SJ022049"
   },
   {
     "id": 762,
@@ -7061,7 +7702,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "SERGIO GARRIDO"
+    "driver": "SERGIO GARRIDO",
+    "vin": "8A18SRDD4SL020930"
   },
   {
     "id": 763,
@@ -7072,7 +7714,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "JAIME ALBERTO QUINTERO"
+    "driver": "JAIME ALBERTO QUINTERO",
+    "vin": "93Y9SR333SJ022136"
   },
   {
     "id": 764,
@@ -7083,7 +7726,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "ISRAEL CONTRERAS"
+    "driver": "ISRAEL CONTRERAS",
+    "vin": "8A18SRDD4SL020928"
   },
   {
     "id": 765,
@@ -7094,7 +7738,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "DAIRO CLAVIJO"
+    "driver": "DAIRO CLAVIJO",
+    "vin": "93Y9SR333SJ022134"
   },
   {
     "id": 766,
@@ -7105,7 +7750,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "NORMAN AYALA"
+    "driver": "NORMAN AYALA",
+    "vin": "93Y9SR333SJ022135"
   },
   {
     "id": 767,
@@ -7116,7 +7762,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "DAVID ORDUY"
+    "driver": "DAVID ORDUY",
+    "vin": "93Y9SR333SJ022140"
   },
   {
     "id": 768,
@@ -7127,7 +7774,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "DIEGO RODRIGUEZ(JAVIER HIDALGO)"
+    "driver": "DIEGO RODRIGUEZ(JAVIER HIDALGO)",
+    "vin": "93Y9SR333SJ022052"
   },
   {
     "id": 769,
@@ -7138,7 +7786,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "MISAEL SALAZAR-SALIN ABDALA"
+    "driver": "MISAEL SALAZAR-SALIN ABDALA",
+    "vin": "93Y9SR333SJ043510"
   },
   {
     "id": 770,
@@ -7149,7 +7798,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "LUIS MANCHEGO"
+    "driver": "LUIS MANCHEGO",
+    "vin": "93Y9SR333SJ999783"
   },
   {
     "id": 771,
@@ -7160,7 +7810,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "DIEGO PEREZ SABOGAL"
+    "driver": "DIEGO PEREZ SABOGAL",
+    "vin": "8A18SRDD4SL020914"
   },
   {
     "id": 772,
@@ -7171,7 +7822,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "CAMILO CARDOZO"
+    "driver": "CAMILO CARDOZO",
+    "vin": "93Y9SR333SJ022043"
   },
   {
     "id": 773,
@@ -7182,7 +7834,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "CARLOS ROJAS"
+    "driver": "CARLOS ROJAS",
+    "vin": "93Y9SR333SJ022143"
   },
   {
     "id": 774,
@@ -7193,7 +7846,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "NAIVIS ESCALANTE"
+    "driver": "NAIVIS ESCALANTE",
+    "vin": "93Y9SR333SJ022137"
   },
   {
     "id": 775,
@@ -7204,7 +7858,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "JAVIER HIDALGO"
+    "driver": "JAVIER HIDALGO",
+    "vin": "9FBHJD401SM097872"
   },
   {
     "id": 776,
@@ -7215,7 +7870,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "CAMILO SUESCUN"
+    "driver": "CAMILO SUESCUN",
+    "vin": "9FBHJD404SM097855"
   },
   {
     "id": 777,
@@ -7226,7 +7882,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "JULIAN SALDA\u00d1A"
+    "driver": "JULIAN SALDA\u00d1A",
+    "vin": "9FBHJD401SM097869"
   },
   {
     "id": 778,
@@ -7237,7 +7894,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "YINA TORRADO"
+    "driver": "YINA TORRADO",
+    "vin": "9BWAL5BZ1ST615104"
   },
   {
     "id": 779,
@@ -7248,7 +7906,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "DAVID VEGA"
+    "driver": "DAVID VEGA",
+    "vin": "9FBHJD403SM097873"
   },
   {
     "id": 780,
@@ -7259,7 +7918,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "ALBERT BARBOZA"
+    "driver": "ALBERT BARBOZA",
+    "vin": "9BWAL5BZ0ST614557"
   },
   {
     "id": 781,
@@ -7270,7 +7930,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "MANUEL SALAS"
+    "driver": "MANUEL SALAS",
+    "vin": "9BWAL5BZ1ST6148557"
   },
   {
     "id": 782,
@@ -7281,7 +7942,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "nan"
+    "driver": "nan",
+    "vin": "LVBV3ABB1TE001315"
   },
   {
     "id": 783,
@@ -7292,7 +7954,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "JAIME PEREZ LOZANO"
+    "driver": "JAIME PEREZ LOZANO",
+    "vin": "9BWAL5BZ2ST614561"
   },
   {
     "id": 784,
@@ -7303,7 +7966,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "OSCAR MARTINEZ"
+    "driver": "OSCAR MARTINEZ",
+    "vin": "9FBHJD406SM097849"
   },
   {
     "id": 785,
@@ -7314,7 +7978,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "GLORIA LINED VILLA"
+    "driver": "GLORIA LINED VILLA",
+    "vin": "9FBHJD409SM097845"
   },
   {
     "id": 786,
@@ -7325,7 +7990,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "Oscar Benavides"
+    "driver": "Oscar Benavides",
+    "vin": "9FBHJD404SM097865"
   },
   {
     "id": 787,
@@ -7336,7 +8002,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "JULIO CESAR ZAMBRANO"
+    "driver": "JULIO CESAR ZAMBRANO",
+    "vin": "9FBHJD404SM097879"
   },
   {
     "id": 788,
@@ -7347,7 +8014,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "GILBERTO TIGREROS"
+    "driver": "GILBERTO TIGREROS",
+    "vin": "9FBHJD402SM097878"
   },
   {
     "id": 789,
@@ -7358,7 +8026,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "SANDRA QUEMBA"
+    "driver": "SANDRA QUEMBA",
+    "vin": "9FBHJD406SM097852"
   },
   {
     "id": 790,
@@ -7369,7 +8038,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "EDWIN PALLARES"
+    "driver": "EDWIN PALLARES",
+    "vin": "9BWAL5BZ0ST614753"
   },
   {
     "id": 791,
@@ -7380,7 +8050,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "CARLOS BUGALLO"
+    "driver": "CARLOS BUGALLO",
+    "vin": "9FBHJD405SM097986"
   },
   {
     "id": 792,
@@ -7391,7 +8062,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "ANDRE QUIJANO"
+    "driver": "ANDRE QUIJANO",
+    "vin": "9BWAL5BZ0ST639300"
   },
   {
     "id": 793,
@@ -7402,7 +8074,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "SANDRA QUEMBA"
+    "driver": "SANDRA QUEMBA",
+    "vin": "93Y9SR333SJ087159"
   },
   {
     "id": 794,
@@ -7413,7 +8086,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "JHON MURCIA"
+    "driver": "JHON MURCIA",
+    "vin": "8A18SRDD4SL099687"
   },
   {
     "id": 795,
@@ -7424,7 +8098,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "ALFONSO PELAEZ"
+    "driver": "ALFONSO PELAEZ",
+    "vin": "93Y9SR333SJ087160"
   },
   {
     "id": 796,
@@ -7435,7 +8110,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "JOHANA LOBO"
+    "driver": "JOHANA LOBO",
+    "vin": "93Y9SR333SJ099242"
   },
   {
     "id": 797,
@@ -7446,7 +8122,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "JAIME ALBERTO RODRIGUEZ"
+    "driver": "JAIME ALBERTO RODRIGUEZ",
+    "vin": "93Y9SR333SJ099698"
   },
   {
     "id": 798,
@@ -7457,7 +8134,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "JULIO CESAR ZAMBRANO"
+    "driver": "JULIO CESAR ZAMBRANO",
+    "vin": "93Y9SR333SJ087176"
   },
   {
     "id": 799,
@@ -7468,7 +8146,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "JOSE PAEZ"
+    "driver": "JOSE PAEZ",
+    "vin": "8A18SRDD4SL099688"
   },
   {
     "id": 800,
@@ -7479,7 +8158,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "WILSON PULIDO"
+    "driver": "WILSON PULIDO",
+    "vin": "93Y9SR333SJ060213"
   },
   {
     "id": 801,
@@ -7490,7 +8170,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "SANDRA QUEMBA"
+    "driver": "SANDRA QUEMBA",
+    "vin": "93Y9SR333SJ087171"
   },
   {
     "id": 802,
@@ -7501,7 +8182,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "NIDIA LEON"
+    "driver": "NIDIA LEON",
+    "vin": "93Y9SR333SJ060237"
   },
   {
     "id": 803,
@@ -7512,7 +8194,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PAULA ANDREA RIVAS"
+    "driver": "PAULA ANDREA RIVAS",
+    "vin": "93Y9SR333SJ087169"
   },
   {
     "id": 804,
@@ -7523,7 +8206,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "JHON GUZMAN"
+    "driver": "JHON GUZMAN",
+    "vin": "93Y9SR333SJ099699"
   },
   {
     "id": 805,
@@ -7534,7 +8218,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "YEFERSON GOMEZ(ALBERT BARBOZA)"
+    "driver": "YEFERSON GOMEZ(ALBERT BARBOZA)",
+    "vin": "93Y9SR333SJ087162"
   },
   {
     "id": 806,
@@ -7545,7 +8230,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "RUBEN BENJUMEA"
+    "driver": "RUBEN BENJUMEA",
+    "vin": "93Y9SR333SJ099114"
   },
   {
     "id": 807,
@@ -7556,7 +8242,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "SANDRA QUEMBA"
+    "driver": "SANDRA QUEMBA",
+    "vin": "93Y9SR333SJ087157"
   },
   {
     "id": 808,
@@ -7567,7 +8254,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "ANGEL MIRANDA"
+    "driver": "ANGEL MIRANDA",
+    "vin": "8AFBR01EXSJ442699"
   },
   {
     "id": 809,
@@ -7578,7 +8266,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "RETIRADO",
     "lastMaintenance": 0,
-    "driver": "nan"
+    "driver": "nan",
+    "vin": "8AFBR01E9SJ430785"
   },
   {
     "id": 810,
@@ -7589,7 +8278,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "RETIRADO",
     "lastMaintenance": 0,
-    "driver": "nan"
+    "driver": "nan",
+    "vin": "93Y9SR333SJ937843"
   },
   {
     "id": 811,
@@ -7600,7 +8290,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "ANDERSON SOTO"
+    "driver": "ANDERSON SOTO",
+    "vin": "8AFBR01ESJ442882"
   },
   {
     "id": 812,
@@ -7611,7 +8302,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "RETIRADO",
     "lastMaintenance": 0,
-    "driver": "nan"
+    "driver": "nan",
+    "vin": "93Y9SR333TJ250862"
   },
   {
     "id": 813,
@@ -7622,7 +8314,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "nan"
+    "driver": "nan",
+    "vin": "9FBHJD403TM373213"
   },
   {
     "id": 814,
@@ -7633,7 +8326,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "nan"
+    "driver": "nan",
+    "vin": "8AFBR01EXTJ486221"
   },
   {
     "id": 815,
@@ -7644,7 +8338,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "nan"
+    "driver": "nan",
+    "vin": "8AFBR01E0TJ486213"
   },
   {
     "id": 816,
@@ -7655,7 +8350,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "nan"
+    "driver": "nan",
+    "vin": "8AFBR01E2TJ486214"
   },
   {
     "id": 817,
@@ -7666,7 +8362,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "nan"
+    "driver": "nan",
+    "vin": "8AFBR01E4TJ486215"
   },
   {
     "id": 818,
@@ -7677,7 +8374,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "nan"
+    "driver": "nan",
+    "vin": "9FBHJD402TM373199"
   },
   {
     "id": 819,
@@ -7688,7 +8386,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "nan"
+    "driver": "nan",
+    "vin": "8AFBR01E5TJ486224"
   },
   {
     "id": 820,
@@ -7699,7 +8398,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "nan"
+    "driver": "nan",
+    "vin": "8AFBR01E7TJ486211"
   },
   {
     "id": 821,
@@ -7710,7 +8410,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "nan"
+    "driver": "nan",
+    "vin": "8AFBR01E8TJ486217"
   },
   {
     "id": 822,
@@ -7721,7 +8422,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "nan"
+    "driver": "nan",
+    "vin": "8A18SRDD4TL288748"
   },
   {
     "id": 823,
@@ -7732,7 +8434,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "nan"
+    "driver": "nan",
+    "vin": "8AFBR01E9TJ486226"
   },
   {
     "id": 824,
@@ -7743,7 +8446,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "nan"
+    "driver": "nan",
+    "vin": "8AFBR01E6TJ486233"
   },
   {
     "id": 825,
@@ -7754,7 +8458,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "nan"
+    "driver": "nan",
+    "vin": "8AFBR01E0TJ486244"
   },
   {
     "id": 826,
@@ -7765,7 +8470,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "nan"
+    "driver": "nan",
+    "vin": "9FBHJD408TM338876"
   },
   {
     "id": 827,
@@ -7776,7 +8482,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "nan"
+    "driver": "nan",
+    "vin": "8AFBR01E4TJ486232"
   },
   {
     "id": 828,
@@ -7787,7 +8494,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "nan"
+    "driver": "nan",
+    "vin": "9FBHJD401TM338878"
   },
   {
     "id": 829,
@@ -7798,7 +8506,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "nan"
+    "driver": "nan",
+    "vin": "8AFBR01E9TJ486209"
   },
   {
     "id": 830,
@@ -7809,7 +8518,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "RETIRADO",
     "lastMaintenance": 0,
-    "driver": "nan"
+    "driver": "nan",
+    "vin": "nan"
   },
   {
     "id": 831,
@@ -7820,7 +8530,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "RETIRADO",
     "lastMaintenance": 0,
-    "driver": "N"
+    "driver": "N",
+    "vin": "nan"
   },
   {
     "id": 832,
@@ -7831,7 +8542,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "RETIRADO",
     "lastMaintenance": 0,
-    "driver": "nan"
+    "driver": "nan",
+    "vin": "6TB11893"
   },
   {
     "id": 833,
@@ -7842,7 +8554,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "RETIRADO",
     "lastMaintenance": 0,
-    "driver": "nan"
+    "driver": "nan",
+    "vin": "RX60B-454"
   },
   {
     "id": 834,
@@ -7853,7 +8566,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "RETIRADO",
     "lastMaintenance": 0,
-    "driver": "nan"
+    "driver": "nan",
+    "vin": "8XGAK06Y07V023332"
   },
   {
     "id": 835,
@@ -7864,7 +8578,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "nan"
+    "driver": "nan",
+    "vin": "9GDNLR774HB023248"
   },
   {
     "id": 836,
@@ -7875,7 +8590,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "RETIRADO",
     "lastMaintenance": 0,
-    "driver": "nan"
+    "driver": "nan",
+    "vin": "9GDNLR77XKB003691"
   },
   {
     "id": 837,
@@ -7886,7 +8602,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "nan"
+    "driver": "nan",
+    "vin": "LVBV8AE66CE001696"
   },
   {
     "id": 838,
@@ -7897,7 +8614,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "nan"
+    "driver": "nan",
+    "vin": "LVBV8AE62CE001405"
   },
   {
     "id": 839,
@@ -7908,7 +8626,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "RETIRADO",
     "lastMaintenance": 0,
-    "driver": "nan"
+    "driver": "nan",
+    "vin": "3WKDD40X2DF712481"
   },
   {
     "id": 840,
@@ -7919,7 +8638,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "nan"
+    "driver": "nan",
+    "vin": "3BKHHZ8X4CF707616"
   },
   {
     "id": 849,
@@ -7930,7 +8650,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "LVBV3ABB2LE003087"
   },
   {
     "id": 850,
@@ -7941,7 +8662,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "JULIO BARRANTES"
+    "driver": "JULIO BARRANTES",
+    "vin": "LJ11RTCE7N1106235"
   },
   {
     "id": 851,
@@ -7952,7 +8674,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "RETIRADO",
     "lastMaintenance": 0,
-    "driver": "nan"
+    "driver": "nan",
+    "vin": "LJN0KB521EX299197"
   },
   {
     "id": 852,
@@ -7963,7 +8686,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "LJN0KB526FX299164"
   },
   {
     "id": 853,
@@ -7974,7 +8698,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "RETIRADO",
     "lastMaintenance": 0,
-    "driver": "nan"
+    "driver": "nan",
+    "vin": "WGW02610LWIA00016"
   },
   {
     "id": 854,
@@ -7985,7 +8710,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "nan"
+    "driver": "nan",
+    "vin": "LJN0KB523EX299069"
   },
   {
     "id": 855,
@@ -7996,7 +8722,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "RETIRADO",
     "lastMaintenance": 0,
-    "driver": "nan"
+    "driver": "nan",
+    "vin": "LVAV3ABB1FJ003503"
   },
   {
     "id": 856,
@@ -8007,7 +8734,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "PENDIENTE"
+    "driver": "PENDIENTE",
+    "vin": "LEFYFCG23MHN00009"
   },
   {
     "id": 857,
@@ -8018,7 +8746,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "RETIRADO",
     "lastMaintenance": 0,
-    "driver": "nan"
+    "driver": "nan",
+    "vin": "LVBV3ABB3HJ002190"
   },
   {
     "id": 858,
@@ -8029,7 +8758,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "nan"
+    "driver": "nan",
+    "vin": "LJN0KB524EX299131"
   },
   {
     "id": 859,
@@ -8040,7 +8770,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "nan"
+    "driver": "nan",
+    "vin": "LETYFCG28FHN00197"
   },
   {
     "id": 860,
@@ -8051,7 +8782,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "Juan Pablo Montoya Betancur"
+    "driver": "Juan Pablo Montoya Betancur",
+    "vin": "3ALHCYCSXFDGN8020"
   },
   {
     "id": 861,
@@ -8062,7 +8794,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "NIDIA LE\u00d3N"
+    "driver": "NIDIA LE\u00d3N",
+    "vin": "9F3UCP1H3G3102339"
   },
   {
     "id": 862,
@@ -8073,7 +8806,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "nan"
+    "driver": "nan",
+    "vin": "LJN0KB525HX200045"
   },
   {
     "id": 863,
@@ -8084,7 +8818,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "nan"
+    "driver": "nan",
+    "vin": "LEFYFCG29LHN00112"
   },
   {
     "id": 864,
@@ -8095,7 +8830,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "RETIRADO",
     "lastMaintenance": 0,
-    "driver": "nan"
+    "driver": "nan",
+    "vin": "3HSDJAPT2MN403941"
   },
   {
     "id": 865,
@@ -8106,7 +8842,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "OPERATIVO",
     "lastMaintenance": 0,
-    "driver": "nan"
+    "driver": "nan",
+    "vin": "3HTWYAHT3HN474313"
   },
   {
     "id": 866,
@@ -8117,7 +8854,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "RETIRADO",
     "lastMaintenance": 0,
-    "driver": "nan"
+    "driver": "nan",
+    "vin": "211263"
   },
   {
     "id": 867,
@@ -8128,7 +8866,8 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "RETIRADO",
     "lastMaintenance": 0,
-    "driver": "nan"
+    "driver": "nan",
+    "vin": "9GDFVR345MB001702"
   },
   {
     "id": 868,
@@ -8139,3918 +8878,583 @@ export const INITIAL_FLEET = [
     "mileage": 0,
     "status": "VARADO",
     "lastMaintenance": 0,
-    "driver": "nan"
+    "driver": "nan",
+    "vin": "FNH183XTNBHC45110"
   }
 ];
 
 export const MAINTENANCE_ROUTINES = {
-  "7000": {
-    "name": "Mantenimiento 7,000 KM",
-    "items": [],
-    "supplies": [],
-    "variants": {
-      "JMC": {
-        "name": "Mantenimiento 7,000 KM (JMC)",
-        "items": [
-          {
-            "description": "CAMBIAR ACEITE DE MOTOR",
-            "type": "Cambio"
-          },
-          {
-            "description": "CAMBIAR FILTRO DE ACEITE DEL MOTOR",
-            "type": "Cambio"
-          },
-          {
-            "description": "CAMBIAR FILTRO DE AIRE",
-            "type": "Cambio"
-          },
-          {
-            "description": "CAMBIAR FILTRO DE COMBUSTIBLE",
-            "type": "Cambio"
-          },
-          {
-            "description": "REVISION Y AJUSTE DE NIVEL DE REFRIGERANTE",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION Y AJUSTE DE NIVEL DE LIQUIDO DE FRENOS",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE CORREA DE ACCESORIOS",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE CORREA DE AIRE ACONDICIONADO",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL DEL SISTEMA DE FRENOS",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DE LA BANDA DE FRENOS",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DE TAMBOR DE FRENOS",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DE ESTADO DE LAS PASTILLAS DE FRENO",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DE LOS DISCOS DE FRENO",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DE LOS AMORTIGUADORES",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DE LOS TERMINALES DE DIRECCION",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE LAS PUNTAS DE EJE",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DE LA BARRA TRANSVERSAL",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL EMBRAGUE",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE PEDALES(FRENO-ACELERACION-EMBRAGUE)",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DE LAS LLANTAS",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DE ELEMENTOS DE CABINA (PUERTAS-ASIENTOS-VOLANTE-ESPEJOS)",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL TABLERO(LUCES-ALARMAS)",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DE FUNCIONAMIENTO DE LAS ALARMAS DE EMERGENCIA",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL SIST DE LUCES (DELANTERAS-DIRECIONALES-STOP-CABINA)",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE BATERIAS",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADOY FUNCIONAMIENTO DEL CABLEADO DEL EQUIPO",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL ALTERNADOR",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL SISTEMA DE ARRANQUE",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DEL MOTOR(FUGAS-RUIDOS)",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE MANGUERAS DEL SISTEMA",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL RADIADOR",
-            "type": "Inspección"
-          },
-          {
-            "description": "LIMPIAR Y/O LAVAR RADIADOR",
-            "type": "Inspección"
-          }
-        ],
-        "supplies": [
-          {
-            "name": "ACEITE DE MOTOR",
-            "reference": "(Mobil Delvac 15W40) API CK-4",
-            "quantity": "1.75"
-          },
-          {
-            "name": "FILTRO DE ACEITE DE MOTOR",
-            "reference": "EP1-6612-AB",
-            "quantity": "1"
-          },
-          {
-            "name": "FILTRO DE AIRE",
-            "reference": "EJP1-9601-AB",
-            "quantity": "1"
-          },
-          {
-            "name": "FILTRO DE  COMBUSTIBLE",
-            "reference": "E9P2-9156AA",
-            "quantity": "1"
-          }
-        ]
-      }
-    }
-  },
   "10000": {
-    "name": "Mantenimiento 10,000 KM",
-    "items": [],
-    "supplies": [],
-    "variants": {
-      "RAM": {
-        "name": "Mantenimiento 10,000 KM (RAM)",
-        "items": [
-          {
-            "description": "CAMBIAR ACEITE DE MOTOR",
-            "type": "Cambio"
-          },
-          {
-            "description": "CAMBIAR FILTRO DE ACEITE DEL MOTOR",
-            "type": "Cambio"
-          },
-          {
-            "description": "CAMBIAR FILTRO DE AIRE",
-            "type": "Cambio"
-          },
-          {
-            "description": "CAMBIAR FILTRO DE AIRE ACONDICIONADO",
-            "type": "Cambio"
-          },
-          {
-            "description": "REVISION Y AJUSTE NIVEL ACEITE DE TRANSMISION",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION Y AJUSTE DE NIVEL DE REFRIGERANTE",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION Y AJUSTE DE NIVEL DE ACEITE DE FRENOS",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE CORREAS",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE POLEAS Y TENSORES",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION Y AJUSTE DE NIVEL DE ACEITE DE DIRECCION",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL DEL SISTEMA DE FRENOS",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DE LA BANDA DE FRENOS",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DE TAMBOR DE FRENOS",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DE ESTADO DE LAS PASTILLAS DE FRENO",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DE LOS DISCOS DE FRENO",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DE LOS AMORTIGUADORES",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DE LOS TERMINALES DE DIRECCION",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE LAS PUNTAS DE EJE",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DE LA BARRA TRANSVERSAL",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL EMBRAGUE",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE PEDALES(FRENO-ACELERACION-EMBRAGUE)",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DE LAS LLANTAS",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DE ELEMENTOS DE CABINA (PUERTAS-ASIENTOS-VOLANTE-ESPEJOS)",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL TABLERO(LUCES-ALARMAS)",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DE FUNCIONAMIENTO DE LAS ALARMAS DE EMERGENCIA",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL SIST DE LUCES (DELANTERAS-DIRECIONALES-STOP-CABINA)",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE BATERIAS",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADOY FUNCIONAMIENTO DEL CABLEADO DEL EQUIPO",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL ALTERNADOR",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL SISTEMA DE ARRANQUE",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DEL MOTOR(FUGAS-RUIDOS)",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE MANGUERAS DEL SISTEMA",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL RADIADOR",
-            "type": "Inspección"
-          },
-          {
-            "description": "LIMPIAR Y/O LAVAR RADIADOR",
-            "type": "Inspección"
-          }
-        ],
-        "supplies": [
-          {
-            "name": "ACEITE DE MOTOR",
-            "reference": "0W20",
-            "quantity": "1"
-          },
-          {
-            "name": "FILTRO DE ACEITE DE MOTOR",
-            "reference": "7094709",
-            "quantity": "1"
-          },
-          {
-            "name": "FILTRO DE AIRE",
-            "reference": "52046268",
-            "quantity": "1"
-          },
-          {
-            "name": "FILTRO AIRE ACONDICIONADO",
-            "reference": "51842923",
-            "quantity": "1"
-          }
-        ]
+    "name": "Mantenimiento PM1 (10000 km)",
+    "items": [
+      {
+        "description": "CAMBIAR ACEITE DE MOTOR",
+        "type": "Preventivo"
+      },
+      {
+        "description": "CAMBIAR FILTRO DE ACEITE DEL MOTOR",
+        "type": "Preventivo"
+      },
+      {
+        "description": "CAMBIAR FILTRO DE AIRE",
+        "type": "Preventivo"
+      },
+      {
+        "description": "CAMBIAR FILTRO DE COMBUSTIBLE",
+        "type": "Preventivo"
+      },
+      {
+        "description": "REVISION Y AJUSTE DE NIVEL DE REFRIGERANTE",
+        "type": "Inspecci\u00f3n"
+      },
+      {
+        "description": "REVISION Y AJUSTE DE NIVEL DE LIQUIDO DE FRENOS",
+        "type": "Inspecci\u00f3n"
+      },
+      {
+        "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE CORREA DE ACCESORIOS",
+        "type": "Inspecci\u00f3n"
+      },
+      {
+        "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE CORREA DE AIRE ACONDICIONADO",
+        "type": "Inspecci\u00f3n"
+      },
+      {
+        "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL DEL SISTEMA DE FRENOS",
+        "type": "Inspecci\u00f3n"
+      },
+      {
+        "description": "REVISION DEL ESTADO DE LA BANDA DE FRENOS",
+        "type": "Inspecci\u00f3n"
+      },
+      {
+        "description": "REVISION DEL ESTADO DE TAMBOR DE FRENOS",
+        "type": "Inspecci\u00f3n"
+      },
+      {
+        "description": "REVISION DE ESTADO DE LAS PASTILLAS DE FRENO",
+        "type": "Inspecci\u00f3n"
+      },
+      {
+        "description": "REVISION DEL ESTADO DE LOS DISCOS DE FRENO",
+        "type": "Inspecci\u00f3n"
+      },
+      {
+        "description": "REVISION DEL ESTADO DE LOS AMORTIGUADORES",
+        "type": "Inspecci\u00f3n"
+      },
+      {
+        "description": "REVISION DEL ESTADO DE LOS TERMINALES DE DIRECCION",
+        "type": "Inspecci\u00f3n"
+      },
+      {
+        "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE LAS PUNTAS DE EJE",
+        "type": "Inspecci\u00f3n"
+      },
+      {
+        "description": "REVISION DEL ESTADO DE LA BARRA TRANSVERSAL",
+        "type": "Inspecci\u00f3n"
+      },
+      {
+        "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL EMBRAGUE",
+        "type": "Inspecci\u00f3n"
+      },
+      {
+        "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE PEDALES(FRENO-ACELERACION-EMBRAGUE)",
+        "type": "Inspecci\u00f3n"
+      },
+      {
+        "description": "REVISION DEL ESTADO DE LAS LLANTAS",
+        "type": "Inspecci\u00f3n"
+      },
+      {
+        "description": "REVISION DEL ESTADO DE ELEMENTOS DE CABINA (PUERTAS-ASIENTOS-VOLANTE-ESPEJOS)",
+        "type": "Inspecci\u00f3n"
+      },
+      {
+        "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL TABLERO(LUCES-ALARMAS)",
+        "type": "Inspecci\u00f3n"
+      },
+      {
+        "description": "REVISION DEL ESTADO DE FUNCIONAMIENTO DE LAS ALARMAS DE EMERGENCIA",
+        "type": "Inspecci\u00f3n"
+      },
+      {
+        "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL SIST DE LUCES (DELANTERAS-DIRECIONALES-STOP-CABINA)",
+        "type": "Inspecci\u00f3n"
+      },
+      {
+        "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE BATERIAS",
+        "type": "Inspecci\u00f3n"
+      },
+      {
+        "description": "REVISION DEL ESTADOY FUNCIONAMIENTO DEL CABLEADO DEL EQUIPO",
+        "type": "Inspecci\u00f3n"
+      },
+      {
+        "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL ALTERNADOR",
+        "type": "Inspecci\u00f3n"
+      },
+      {
+        "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL SISTEMA DE ARRANQUE",
+        "type": "Inspecci\u00f3n"
+      },
+      {
+        "description": "REVISION DEL ESTADO DEL MOTOR(FUGAS-RUIDOS)",
+        "type": "Inspecci\u00f3n"
+      },
+      {
+        "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE MANGUERAS DEL SISTEMA",
+        "type": "Inspecci\u00f3n"
+      },
+      {
+        "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL RADIADOR",
+        "type": "Inspecci\u00f3n"
+      },
+      {
+        "description": "LIMPIAR Y/O LAVAR RADIADOR",
+        "type": "Inspecci\u00f3n"
       }
-    }
-  },
-  "14000": {
-    "name": "Mantenimiento 14,000 KM",
-    "items": [],
-    "supplies": [],
-    "variants": {
-      "JMC": {
-        "name": "Mantenimiento 14,000 KM (JMC)",
-        "items": [
-          {
-            "description": "CAMBIAR ACEITE DE MOTOR",
-            "type": "Cambio"
-          },
-          {
-            "description": "CAMBIAR FILTRO DE ACEITE DEL MOTOR",
-            "type": "Cambio"
-          },
-          {
-            "description": "CAMBIAR FILTRO DE AIRE",
-            "type": "Cambio"
-          },
-          {
-            "description": "CAMBIAR FILTRO DE COMBUSTIBLE",
-            "type": "Cambio"
-          },
-          {
-            "description": "CAMBIAR FILTRO AIRE ACONDICIONADO",
-            "type": "Cambio"
-          },
-          {
-            "description": "REVISION Y AJUSTE DE NIVEL DE REFRIGERANTE",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION Y AJUSTE DE NIVEL DE LIQUIDO DE FRENOS",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE CORREA DE ACCESORIOS",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE CORREA DE AIRE ACONDICIONADO",
-            "type": "Inspección"
-          },
-          {
-            "description": "ADICIONAR ADITIVO AL SISTEMA DE INYECCION",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL DEL SISTEMA DE FRENOS",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DE LA BANDA DE FRENOS",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DE TAMBOR DE FRENOS",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DE ESTADO DE LAS PASTILLAS DE FRENO",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DE LOS DISCOS DE FRENO",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DE LOS AMORTIGUADORES",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DE LOS TERMINALES DE DIRECCION",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE LAS PUNTAS DE EJE",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DE LA BARRA TRANSVERSAL",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL EMBRAGUE",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE PEDALES(FRENO-ACELERACION-EMBRAGUE)",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DE LAS LLANTAS",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DE ELEMENTOS DE CABINA (PUERTAS-ASIENTOS-VOLANTE-ESPEJOS)",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL TABLERO(LUCES-ALARMAS)",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DE FUNCIONAMIENTO DE LAS ALARMAS DE EMERGENCIA",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL SIST DE LUCES (DELANTERAS-DIRECIONALES-STOP-CABINA)",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE BATERIAS",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADOY FUNCIONAMIENTO DEL CABLEADO DEL EQUIPO",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL ALTERNADOR",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL SISTEMA DE ARRANQUE",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DEL MOTOR(FUGAS-RUIDOS)",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE MANGUERAS DEL SISTEMA",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL RADIADOR",
-            "type": "Inspección"
-          },
-          {
-            "description": "LIMPIAR Y/O LAVAR RADIADOR",
-            "type": "Inspección"
-          }
-        ],
-        "supplies": [
-          {
-            "name": "ACEITE DE MOTOR",
-            "reference": "(Mobil Delvac 15W40) API CK-4",
-            "quantity": "1.75"
-          },
-          {
-            "name": "FILTRO DE ACEITE DE MOTOR",
-            "reference": "EP1-6612-AB",
-            "quantity": "1"
-          },
-          {
-            "name": "FILTRO DE AIRE",
-            "reference": "EJP1-9601-AB",
-            "quantity": "1"
-          },
-          {
-            "name": "FILTRO DE  COMBUSTIBLE",
-            "reference": "E9P2-9156AA",
-            "quantity": "1"
-          },
-          {
-            "name": "ADITIVO LIMPIADOR SISTEMA INYECCION",
-            "reference": "3890 182",
-            "quantity": "1"
-          }
-        ]
-      }
-    }
+    ],
+    "supplies": [
+      "FILTRO ACEITE MOTOR",
+      "PRE-FILTRO COMBUSTIBLE",
+      "FILTRO PRINCIPAL COMBUSTIBLE"
+    ]
   },
   "20000": {
-    "name": "Mantenimiento 20,000 KM",
-    "items": [],
-    "supplies": [],
-    "variants": {
-      "RAM": {
-        "name": "Mantenimiento 20,000 KM (RAM)",
-        "items": [
-          {
-            "description": "CAMBIAR ACEITE DE MOTOR",
-            "type": "Cambio"
-          },
-          {
-            "description": "CAMBIAR FILTRO DE ACEITE DEL MOTOR",
-            "type": "Cambio"
-          },
-          {
-            "description": "CAMBIAR FILTRO DE AIRE",
-            "type": "Cambio"
-          },
-          {
-            "description": "CAMBIAR FILTRO DE AIRE ACONDICIONADO",
-            "type": "Cambio"
-          },
-          {
-            "description": "REVISION Y AJUSTE NIVEL ACEITE DE TRANSMISION",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION Y AJUSTE DE NIVEL DE REFRIGERANTE",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION Y AJUSTE DE NIVEL DE ACEITE DE FRENOS",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE CORREAS",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE POLEAS Y TENSORES",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION Y AJUSTE DE NIVEL DE ACEITE DE DIRECCION",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL DEL SISTEMA DE FRENOS",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DE LA BANDA DE FRENOS",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DE TAMBOR DE FRENOS",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DE ESTADO DE LAS PASTILLAS DE FRENO",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DE LOS DISCOS DE FRENO",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DE LOS AMORTIGUADORES",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DE LOS TERMINALES DE DIRECCION",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE LAS PUNTAS DE EJE",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DE LA BARRA TRANSVERSAL",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL EMBRAGUE",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE PEDALES(FRENO-ACELERACION-EMBRAGUE)",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DE LAS LLANTAS",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DE ELEMENTOS DE CABINA (PUERTAS-ASIENTOS-VOLANTE-ESPEJOS)",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL TABLERO(LUCES-ALARMAS)",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DE FUNCIONAMIENTO DE LAS ALARMAS DE EMERGENCIA",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL SIST DE LUCES (DELANTERAS-DIRECIONALES-STOP-CABINA)",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE BATERIAS",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADOY FUNCIONAMIENTO DEL CABLEADO DEL EQUIPO",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL ALTERNADOR",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL SISTEMA DE ARRANQUE",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DEL MOTOR(FUGAS-RUIDOS)",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE MANGUERAS DEL SISTEMA",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL RADIADOR",
-            "type": "Inspección"
-          },
-          {
-            "description": "LIMPIAR Y/O LAVAR RADIADOR",
-            "type": "Inspección"
-          }
-        ],
-        "supplies": [
-          {
-            "name": "ACEITE DE MOTOR",
-            "reference": "0W20",
-            "quantity": "1"
-          },
-          {
-            "name": "FILTRO DE ACEITE DE MOTOR",
-            "reference": "7094709",
-            "quantity": "1"
-          },
-          {
-            "name": "FILTRO DE AIRE",
-            "reference": "52046268",
-            "quantity": "1"
-          },
-          {
-            "name": "FILTRO AIRE ACONDICIONADO",
-            "reference": "51842923",
-            "quantity": "1"
-          }
-        ]
+    "name": "Mantenimiento PM2 (20000 km)",
+    "items": [
+      {
+        "description": "TAREAS A EJECUTAR",
+        "type": "Inspecci\u00f3n"
+      },
+      {
+        "description": "CAMBIAR ACEITE DE MOTOR",
+        "type": "Preventivo"
+      },
+      {
+        "description": "CAMBIAR FILTRO DE ACEITE DEL MOTOR",
+        "type": "Preventivo"
+      },
+      {
+        "description": "CAMBIAR FILTRO DE AIRE",
+        "type": "Preventivo"
+      },
+      {
+        "description": "CAMBIAR FILTRO DE COMBUSTIBLE",
+        "type": "Preventivo"
+      },
+      {
+        "description": "REVISION Y AJUSTE DE NIVEL DE REFRIGERANTE",
+        "type": "Inspecci\u00f3n"
+      },
+      {
+        "description": "REVISION Y AJUSTE DE NIVEL DE LIQUIDO DE FRENOS",
+        "type": "Inspecci\u00f3n"
+      },
+      {
+        "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE CORREA DE ACCESORIOS",
+        "type": "Inspecci\u00f3n"
+      },
+      {
+        "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE CORREA DE AIRE ACONDICIONADO",
+        "type": "Inspecci\u00f3n"
+      },
+      {
+        "description": "ADICIONAR ADITIVO AL SISTEMA DE INYECCION",
+        "type": "Inspecci\u00f3n"
+      },
+      {
+        "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL DEL SISTEMA DE FRENOS",
+        "type": "Inspecci\u00f3n"
+      },
+      {
+        "description": "REVISION DEL ESTADO DE LA BANDA DE FRENOS",
+        "type": "Inspecci\u00f3n"
+      },
+      {
+        "description": "REVISION DEL ESTADO DE TAMBOR DE FRENOS",
+        "type": "Inspecci\u00f3n"
+      },
+      {
+        "description": "REVISION DE ESTADO DE LAS PASTILLAS DE FRENO",
+        "type": "Inspecci\u00f3n"
+      },
+      {
+        "description": "REVISION DEL ESTADO DE LOS DISCOS DE FRENO",
+        "type": "Inspecci\u00f3n"
+      },
+      {
+        "description": "REVISION DEL ESTADO DE LOS AMORTIGUADORES",
+        "type": "Inspecci\u00f3n"
+      },
+      {
+        "description": "REVISION DEL ESTADO DE LOS TERMINALES DE DIRECCION",
+        "type": "Inspecci\u00f3n"
+      },
+      {
+        "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE LAS PUNTAS DE EJE",
+        "type": "Inspecci\u00f3n"
+      },
+      {
+        "description": "REVISION DEL ESTADO DE LA BARRA TRANSVERSAL",
+        "type": "Inspecci\u00f3n"
+      },
+      {
+        "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL EMBRAGUE",
+        "type": "Inspecci\u00f3n"
+      },
+      {
+        "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE PEDALES(FRENO-ACELERACION-EMBRAGUE)",
+        "type": "Inspecci\u00f3n"
+      },
+      {
+        "description": "REVISION DEL ESTADO DE LAS LLANTAS",
+        "type": "Inspecci\u00f3n"
+      },
+      {
+        "description": "REVISION DEL ESTADO DE ELEMENTOS DE CABINA (PUERTAS-ASIENTOS-VOLANTE-ESPEJOS)",
+        "type": "Inspecci\u00f3n"
+      },
+      {
+        "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL TABLERO(LUCES-ALARMAS)",
+        "type": "Inspecci\u00f3n"
+      },
+      {
+        "description": "REVISION DEL ESTADO DE FUNCIONAMIENTO DE LAS ALARMAS DE EMERGENCIA",
+        "type": "Inspecci\u00f3n"
+      },
+      {
+        "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL SIST DE LUCES (DELANTERAS-DIRECIONALES-STOP-CABINA)",
+        "type": "Inspecci\u00f3n"
+      },
+      {
+        "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE BATERIAS",
+        "type": "Inspecci\u00f3n"
+      },
+      {
+        "description": "REVISION DEL ESTADOY FUNCIONAMIENTO DEL CABLEADO DEL EQUIPO",
+        "type": "Inspecci\u00f3n"
+      },
+      {
+        "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL ALTERNADOR",
+        "type": "Inspecci\u00f3n"
+      },
+      {
+        "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL SISTEMA DE ARRANQUE",
+        "type": "Inspecci\u00f3n"
+      },
+      {
+        "description": "REVISION DEL ESTADO DEL MOTOR(FUGAS-RUIDOS)",
+        "type": "Inspecci\u00f3n"
+      },
+      {
+        "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE MANGUERAS DEL SISTEMA",
+        "type": "Inspecci\u00f3n"
+      },
+      {
+        "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL RADIADOR",
+        "type": "Inspecci\u00f3n"
+      },
+      {
+        "description": "LIMPIAR Y/O LAVAR RADIADOR",
+        "type": "Inspecci\u00f3n"
       }
-    }
-  },
-  "21000": {
-    "name": "Mantenimiento 21,000 KM",
-    "items": [],
-    "supplies": [],
-    "variants": {
-      "JMC": {
-        "name": "Mantenimiento 21,000 KM (JMC)",
-        "items": [
-          {
-            "description": "CAMBIAR ACEITE DE MOTOR",
-            "type": "Cambio"
-          },
-          {
-            "description": "CAMBIAR FILTRO DE ACEITE DEL MOTOR",
-            "type": "Cambio"
-          },
-          {
-            "description": "CAMBIAR FILTRO DE AIRE",
-            "type": "Cambio"
-          },
-          {
-            "description": "CAMBIAR FILTRO DE COMBUSTIBLE",
-            "type": "Cambio"
-          },
-          {
-            "description": "REVISION Y AJUSTE DE NIVEL DE REFRIGERANTE",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION Y AJUSTE DE NIVEL DE LIQUIDO DE FRENOS",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE CORREA DE ACCESORIOS",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE CORREA DE AIRE ACONDICIONADO",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL DEL SISTEMA DE FRENOS",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DE LA BANDA DE FRENOS",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DE TAMBOR DE FRENOS",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DE ESTADO DE LAS PASTILLAS DE FRENO",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DE LOS DISCOS DE FRENO",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DE LOS AMORTIGUADORES",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DE LOS TERMINALES DE DIRECCION",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE LAS PUNTAS DE EJE",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DE LA BARRA TRANSVERSAL",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL EMBRAGUE",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE PEDALES(FRENO-ACELERACION-EMBRAGUE)",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DE LAS LLANTAS",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DE ELEMENTOS DE CABINA (PUERTAS-ASIENTOS-VOLANTE-ESPEJOS)",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL TABLERO(LUCES-ALARMAS)",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DE FUNCIONAMIENTO DE LAS ALARMAS DE EMERGENCIA",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL SIST DE LUCES (DELANTERAS-DIRECIONALES-STOP-CABINA)",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE BATERIAS",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADOY FUNCIONAMIENTO DEL CABLEADO DEL EQUIPO",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL ALTERNADOR",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL SISTEMA DE ARRANQUE",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DEL MOTOR(FUGAS-RUIDOS)",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE MANGUERAS DEL SISTEMA",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL RADIADOR",
-            "type": "Inspección"
-          },
-          {
-            "description": "LIMPIAR Y/O LAVAR RADIADOR",
-            "type": "Inspección"
-          }
-        ],
-        "supplies": [
-          {
-            "name": "ACEITE DE MOTOR",
-            "reference": "(Mobil Delvac 15W40) API CK-4",
-            "quantity": "1.75"
-          },
-          {
-            "name": "FILTRO DE ACEITE DE MOTOR",
-            "reference": "EP1-6612-AB",
-            "quantity": "1"
-          },
-          {
-            "name": "FILTRO DE AIRE",
-            "reference": "EJP1-9601-AB",
-            "quantity": "1"
-          },
-          {
-            "name": "FILTRO DE  COMBUSTIBLE",
-            "reference": "E9P2-9156AA",
-            "quantity": "1"
-          }
-        ]
-      }
-    }
-  },
-  "28000": {
-    "name": "Mantenimiento 28,000 KM",
-    "items": [],
-    "supplies": [],
-    "variants": {
-      "JMC": {
-        "name": "Mantenimiento 28,000 KM (JMC)",
-        "items": [
-          {
-            "description": "CAMBIAR ACEITE DE MOTOR",
-            "type": "Cambio"
-          },
-          {
-            "description": "CAMBIAR FILTRO DE ACEITE DEL MOTOR",
-            "type": "Cambio"
-          },
-          {
-            "description": "CAMBIAR FILTRO DE AIRE",
-            "type": "Cambio"
-          },
-          {
-            "description": "CAMBIAR FILTRO DE COMBUSTIBLE",
-            "type": "Cambio"
-          },
-          {
-            "description": "CAMBIAR FILTRO AIRE ACONDICIONADO",
-            "type": "Cambio"
-          },
-          {
-            "description": "REVISION Y AJUSTE DE NIVEL DE REFRIGERANTE",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION Y AJUSTE DE NIVEL DE LIQUIDO DE FRENOS",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE CORREA DE ACCESORIOS",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE CORREA DE AIRE ACONDICIONADO",
-            "type": "Inspección"
-          },
-          {
-            "description": "ADICIONAR ADITIVO AL SISTEMA DE INYECCION",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL DEL SISTEMA DE FRENOS",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DE LA BANDA DE FRENOS",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DE TAMBOR DE FRENOS",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DE ESTADO DE LAS PASTILLAS DE FRENO",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DE LOS DISCOS DE FRENO",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DE LOS AMORTIGUADORES",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DE LOS TERMINALES DE DIRECCION",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE LAS PUNTAS DE EJE",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DE LA BARRA TRANSVERSAL",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL EMBRAGUE",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE PEDALES(FRENO-ACELERACION-EMBRAGUE)",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DE LAS LLANTAS",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DE ELEMENTOS DE CABINA (PUERTAS-ASIENTOS-VOLANTE-ESPEJOS)",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL TABLERO(LUCES-ALARMAS)",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DE FUNCIONAMIENTO DE LAS ALARMAS DE EMERGENCIA",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL SIST DE LUCES (DELANTERAS-DIRECIONALES-STOP-CABINA)",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE BATERIAS",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADOY FUNCIONAMIENTO DEL CABLEADO DEL EQUIPO",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL ALTERNADOR",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL SISTEMA DE ARRANQUE",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DEL MOTOR(FUGAS-RUIDOS)",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE MANGUERAS DEL SISTEMA",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL RADIADOR",
-            "type": "Inspección"
-          },
-          {
-            "description": "LIMPIAR Y/O LAVAR RADIADOR",
-            "type": "Inspección"
-          }
-        ],
-        "supplies": [
-          {
-            "name": "ACEITE DE MOTOR",
-            "reference": "(Mobil Delvac 15W40) API CK-4",
-            "quantity": "1.75"
-          },
-          {
-            "name": "FILTRO DE ACEITE DE MOTOR",
-            "reference": "EP1-6612-AB",
-            "quantity": "1"
-          },
-          {
-            "name": "FILTRO DE AIRE",
-            "reference": "EJP1-9601-AB",
-            "quantity": "1"
-          },
-          {
-            "name": "FILTRO DE  COMBUSTIBLE",
-            "reference": "E9P2-9156AA",
-            "quantity": "1"
-          },
-          {
-            "name": "ADITIVO LIMPIADOR SISTEMA INYECCION",
-            "reference": "3890 182",
-            "quantity": "1"
-          }
-        ]
-      }
-    }
+    ],
+    "supplies": [
+      "FILTRO ACEITE MOTOR",
+      "PRE-FILTRO COMBUSTIBLE",
+      "FILTRO PRINCIPAL COMBUSTIBLE",
+      "ADITIVO SISTEMA INYECCION"
+    ]
   },
   "30000": {
-    "name": "Mantenimiento 30,000 KM",
-    "items": [],
-    "supplies": [],
-    "variants": {
-      "RAM": {
-        "name": "Mantenimiento 30,000 KM (RAM)",
-        "items": [
-          {
-            "description": "FILTRO COMBUSTIBLE",
-            "type": "Inspección"
-          },
-          {
-            "description": "CAMBIAR ACEITE DE MOTOR",
-            "type": "Cambio"
-          },
-          {
-            "description": "CAMBIAR FILTRO DE ACEITE DEL MOTOR",
-            "type": "Cambio"
-          },
-          {
-            "description": "CAMBIAR FILTRO DE AIRE",
-            "type": "Cambio"
-          },
-          {
-            "description": "CAMBIAR FILTRO COMBUSTIBLE",
-            "type": "Cambio"
-          },
-          {
-            "description": "CAMBIAR FILTRO DE AIRE ACONDICIONADO",
-            "type": "Cambio"
-          },
-          {
-            "description": "CAMBIO DE BUJIAS",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION Y AJUSTE NIVEL ACEITE DE TRANSMISION",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION Y AJUSTE DE NIVEL DE REFRIGERANTE",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION Y AJUSTE DE NIVEL DE ACEITE DE FRENOS",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE CORREAS",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE POLEAS Y TENSORES",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION Y AJUSTE DE NIVEL DE ACEITE DE DIRECCION",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL DEL SISTEMA DE FRENOS",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DE LA BANDA DE FRENOS",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DE TAMBOR DE FRENOS",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DE ESTADO DE LAS PASTILLAS DE FRENO",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DE LOS DISCOS DE FRENO",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DE LOS AMORTIGUADORES",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DE LOS TERMINALES DE DIRECCION",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE LAS PUNTAS DE EJE",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DE LA BARRA TRANSVERSAL",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL EMBRAGUE",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE PEDALES(FRENO-ACELERACION-EMBRAGUE)",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DE LAS LLANTAS",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DE ELEMENTOS DE CABINA (PUERTAS-ASIENTOS-VOLANTE-ESPEJOS)",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL TABLERO(LUCES-ALARMAS)",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DE FUNCIONAMIENTO DE LAS ALARMAS DE EMERGENCIA",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL SIST DE LUCES (DELANTERAS-DIRECIONALES-STOP-CABINA)",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE BATERIAS",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADOY FUNCIONAMIENTO DEL CABLEADO DEL EQUIPO",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL ALTERNADOR",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL SISTEMA DE ARRANQUE",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DEL MOTOR(FUGAS-RUIDOS)",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE MANGUERAS DEL SISTEMA",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL RADIADOR",
-            "type": "Inspección"
-          },
-          {
-            "description": "LIMPIAR Y/O LAVAR RADIADOR",
-            "type": "Inspección"
-          }
-        ],
-        "supplies": [
-          {
-            "name": "ACEITE DE MOTOR",
-            "reference": "0W20",
-            "quantity": "1"
-          },
-          {
-            "name": "FILTRO DE ACEITE DE MOTOR",
-            "reference": "7094709",
-            "quantity": "1"
-          },
-          {
-            "name": "FILTRO DE AIRE",
-            "reference": "52046268",
-            "quantity": "1"
-          },
-          {
-            "name": "FILTRO AIRE ACONDICIONADO",
-            "reference": "51842923",
-            "quantity": "1"
-          },
-          {
-            "name": "BUJIAS",
-            "reference": "55260260",
-            "quantity": "4"
-          }
-        ]
+    "name": "Mantenimiento PM3 (30000 km)",
+    "items": [
+      {
+        "description": "ACTIVIDADES DE MANTENIMIENTO",
+        "type": "Inspecci\u00f3n"
+      },
+      {
+        "description": "TAREAS A EJECUTAR",
+        "type": "Inspecci\u00f3n"
+      },
+      {
+        "description": "CAMBIAR ACEITE DE MOTOR",
+        "type": "Preventivo"
+      },
+      {
+        "description": "CAMBIAR FILTRO DE ACEITE DEL MOTOR",
+        "type": "Preventivo"
+      },
+      {
+        "description": "CAMBIAR FILTRO DE AIRE",
+        "type": "Preventivo"
+      },
+      {
+        "description": "CAMBIAR FILTRO DE COMBUSTIBLE",
+        "type": "Preventivo"
+      },
+      {
+        "description": "CAMBIAR FILTRO DE UREA",
+        "type": "Preventivo"
+      },
+      {
+        "description": "CAMBIAR LIQUIDO DEL SISTEMA DE FRENOS",
+        "type": "Preventivo"
+      },
+      {
+        "description": "CAMBIO DE REFRIGERANTE DE MOTOR",
+        "type": "Inspecci\u00f3n"
+      },
+      {
+        "description": "CAMBIAR CORREA ACCESORIOS",
+        "type": "Preventivo"
+      },
+      {
+        "description": "CAMBIAR CORREA AIRE ACONDICIONADO",
+        "type": "Preventivo"
+      },
+      {
+        "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL DEL SISTEMA DE FRENOS",
+        "type": "Inspecci\u00f3n"
+      },
+      {
+        "description": "REVISION DEL ESTADO DE LA BANDA DE FRENOS",
+        "type": "Inspecci\u00f3n"
+      },
+      {
+        "description": "REVISION DEL ESTADO DE TAMBOR DE FRENOS",
+        "type": "Inspecci\u00f3n"
+      },
+      {
+        "description": "REVISION DE ESTADO DE LAS PASTILLAS DE FRENO",
+        "type": "Inspecci\u00f3n"
+      },
+      {
+        "description": "REVISION DEL ESTADO DE LOS DISCOS DE FRENO",
+        "type": "Inspecci\u00f3n"
+      },
+      {
+        "description": "REVISION DEL ESTADO DE LOS AMORTIGUADORES",
+        "type": "Inspecci\u00f3n"
+      },
+      {
+        "description": "REVISION DEL ESTADO DE LOS TERMINALES DE DIRECCION",
+        "type": "Inspecci\u00f3n"
+      },
+      {
+        "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE LAS PUNTAS DE EJE",
+        "type": "Inspecci\u00f3n"
+      },
+      {
+        "description": "REVISION DEL ESTADO DE LA BARRA TRANSVERSAL",
+        "type": "Inspecci\u00f3n"
+      },
+      {
+        "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL EMBRAGUE",
+        "type": "Inspecci\u00f3n"
+      },
+      {
+        "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE PEDALES(FRENO-ACELERACION-EMBRAGUE)",
+        "type": "Inspecci\u00f3n"
+      },
+      {
+        "description": "REVISION DEL ESTADO DE LAS LLANTAS",
+        "type": "Inspecci\u00f3n"
+      },
+      {
+        "description": "REVISION DEL ESTADO DE ELEMENTOS DE CABINA (PUERTAS-ASIENTOS-VOLANTE-ESPEJOS)",
+        "type": "Inspecci\u00f3n"
+      },
+      {
+        "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL TABLERO(LUCES-ALARMAS)",
+        "type": "Inspecci\u00f3n"
+      },
+      {
+        "description": "REVISION DEL ESTADO DE FUNCIONAMIENTO DE LAS ALARMAS DE EMERGENCIA",
+        "type": "Inspecci\u00f3n"
+      },
+      {
+        "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL SIST DE LUCES (DELANTERAS-DIRECIONALES-STOP-CABINA)",
+        "type": "Inspecci\u00f3n"
+      },
+      {
+        "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE BATERIAS",
+        "type": "Inspecci\u00f3n"
+      },
+      {
+        "description": "REVISION DEL ESTADOY FUNCIONAMIENTO DEL CABLEADO DEL EQUIPO",
+        "type": "Inspecci\u00f3n"
+      },
+      {
+        "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL ALTERNADOR",
+        "type": "Inspecci\u00f3n"
+      },
+      {
+        "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL SISTEMA DE ARRANQUE",
+        "type": "Inspecci\u00f3n"
+      },
+      {
+        "description": "REVISION DEL ESTADO DEL MOTOR(FUGAS-RUIDOS)",
+        "type": "Inspecci\u00f3n"
+      },
+      {
+        "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE MANGUERAS DEL SISTEMA",
+        "type": "Inspecci\u00f3n"
+      },
+      {
+        "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL RADIADOR",
+        "type": "Inspecci\u00f3n"
+      },
+      {
+        "description": "LIMPIAR Y/O LAVAR RADIADOR",
+        "type": "Inspecci\u00f3n"
       }
-    }
-  },
-  "35000": {
-    "name": "Mantenimiento 35,000 KM",
-    "items": [],
-    "supplies": [],
-    "variants": {
-      "JMC": {
-        "name": "Mantenimiento 35,000 KM (JMC)",
-        "items": [
-          {
-            "description": "CAMBIAR ACEITE DE MOTOR",
-            "type": "Cambio"
-          },
-          {
-            "description": "CAMBIAR FILTRO DE ACEITE DEL MOTOR",
-            "type": "Cambio"
-          },
-          {
-            "description": "CAMBIAR FILTRO DE AIRE",
-            "type": "Cambio"
-          },
-          {
-            "description": "CAMBIAR FILTRO DE COMBUSTIBLE",
-            "type": "Cambio"
-          },
-          {
-            "description": "CAMBIAR FILTRO DE UREA",
-            "type": "Cambio"
-          },
-          {
-            "description": "CAMBIAR LIQUIDO DEL SISTEMA DE FRENOS",
-            "type": "Cambio"
-          },
-          {
-            "description": "CAMBIO DE REFRIGERANTE DE MOTOR",
-            "type": "Inspección"
-          },
-          {
-            "description": "CAMBIAR CORREA ACCESORIOS",
-            "type": "Cambio"
-          },
-          {
-            "description": "CAMBIAR CORREA AIRE ACONDICIONADO",
-            "type": "Cambio"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL DEL SISTEMA DE FRENOS",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DE LA BANDA DE FRENOS",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DE TAMBOR DE FRENOS",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DE ESTADO DE LAS PASTILLAS DE FRENO",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DE LOS DISCOS DE FRENO",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DE LOS AMORTIGUADORES",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DE LOS TERMINALES DE DIRECCION",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE LAS PUNTAS DE EJE",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DE LA BARRA TRANSVERSAL",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL EMBRAGUE",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE PEDALES(FRENO-ACELERACION-EMBRAGUE)",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DE LAS LLANTAS",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DE ELEMENTOS DE CABINA (PUERTAS-ASIENTOS-VOLANTE-ESPEJOS)",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL TABLERO(LUCES-ALARMAS)",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DE FUNCIONAMIENTO DE LAS ALARMAS DE EMERGENCIA",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL SIST DE LUCES (DELANTERAS-DIRECIONALES-STOP-CABINA)",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE BATERIAS",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADOY FUNCIONAMIENTO DEL CABLEADO DEL EQUIPO",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL ALTERNADOR",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL SISTEMA DE ARRANQUE",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DEL MOTOR(FUGAS-RUIDOS)",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE MANGUERAS DEL SISTEMA",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL RADIADOR",
-            "type": "Inspección"
-          },
-          {
-            "description": "LIMPIAR Y/O LAVAR RADIADOR",
-            "type": "Inspección"
-          }
-        ],
-        "supplies": [
-          {
-            "name": "ACEITE DE MOTOR",
-            "reference": "(Mobil Delvac 15W40) API CK-4",
-            "quantity": "1.75"
-          },
-          {
-            "name": "ACEITE DE DIFERENCIAL",
-            "reference": "85W140",
-            "quantity": "0.75"
-          },
-          {
-            "name": "ACEITE DE TRANSMISION",
-            "reference": "80W90",
-            "quantity": "0.75"
-          },
-          {
-            "name": "ACEITE TRANSFER",
-            "reference": "ATF III",
-            "quantity": "0.75"
-          },
-          {
-            "name": "REFRIGERANTE",
-            "reference": "50/50",
-            "quantity": "2"
-          },
-          {
-            "name": "LIQUIDO DE FRENOS",
-            "reference": "DOT4",
-            "quantity": "2"
-          },
-          {
-            "name": "FILTRO DE ACEITE DE MOTOR",
-            "reference": "EP1-6612-AB",
-            "quantity": "1"
-          },
-          {
-            "name": "FILTRO DE AIRE",
-            "reference": "EJP1-9601-AB",
-            "quantity": "1"
-          },
-          {
-            "name": "FILTRO DE  COMBUSTIBLE",
-            "reference": "E9P2-9156AA",
-            "quantity": "1"
-          },
-          {
-            "name": "FILTRO DE UREA",
-            "reference": "ELP1-5L210-AA",
-            "quantity": "1"
-          },
-          {
-            "name": "CORREA ACCESORIOS",
-            "reference": "CN3-6C301-AC",
-            "quantity": "1"
-          },
-          {
-            "name": "CORREA A/C",
-            "reference": "JP1-19896-BB",
-            "quantity": "1"
-          }
-        ]
-      }
-    }
-  },
-  "40000": {
-    "name": "Mantenimiento 40,000 KM",
-    "items": [],
-    "supplies": [],
-    "variants": {
-      "RAM": {
-        "name": "Mantenimiento 40,000 KM (RAM)",
-        "items": [
-          {
-            "description": "CAMBIAR ACEITE DE MOTOR",
-            "type": "Cambio"
-          },
-          {
-            "description": "CAMBIAR FILTRO DE ACEITE DEL MOTOR",
-            "type": "Cambio"
-          },
-          {
-            "description": "CAMBIAR FILTRO DE AIRE",
-            "type": "Cambio"
-          },
-          {
-            "description": "CAMBIAR FILTRO DE AIRE ACONDICIONADO",
-            "type": "Cambio"
-          },
-          {
-            "description": "CAMBIAR LIQUIDO DEL SISTEMA DE FRENOS",
-            "type": "Cambio"
-          },
-          {
-            "description": "REVISION Y AJUSTE NIVEL ACEITE DE TRANSMISION",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION Y AJUSTE DE NIVEL DE REFRIGERANTE",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE CORREAS",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE POLEAS Y TENSORES",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION Y AJUSTE DE NIVEL DE ACEITE DE DIRECCION",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL DEL SISTEMA DE FRENOS",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DE LA BANDA DE FRENOS",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DE TAMBOR DE FRENOS",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DE ESTADO DE LAS PASTILLAS DE FRENO",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DE LOS DISCOS DE FRENO",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DE LOS AMORTIGUADORES",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DE LOS TERMINALES DE DIRECCION",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE LAS PUNTAS DE EJE",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DE LA BARRA TRANSVERSAL",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL EMBRAGUE",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE PEDALES(FRENO-ACELERACION-EMBRAGUE)",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DE LAS LLANTAS",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DE ELEMENTOS DE CABINA (PUERTAS-ASIENTOS-VOLANTE-ESPEJOS)",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL TABLERO(LUCES-ALARMAS)",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DE FUNCIONAMIENTO DE LAS ALARMAS DE EMERGENCIA",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL SIST DE LUCES (DELANTERAS-DIRECIONALES-STOP-CABINA)",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE BATERIAS",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADOY FUNCIONAMIENTO DEL CABLEADO DEL EQUIPO",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL ALTERNADOR",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL SISTEMA DE ARRANQUE",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DEL MOTOR(FUGAS-RUIDOS)",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE MANGUERAS DEL SISTEMA",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL RADIADOR",
-            "type": "Inspección"
-          },
-          {
-            "description": "LIMPIAR Y/O LAVAR RADIADOR",
-            "type": "Inspección"
-          }
-        ],
-        "supplies": [
-          {
-            "name": "ACEITE DE MOTOR",
-            "reference": "0W20",
-            "quantity": "1"
-          },
-          {
-            "name": "LIQUIDO DE FRENOS",
-            "reference": "16 107 255 80",
-            "quantity": "2"
-          },
-          {
-            "name": "FILTRO DE ACEITE DE MOTOR",
-            "reference": "7094709",
-            "quantity": "1"
-          },
-          {
-            "name": "FILTRO DE AIRE",
-            "reference": "52046268",
-            "quantity": "1"
-          },
-          {
-            "name": "FILTRO AIRE ACONDICIONADO",
-            "reference": "51842923",
-            "quantity": "1"
-          }
-        ]
-      }
-    }
-  },
-  "42000": {
-    "name": "Mantenimiento 42,000 KM",
-    "items": [],
-    "supplies": [],
-    "variants": {
-      "JMC": {
-        "name": "Mantenimiento 42,000 KM (JMC)",
-        "items": [
-          {
-            "description": "CAMBIAR ACEITE DE MOTOR",
-            "type": "Cambio"
-          },
-          {
-            "description": "CAMBIAR FILTRO DE ACEITE DEL MOTOR",
-            "type": "Cambio"
-          },
-          {
-            "description": "CAMBIAR FILTRO DE AIRE",
-            "type": "Cambio"
-          },
-          {
-            "description": "CAMBIAR FILTRO DE COMBUSTIBLE",
-            "type": "Cambio"
-          },
-          {
-            "description": "CAMBIAR FILTRO AIRE ACONDICIONADO",
-            "type": "Cambio"
-          },
-          {
-            "description": "REVISION Y AJUSTE DE NIVEL DE REFRIGERANTE",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION Y AJUSTE DE NIVEL DE LIQUIDO DE FRENOS",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE CORREA DE ACCESORIOS",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE CORREA DE AIRE ACONDICIONADO",
-            "type": "Inspección"
-          },
-          {
-            "description": "ADICIONAR ADITIVO AL SISTEMA DE INYECCION",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL DEL SISTEMA DE FRENOS",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DE LA BANDA DE FRENOS",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DE TAMBOR DE FRENOS",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DE ESTADO DE LAS PASTILLAS DE FRENO",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DE LOS DISCOS DE FRENO",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DE LOS AMORTIGUADORES",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DE LOS TERMINALES DE DIRECCION",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE LAS PUNTAS DE EJE",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DE LA BARRA TRANSVERSAL",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL EMBRAGUE",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE PEDALES(FRENO-ACELERACION-EMBRAGUE)",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DE LAS LLANTAS",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DE ELEMENTOS DE CABINA (PUERTAS-ASIENTOS-VOLANTE-ESPEJOS)",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL TABLERO(LUCES-ALARMAS)",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DE FUNCIONAMIENTO DE LAS ALARMAS DE EMERGENCIA",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL SIST DE LUCES (DELANTERAS-DIRECIONALES-STOP-CABINA)",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE BATERIAS",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADOY FUNCIONAMIENTO DEL CABLEADO DEL EQUIPO",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL ALTERNADOR",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL SISTEMA DE ARRANQUE",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DEL MOTOR(FUGAS-RUIDOS)",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE MANGUERAS DEL SISTEMA",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL RADIADOR",
-            "type": "Inspección"
-          },
-          {
-            "description": "LIMPIAR Y/O LAVAR RADIADOR",
-            "type": "Inspección"
-          }
-        ],
-        "supplies": [
-          {
-            "name": "ACEITE DE MOTOR",
-            "reference": "(Mobil Delvac 15W40) API CK-4",
-            "quantity": "1.75"
-          },
-          {
-            "name": "FILTRO DE ACEITE DE MOTOR",
-            "reference": "EP1-6612-AB",
-            "quantity": "1"
-          },
-          {
-            "name": "FILTRO DE AIRE",
-            "reference": "EJP1-9601-AB",
-            "quantity": "1"
-          },
-          {
-            "name": "FILTRO DE  COMBUSTIBLE",
-            "reference": "E9P2-9156AA",
-            "quantity": "1"
-          },
-          {
-            "name": "ADITIVO LIMPIADOR SISTEMA INYECCION",
-            "reference": "3890 182",
-            "quantity": "1"
-          }
-        ]
-      }
-    }
-  },
-  "49000": {
-    "name": "Mantenimiento 49,000 KM",
-    "items": [],
-    "supplies": [],
-    "variants": {
-      "JMC": {
-        "name": "Mantenimiento 49,000 KM (JMC)",
-        "items": [
-          {
-            "description": "CAMBIAR ACEITE DE MOTOR",
-            "type": "Cambio"
-          },
-          {
-            "description": "CAMBIAR FILTRO DE ACEITE DEL MOTOR",
-            "type": "Cambio"
-          },
-          {
-            "description": "CAMBIAR FILTRO DE AIRE",
-            "type": "Cambio"
-          },
-          {
-            "description": "CAMBIAR FILTRO DE COMBUSTIBLE",
-            "type": "Cambio"
-          },
-          {
-            "description": "REVISION Y AJUSTE DE NIVEL DE REFRIGERANTE",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION Y AJUSTE DE NIVEL DE LIQUIDO DE FRENOS",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE CORREA DE ACCESORIOS",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE CORREA DE AIRE ACONDICIONADO",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL DEL SISTEMA DE FRENOS",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DE LA BANDA DE FRENOS",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DE TAMBOR DE FRENOS",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DE ESTADO DE LAS PASTILLAS DE FRENO",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DE LOS DISCOS DE FRENO",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DE LOS AMORTIGUADORES",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DE LOS TERMINALES DE DIRECCION",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE LAS PUNTAS DE EJE",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DE LA BARRA TRANSVERSAL",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL EMBRAGUE",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE PEDALES(FRENO-ACELERACION-EMBRAGUE)",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DE LAS LLANTAS",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DE ELEMENTOS DE CABINA (PUERTAS-ASIENTOS-VOLANTE-ESPEJOS)",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL TABLERO(LUCES-ALARMAS)",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DE FUNCIONAMIENTO DE LAS ALARMAS DE EMERGENCIA",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL SIST DE LUCES (DELANTERAS-DIRECIONALES-STOP-CABINA)",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE BATERIAS",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADOY FUNCIONAMIENTO DEL CABLEADO DEL EQUIPO",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL ALTERNADOR",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL SISTEMA DE ARRANQUE",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DEL MOTOR(FUGAS-RUIDOS)",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE MANGUERAS DEL SISTEMA",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL RADIADOR",
-            "type": "Inspección"
-          },
-          {
-            "description": "LIMPIAR Y/O LAVAR RADIADOR",
-            "type": "Inspección"
-          }
-        ],
-        "supplies": [
-          {
-            "name": "ACEITE DE MOTOR",
-            "reference": "(Mobil Delvac 15W40) API CK-4",
-            "quantity": "1.75"
-          },
-          {
-            "name": "FILTRO DE ACEITE DE MOTOR",
-            "reference": "EP1-6612-AB",
-            "quantity": "1"
-          },
-          {
-            "name": "FILTRO DE AIRE",
-            "reference": "EJP1-9601-AB",
-            "quantity": "1"
-          },
-          {
-            "name": "FILTRO DE  COMBUSTIBLE",
-            "reference": "E9P2-9156AA",
-            "quantity": "1"
-          }
-        ]
-      }
-    }
+    ],
+    "supplies": [
+      "FILTRO DE ACEITE DE MOTOR",
+      "FILTRO DE AIRE",
+      "FILTRO DE  COMBUSTIBLE",
+      "FILTRO DE UREA",
+      "CORREA ACCESORIOS"
+    ]
   },
   "50000": {
-    "name": "Mantenimiento 50,000 KM",
-    "items": [],
-    "supplies": [],
-    "variants": {
-      "RAM": {
-        "name": "Mantenimiento 50,000 KM (RAM)",
-        "items": [
-          {
-            "description": "CAMBIAR ACEITE DE MOTOR",
-            "type": "Cambio"
-          },
-          {
-            "description": "CAMBIAR FILTRO DE ACEITE DEL MOTOR",
-            "type": "Cambio"
-          },
-          {
-            "description": "CAMBIAR FILTRO DE AIRE",
-            "type": "Cambio"
-          },
-          {
-            "description": "CAMBIAR FILTRO DE AIRE ACONDICIONADO",
-            "type": "Cambio"
-          },
-          {
-            "description": "CAMBIO DE REFRIGERANTE DE MOTOR",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION Y AJUSTE NIVEL ACEITE DE TRANSMISION",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION Y AJUSTE DE NIVEL DE ACEITE DE FRENOS",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE CORREAS",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE POLEAS Y TENSORES",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION Y AJUSTE DE NIVEL DE ACEITE DE DIRECCION",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL DEL SISTEMA DE FRENOS",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DE LA BANDA DE FRENOS",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DE TAMBOR DE FRENOS",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DE ESTADO DE LAS PASTILLAS DE FRENO",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DE LOS DISCOS DE FRENO",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DE LOS AMORTIGUADORES",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DE LOS TERMINALES DE DIRECCION",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE LAS PUNTAS DE EJE",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DE LA BARRA TRANSVERSAL",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL EMBRAGUE",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE PEDALES(FRENO-ACELERACION-EMBRAGUE)",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DE LAS LLANTAS",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DE ELEMENTOS DE CABINA (PUERTAS-ASIENTOS-VOLANTE-ESPEJOS)",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL TABLERO(LUCES-ALARMAS)",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DE FUNCIONAMIENTO DE LAS ALARMAS DE EMERGENCIA",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL SIST DE LUCES (DELANTERAS-DIRECIONALES-STOP-CABINA)",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE BATERIAS",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADOY FUNCIONAMIENTO DEL CABLEADO DEL EQUIPO",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL ALTERNADOR",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL SISTEMA DE ARRANQUE",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DEL MOTOR(FUGAS-RUIDOS)",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE MANGUERAS DEL SISTEMA",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL RADIADOR",
-            "type": "Inspección"
-          },
-          {
-            "description": "LIMPIAR Y/O LAVAR RADIADOR",
-            "type": "Inspección"
-          }
-        ],
-        "supplies": [
-          {
-            "name": "ACEITE DE MOTOR",
-            "reference": "0W20",
-            "quantity": "1"
-          },
-          {
-            "name": "REFRIGERANTE",
-            "reference": "68163848",
-            "quantity": "1"
-          },
-          {
-            "name": "FILTRO DE ACEITE DE MOTOR",
-            "reference": "7094709",
-            "quantity": "1"
-          },
-          {
-            "name": "FILTRO DE AIRE",
-            "reference": "52046268",
-            "quantity": "1"
-          },
-          {
-            "name": "FILTRO AIRE ACONDICIONADO",
-            "reference": "51842923",
-            "quantity": "1"
-          }
-        ]
-      }
-    }
-  },
-  "56000": {
-    "name": "Mantenimiento 56,000 KM",
-    "items": [],
-    "supplies": [],
-    "variants": {
-      "JMC": {
-        "name": "Mantenimiento 56,000 KM (JMC)",
-        "items": [
-          {
-            "description": "CAMBIAR ACEITE DE MOTOR",
-            "type": "Cambio"
-          },
-          {
-            "description": "CAMBIAR FILTRO DE ACEITE DEL MOTOR",
-            "type": "Cambio"
-          },
-          {
-            "description": "CAMBIAR FILTRO DE AIRE",
-            "type": "Cambio"
-          },
-          {
-            "description": "CAMBIAR FILTRO DE COMBUSTIBLE",
-            "type": "Cambio"
-          },
-          {
-            "description": "CAMBIAR FILTRO AIRE ACONDICIONADO",
-            "type": "Cambio"
-          },
-          {
-            "description": "REVISION Y AJUSTE DE NIVEL DE REFRIGERANTE",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION Y AJUSTE DE NIVEL DE LIQUIDO DE FRENOS",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE CORREA DE ACCESORIOS",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE CORREA DE AIRE ACONDICIONADO",
-            "type": "Inspección"
-          },
-          {
-            "description": "ADICIONAR ADITIVO AL SISTEMA DE INYECCION",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL DEL SISTEMA DE FRENOS",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DE LA BANDA DE FRENOS",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DE TAMBOR DE FRENOS",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DE ESTADO DE LAS PASTILLAS DE FRENO",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DE LOS DISCOS DE FRENO",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DE LOS AMORTIGUADORES",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DE LOS TERMINALES DE DIRECCION",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE LAS PUNTAS DE EJE",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DE LA BARRA TRANSVERSAL",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL EMBRAGUE",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE PEDALES(FRENO-ACELERACION-EMBRAGUE)",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DE LAS LLANTAS",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DE ELEMENTOS DE CABINA (PUERTAS-ASIENTOS-VOLANTE-ESPEJOS)",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL TABLERO(LUCES-ALARMAS)",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DE FUNCIONAMIENTO DE LAS ALARMAS DE EMERGENCIA",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL SIST DE LUCES (DELANTERAS-DIRECIONALES-STOP-CABINA)",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE BATERIAS",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADOY FUNCIONAMIENTO DEL CABLEADO DEL EQUIPO",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL ALTERNADOR",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL SISTEMA DE ARRANQUE",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DEL MOTOR(FUGAS-RUIDOS)",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE MANGUERAS DEL SISTEMA",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL RADIADOR",
-            "type": "Inspección"
-          },
-          {
-            "description": "LIMPIAR Y/O LAVAR RADIADOR",
-            "type": "Inspección"
-          }
-        ],
-        "supplies": [
-          {
-            "name": "ACEITE DE MOTOR",
-            "reference": "(Mobil Delvac 15W40) API CK-4",
-            "quantity": "1.75"
-          },
-          {
-            "name": "FILTRO DE ACEITE DE MOTOR",
-            "reference": "EP1-6612-AB",
-            "quantity": "1"
-          },
-          {
-            "name": "FILTRO DE AIRE",
-            "reference": "EJP1-9601-AB",
-            "quantity": "1"
-          },
-          {
-            "name": "FILTRO DE  COMBUSTIBLE",
-            "reference": "E9P2-9156AA",
-            "quantity": "1"
-          },
-          {
-            "name": "ADITIVO LIMPIADOR SISTEMA INYECCION",
-            "reference": "3890 182",
-            "quantity": "1"
-          }
-        ]
-      }
-    }
-  },
-  "60000": {
-    "name": "Mantenimiento 60,000 KM",
-    "items": [],
-    "supplies": [],
-    "variants": {
-      "RAM": {
-        "name": "Mantenimiento 60,000 KM (RAM)",
-        "items": [
-          {
-            "description": "FILTRO COMBUSTIBLE",
-            "type": "Inspección"
-          },
-          {
-            "description": "CAMBIAR ACEITE DE MOTOR",
-            "type": "Cambio"
-          },
-          {
-            "description": "CAMBIAR FILTRO DE ACEITE DEL MOTOR",
-            "type": "Cambio"
-          },
-          {
-            "description": "CAMBIAR FILTRO DE AIRE",
-            "type": "Cambio"
-          },
-          {
-            "description": "CAMBIAR FILTRO COMBUSTIBLE",
-            "type": "Cambio"
-          },
-          {
-            "description": "CAMBIAR FILTRO DE AIRE ACONDICIONADO",
-            "type": "Cambio"
-          },
-          {
-            "description": "CAMBIO DE BUJIAS",
-            "type": "Inspección"
-          },
-          {
-            "description": "CAMBIAR CORREA ACCESORIOS",
-            "type": "Cambio"
-          },
-          {
-            "description": "CAMBIAR TENSOR CORREA ACCESORIOS",
-            "type": "Cambio"
-          },
-          {
-            "description": "REVISION Y AJUSTE NIVEL ACEITE DE TRANSMISION",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION Y AJUSTE DE NIVEL DE REFRIGERANTE",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION Y AJUSTE DE NIVEL DE ACEITE DE FRENOS",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION Y AJUSTE DE NIVEL DE ACEITE DE DIRECCION",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL DEL SISTEMA DE FRENOS",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DE LA BANDA DE FRENOS",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DE TAMBOR DE FRENOS",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DE ESTADO DE LAS PASTILLAS DE FRENO",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DE LOS DISCOS DE FRENO",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DE LOS AMORTIGUADORES",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DE LOS TERMINALES DE DIRECCION",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE LAS PUNTAS DE EJE",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DE LA BARRA TRANSVERSAL",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL EMBRAGUE",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE PEDALES(FRENO-ACELERACION-EMBRAGUE)",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DE LAS LLANTAS",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DE ELEMENTOS DE CABINA (PUERTAS-ASIENTOS-VOLANTE-ESPEJOS)",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL TABLERO(LUCES-ALARMAS)",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DE FUNCIONAMIENTO DE LAS ALARMAS DE EMERGENCIA",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL SIST DE LUCES (DELANTERAS-DIRECIONALES-STOP-CABINA)",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE BATERIAS",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADOY FUNCIONAMIENTO DEL CABLEADO DEL EQUIPO",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL ALTERNADOR",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL SISTEMA DE ARRANQUE",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DEL MOTOR(FUGAS-RUIDOS)",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE MANGUERAS DEL SISTEMA",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL RADIADOR",
-            "type": "Inspección"
-          },
-          {
-            "description": "LIMPIAR Y/O LAVAR RADIADOR",
-            "type": "Inspección"
-          }
-        ],
-        "supplies": [
-          {
-            "name": "ACEITE DE MOTOR",
-            "reference": "0W20",
-            "quantity": "1"
-          },
-          {
-            "name": "FILTRO DE ACEITE DE MOTOR",
-            "reference": "7094709",
-            "quantity": "1"
-          },
-          {
-            "name": "FILTRO DE AIRE",
-            "reference": "52046268",
-            "quantity": "1"
-          },
-          {
-            "name": "FILTRO AIRE ACONDICIONADO",
-            "reference": "51842923",
-            "quantity": "1"
-          },
-          {
-            "name": "BUJIAS",
-            "reference": "55260260",
-            "quantity": "4"
-          },
-          {
-            "name": "CORREA ACCESORIOS",
-            "reference": "55267966",
-            "quantity": "1"
-          },
-          {
-            "name": "TENSOR CORREA ACCESORIOS",
-            "reference": "55267954",
-            "quantity": "1"
-          }
-        ]
-      }
-    }
-  },
-  "63000": {
-    "name": "Mantenimiento 63,000 KM",
-    "items": [],
-    "supplies": [],
-    "variants": {
-      "JMC": {
-        "name": "Mantenimiento 63,000 KM (JMC)",
-        "items": [
-          {
-            "description": "CAMBIAR ACEITE DE MOTOR",
-            "type": "Cambio"
-          },
-          {
-            "description": "CAMBIAR FILTRO DE ACEITE DEL MOTOR",
-            "type": "Cambio"
-          },
-          {
-            "description": "CAMBIAR FILTRO DE AIRE",
-            "type": "Cambio"
-          },
-          {
-            "description": "CAMBIAR FILTRO DE COMBUSTIBLE",
-            "type": "Cambio"
-          },
-          {
-            "description": "REVISION Y AJUSTE DE NIVEL DE REFRIGERANTE",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION Y AJUSTE DE NIVEL DE LIQUIDO DE FRENOS",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE CORREA DE ACCESORIOS",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE CORREA DE AIRE ACONDICIONADO",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL DEL SISTEMA DE FRENOS",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DE LA BANDA DE FRENOS",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DE TAMBOR DE FRENOS",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DE ESTADO DE LAS PASTILLAS DE FRENO",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DE LOS DISCOS DE FRENO",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DE LOS AMORTIGUADORES",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DE LOS TERMINALES DE DIRECCION",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE LAS PUNTAS DE EJE",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DE LA BARRA TRANSVERSAL",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL EMBRAGUE",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE PEDALES(FRENO-ACELERACION-EMBRAGUE)",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DE LAS LLANTAS",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DE ELEMENTOS DE CABINA (PUERTAS-ASIENTOS-VOLANTE-ESPEJOS)",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL TABLERO(LUCES-ALARMAS)",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DE FUNCIONAMIENTO DE LAS ALARMAS DE EMERGENCIA",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL SIST DE LUCES (DELANTERAS-DIRECIONALES-STOP-CABINA)",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE BATERIAS",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADOY FUNCIONAMIENTO DEL CABLEADO DEL EQUIPO",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL ALTERNADOR",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL SISTEMA DE ARRANQUE",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DEL MOTOR(FUGAS-RUIDOS)",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE MANGUERAS DEL SISTEMA",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL RADIADOR",
-            "type": "Inspección"
-          },
-          {
-            "description": "LIMPIAR Y/O LAVAR RADIADOR",
-            "type": "Inspección"
-          }
-        ],
-        "supplies": [
-          {
-            "name": "ACEITE DE MOTOR",
-            "reference": "(Mobil Delvac 15W40) API CK-4",
-            "quantity": "1.75"
-          },
-          {
-            "name": "FILTRO DE ACEITE DE MOTOR",
-            "reference": "EP1-6612-AB",
-            "quantity": "1"
-          },
-          {
-            "name": "FILTRO DE AIRE",
-            "reference": "EJP1-9601-AB",
-            "quantity": "1"
-          },
-          {
-            "name": "FILTRO DE  COMBUSTIBLE",
-            "reference": "E9P2-9156AA",
-            "quantity": "1"
-          }
-        ]
-      }
-    }
-  },
-  "70000": {
-    "name": "Mantenimiento 70,000 KM",
-    "items": [],
-    "supplies": [],
-    "variants": {
-      "RAM": {
-        "name": "Mantenimiento 70,000 KM (RAM)",
-        "items": [
-          {
-            "description": "CAMBIAR ACEITE DE MOTOR",
-            "type": "Cambio"
-          },
-          {
-            "description": "CAMBIAR FILTRO DE ACEITE DEL MOTOR",
-            "type": "Cambio"
-          },
-          {
-            "description": "CAMBIAR FILTRO DE AIRE",
-            "type": "Cambio"
-          },
-          {
-            "description": "CAMBIAR FILTRO DE AIRE ACONDICIONADO",
-            "type": "Cambio"
-          },
-          {
-            "description": "REVISION Y AJUSTE NIVEL ACEITE DE TRANSMISION",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION Y AJUSTE DE NIVEL DE REFRIGERANTE",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION Y AJUSTE DE NIVEL DE ACEITE DE FRENOS",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE CORREAS",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE POLEAS Y TENSORES",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION Y AJUSTE DE NIVEL DE ACEITE DE DIRECCION",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL DEL SISTEMA DE FRENOS",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DE LA BANDA DE FRENOS",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DE TAMBOR DE FRENOS",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DE ESTADO DE LAS PASTILLAS DE FRENO",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DE LOS DISCOS DE FRENO",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DE LOS AMORTIGUADORES",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DE LOS TERMINALES DE DIRECCION",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE LAS PUNTAS DE EJE",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DE LA BARRA TRANSVERSAL",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL EMBRAGUE",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE PEDALES(FRENO-ACELERACION-EMBRAGUE)",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DE LAS LLANTAS",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DE ELEMENTOS DE CABINA (PUERTAS-ASIENTOS-VOLANTE-ESPEJOS)",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL TABLERO(LUCES-ALARMAS)",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DE FUNCIONAMIENTO DE LAS ALARMAS DE EMERGENCIA",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL SIST DE LUCES (DELANTERAS-DIRECIONALES-STOP-CABINA)",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE BATERIAS",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADOY FUNCIONAMIENTO DEL CABLEADO DEL EQUIPO",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL ALTERNADOR",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL SISTEMA DE ARRANQUE",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DEL MOTOR(FUGAS-RUIDOS)",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE MANGUERAS DEL SISTEMA",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL RADIADOR",
-            "type": "Inspección"
-          },
-          {
-            "description": "LIMPIAR Y/O LAVAR RADIADOR",
-            "type": "Inspección"
-          }
-        ],
-        "supplies": [
-          {
-            "name": "ACEITE DE MOTOR",
-            "reference": "0W20",
-            "quantity": "1"
-          },
-          {
-            "name": "FILTRO DE ACEITE DE MOTOR",
-            "reference": "7094709",
-            "quantity": "1"
-          },
-          {
-            "name": "FILTRO DE AIRE",
-            "reference": "52046268",
-            "quantity": "1"
-          },
-          {
-            "name": "FILTRO AIRE ACONDICIONADO",
-            "reference": "51842923",
-            "quantity": "1"
-          }
-        ]
+    "name": "Mantenimiento PM4 (50000 km)",
+    "items": [
+      {
+        "description": "ACTIVIDADES DE MANTENIMIENTO",
+        "type": "Inspecci\u00f3n"
       },
-      "JMC": {
-        "name": "Mantenimiento 70,000 KM (JMC)",
-        "items": [
-          {
-            "description": "CAMBIAR ACEITE DE MOTOR",
-            "type": "Cambio"
-          },
-          {
-            "description": "CAMBIAR FILTRO DE ACEITE DEL MOTOR",
-            "type": "Cambio"
-          },
-          {
-            "description": "CAMBIAR FILTRO DE AIRE",
-            "type": "Cambio"
-          },
-          {
-            "description": "CAMBIAR FILTRO DE COMBUSTIBLE",
-            "type": "Cambio"
-          },
-          {
-            "description": "CAMBIAR FILTRO AIRE ACONDICIONADO",
-            "type": "Cambio"
-          },
-          {
-            "description": "ADICIONAR ADITIVO AL SISTEMA DE INYECCION",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL DEL SISTEMA DE FRENOS",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DE LA BANDA DE FRENOS",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DE TAMBOR DE FRENOS",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DE ESTADO DE LAS PASTILLAS DE FRENO",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DE LOS DISCOS DE FRENO",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DE LOS AMORTIGUADORES",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DE LOS TERMINALES DE DIRECCION",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE LAS PUNTAS DE EJE",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DE LA BARRA TRANSVERSAL",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL EMBRAGUE",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE PEDALES(FRENO-ACELERACION-EMBRAGUE)",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DE LAS LLANTAS",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DE ELEMENTOS DE CABINA (PUERTAS-ASIENTOS-VOLANTE-ESPEJOS)",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL TABLERO(LUCES-ALARMAS)",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DE FUNCIONAMIENTO DE LAS ALARMAS DE EMERGENCIA",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL SIST DE LUCES (DELANTERAS-DIRECIONALES-STOP-CABINA)",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE BATERIAS",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADOY FUNCIONAMIENTO DEL CABLEADO DEL EQUIPO",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL ALTERNADOR",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL SISTEMA DE ARRANQUE",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DEL MOTOR(FUGAS-RUIDOS)",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE MANGUERAS DEL SISTEMA",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL RADIADOR",
-            "type": "Inspección"
-          },
-          {
-            "description": "LIMPIAR Y/O LAVAR RADIADOR",
-            "type": "Inspección"
-          }
-        ],
-        "supplies": [
-          {
-            "name": "ACEITE DE MOTOR",
-            "reference": "(Mobil Delvac 15W40) API CK-4",
-            "quantity": "1.75"
-          },
-          {
-            "name": "ACEITE DE DIFERENCIAL",
-            "reference": "85W140",
-            "quantity": "0.75"
-          },
-          {
-            "name": "ACEITE DE TRANSMISION",
-            "reference": "80W90",
-            "quantity": "0.75"
-          },
-          {
-            "name": "ACEITE TRANSFER",
-            "reference": "ATF III",
-            "quantity": "0.75"
-          },
-          {
-            "name": "REFRIGERANTE",
-            "reference": "50/50",
-            "quantity": "2"
-          },
-          {
-            "name": "LIQUIDO DE FRENOS",
-            "reference": "DOT4",
-            "quantity": "2"
-          },
-          {
-            "name": "FILTRO DE ACEITE DE MOTOR",
-            "reference": "EP1-6612-AB",
-            "quantity": "1"
-          },
-          {
-            "name": "FILTRO DE AIRE",
-            "reference": "EJP1-9601-AB",
-            "quantity": "1"
-          },
-          {
-            "name": "FILTRO DE  COMBUSTIBLE",
-            "reference": "E9P2-9156AA",
-            "quantity": "1"
-          },
-          {
-            "name": "FILTRO DE UREA",
-            "reference": "ELP1-5L210-AA",
-            "quantity": "1"
-          },
-          {
-            "name": "CORREA ACCESORIOS",
-            "reference": "CN3-6C301-AC",
-            "quantity": "1"
-          },
-          {
-            "name": "CORREA A/C",
-            "reference": "JP1-19896-BB",
-            "quantity": "1"
-          },
-          {
-            "name": "ADITIVO LIMPIADOR SISTEMA INYECCION",
-            "reference": "3890 182",
-            "quantity": "1"
-          }
-        ]
+      {
+        "description": "TAREAS A EJECUTAR",
+        "type": "Inspecci\u00f3n"
+      },
+      {
+        "description": "CAMBIAR ACEITE DE MOTOR",
+        "type": "Preventivo"
+      },
+      {
+        "description": "CAMBIAR FILTRO DE ACEITE DEL MOTOR",
+        "type": "Preventivo"
+      },
+      {
+        "description": "CAMBIAR FILTRO DE AIRE",
+        "type": "Preventivo"
+      },
+      {
+        "description": "CAMBIAR FILTRO DE COMBUSTIBLE",
+        "type": "Preventivo"
+      },
+      {
+        "description": "ADICIONAR ADITIVO AL SISTEMA DE INYECCION",
+        "type": "Inspecci\u00f3n"
+      },
+      {
+        "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL DEL SISTEMA DE FRENOS",
+        "type": "Inspecci\u00f3n"
+      },
+      {
+        "description": "REVISION DEL ESTADO DE LA BANDA DE FRENOS",
+        "type": "Inspecci\u00f3n"
+      },
+      {
+        "description": "REVISION DEL ESTADO DE TAMBOR DE FRENOS",
+        "type": "Inspecci\u00f3n"
+      },
+      {
+        "description": "REVISION DE ESTADO DE LAS PASTILLAS DE FRENO",
+        "type": "Inspecci\u00f3n"
+      },
+      {
+        "description": "REVISION DEL ESTADO DE LOS DISCOS DE FRENO",
+        "type": "Inspecci\u00f3n"
+      },
+      {
+        "description": "REVISION DEL ESTADO DE LOS AMORTIGUADORES",
+        "type": "Inspecci\u00f3n"
+      },
+      {
+        "description": "REVISION DEL ESTADO DE LOS TERMINALES DE DIRECCION",
+        "type": "Inspecci\u00f3n"
+      },
+      {
+        "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE LAS PUNTAS DE EJE",
+        "type": "Inspecci\u00f3n"
+      },
+      {
+        "description": "REVISION DEL ESTADO DE LA BARRA TRANSVERSAL",
+        "type": "Inspecci\u00f3n"
+      },
+      {
+        "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL EMBRAGUE",
+        "type": "Inspecci\u00f3n"
+      },
+      {
+        "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE PEDALES(FRENO-ACELERACION-EMBRAGUE)",
+        "type": "Inspecci\u00f3n"
+      },
+      {
+        "description": "REVISION DEL ESTADO DE LAS LLANTAS",
+        "type": "Inspecci\u00f3n"
+      },
+      {
+        "description": "REVISION DEL ESTADO DE ELEMENTOS DE CABINA (PUERTAS-ASIENTOS-VOLANTE-ESPEJOS)",
+        "type": "Inspecci\u00f3n"
+      },
+      {
+        "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL TABLERO(LUCES-ALARMAS)",
+        "type": "Inspecci\u00f3n"
+      },
+      {
+        "description": "REVISION DEL ESTADO DE FUNCIONAMIENTO DE LAS ALARMAS DE EMERGENCIA",
+        "type": "Inspecci\u00f3n"
+      },
+      {
+        "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL SIST DE LUCES (DELANTERAS-DIRECIONALES-STOP-CABINA)",
+        "type": "Inspecci\u00f3n"
+      },
+      {
+        "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE BATERIAS",
+        "type": "Inspecci\u00f3n"
+      },
+      {
+        "description": "REVISION DEL ESTADOY FUNCIONAMIENTO DEL CABLEADO DEL EQUIPO",
+        "type": "Inspecci\u00f3n"
+      },
+      {
+        "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL ALTERNADOR",
+        "type": "Inspecci\u00f3n"
+      },
+      {
+        "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL SISTEMA DE ARRANQUE",
+        "type": "Inspecci\u00f3n"
+      },
+      {
+        "description": "REVISION DEL ESTADO DEL MOTOR(FUGAS-RUIDOS)",
+        "type": "Inspecci\u00f3n"
+      },
+      {
+        "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE MANGUERAS DEL SISTEMA",
+        "type": "Inspecci\u00f3n"
+      },
+      {
+        "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL RADIADOR",
+        "type": "Inspecci\u00f3n"
+      },
+      {
+        "description": "LIMPIAR Y/O LAVAR RADIADOR",
+        "type": "Inspecci\u00f3n"
       }
-    }
-  },
-  "80000": {
-    "name": "Mantenimiento 80,000 KM",
-    "items": [],
-    "supplies": [],
-    "variants": {
-      "RAM": {
-        "name": "Mantenimiento 80,000 KM (RAM)",
-        "items": [
-          {
-            "description": "CAMBIAR ACEITE DE MOTOR",
-            "type": "Cambio"
-          },
-          {
-            "description": "CAMBIAR FILTRO DE ACEITE DEL MOTOR",
-            "type": "Cambio"
-          },
-          {
-            "description": "CAMBIAR FILTRO DE AIRE",
-            "type": "Cambio"
-          },
-          {
-            "description": "CAMBIAR FILTRO DE AIRE ACONDICIONADO",
-            "type": "Cambio"
-          },
-          {
-            "description": "CAMBIAR LIQUIDO DEL SISTEMA DE FRENOS",
-            "type": "Cambio"
-          },
-          {
-            "description": "REVISION Y AJUSTE NIVEL ACEITE DE TRANSMISION",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION Y AJUSTE DE NIVEL DE REFRIGERANTE",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION Y AJUSTE DE NIVEL DE ACEITE DE FRENOS",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE CORREAS",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE POLEAS Y TENSORES",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION Y AJUSTE DE NIVEL DE ACEITE DE DIRECCION",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL DEL SISTEMA DE FRENOS",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DE LA BANDA DE FRENOS",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DE TAMBOR DE FRENOS",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DE ESTADO DE LAS PASTILLAS DE FRENO",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DE LOS DISCOS DE FRENO",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DE LOS AMORTIGUADORES",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DE LOS TERMINALES DE DIRECCION",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE LAS PUNTAS DE EJE",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DE LA BARRA TRANSVERSAL",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL EMBRAGUE",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE PEDALES(FRENO-ACELERACION-EMBRAGUE)",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DE LAS LLANTAS",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DE ELEMENTOS DE CABINA (PUERTAS-ASIENTOS-VOLANTE-ESPEJOS)",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL TABLERO(LUCES-ALARMAS)",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DE FUNCIONAMIENTO DE LAS ALARMAS DE EMERGENCIA",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL SIST DE LUCES (DELANTERAS-DIRECIONALES-STOP-CABINA)",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE BATERIAS",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADOY FUNCIONAMIENTO DEL CABLEADO DEL EQUIPO",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL ALTERNADOR",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL SISTEMA DE ARRANQUE",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DEL MOTOR(FUGAS-RUIDOS)",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE MANGUERAS DEL SISTEMA",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL RADIADOR",
-            "type": "Inspección"
-          },
-          {
-            "description": "LIMPIAR Y/O LAVAR RADIADOR",
-            "type": "Inspección"
-          }
-        ],
-        "supplies": [
-          {
-            "name": "ACEITE DE MOTOR",
-            "reference": "0W20",
-            "quantity": "1"
-          },
-          {
-            "name": "LIQUIDO DE FRENOS",
-            "reference": "16 107 255 80",
-            "quantity": "2"
-          },
-          {
-            "name": "FILTRO DE ACEITE DE MOTOR",
-            "reference": "7094709",
-            "quantity": "1"
-          },
-          {
-            "name": "FILTRO DE AIRE",
-            "reference": "52046268",
-            "quantity": "1"
-          },
-          {
-            "name": "FILTRO AIRE ACONDICIONADO",
-            "reference": "51842923",
-            "quantity": "1"
-          }
-        ]
-      }
-    }
-  },
-  "90000": {
-    "name": "Mantenimiento 90,000 KM",
-    "items": [],
-    "supplies": [],
-    "variants": {
-      "RAM": {
-        "name": "Mantenimiento 90,000 KM (RAM)",
-        "items": [
-          {
-            "description": "FILTRO COMBUSTIBLE",
-            "type": "Inspección"
-          },
-          {
-            "description": "CAMBIAR ACEITE DE MOTOR",
-            "type": "Cambio"
-          },
-          {
-            "description": "CAMBIAR FILTRO DE ACEITE DEL MOTOR",
-            "type": "Cambio"
-          },
-          {
-            "description": "CAMBIAR FILTRO DE AIRE",
-            "type": "Cambio"
-          },
-          {
-            "description": "CAMBIAR FILTRO COMBUSTIBLE",
-            "type": "Cambio"
-          },
-          {
-            "description": "CAMBIAR FILTRO DE AIRE ACONDICIONADO",
-            "type": "Cambio"
-          },
-          {
-            "description": "CAMBIO DE BUJIAS",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION Y AJUSTE NIVEL ACEITE DE TRANSMISION",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION Y AJUSTE DE NIVEL DE REFRIGERANTE",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION Y AJUSTE DE NIVEL DE ACEITE DE FRENOS",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE CORREAS",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE POLEAS Y TENSORES",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION Y AJUSTE DE NIVEL DE ACEITE DE DIRECCION",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL DEL SISTEMA DE FRENOS",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DE LA BANDA DE FRENOS",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DE TAMBOR DE FRENOS",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DE ESTADO DE LAS PASTILLAS DE FRENO",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DE LOS DISCOS DE FRENO",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DE LOS AMORTIGUADORES",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DE LOS TERMINALES DE DIRECCION",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE LAS PUNTAS DE EJE",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DE LA BARRA TRANSVERSAL",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL EMBRAGUE",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE PEDALES(FRENO-ACELERACION-EMBRAGUE)",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DE LAS LLANTAS",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DE ELEMENTOS DE CABINA (PUERTAS-ASIENTOS-VOLANTE-ESPEJOS)",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL TABLERO(LUCES-ALARMAS)",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DE FUNCIONAMIENTO DE LAS ALARMAS DE EMERGENCIA",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL SIST DE LUCES (DELANTERAS-DIRECIONALES-STOP-CABINA)",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE BATERIAS",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADOY FUNCIONAMIENTO DEL CABLEADO DEL EQUIPO",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL ALTERNADOR",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL SISTEMA DE ARRANQUE",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DEL MOTOR(FUGAS-RUIDOS)",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE MANGUERAS DEL SISTEMA",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL RADIADOR",
-            "type": "Inspección"
-          },
-          {
-            "description": "LIMPIAR Y/O LAVAR RADIADOR",
-            "type": "Inspección"
-          }
-        ],
-        "supplies": [
-          {
-            "name": "ACEITE DE MOTOR",
-            "reference": "0W20",
-            "quantity": "1"
-          },
-          {
-            "name": "FILTRO DE ACEITE DE MOTOR",
-            "reference": "7094709",
-            "quantity": "1"
-          },
-          {
-            "name": "FILTRO DE AIRE",
-            "reference": "52046268",
-            "quantity": "1"
-          },
-          {
-            "name": "FILTRO AIRE ACONDICIONADO",
-            "reference": "51842923",
-            "quantity": "1"
-          },
-          {
-            "name": "BUJIAS",
-            "reference": "55260260",
-            "quantity": "4"
-          }
-        ]
-      }
-    }
-  },
-  "100000": {
-    "name": "Mantenimiento 100,000 KM",
-    "items": [],
-    "supplies": [],
-    "variants": {
-      "RAM": {
-        "name": "Mantenimiento 100,000 KM (RAM)",
-        "items": [
-          {
-            "description": "CAMBIAR ACEITE DE MOTOR",
-            "type": "Cambio"
-          },
-          {
-            "description": "CAMBIAR FILTRO DE ACEITE DEL MOTOR",
-            "type": "Cambio"
-          },
-          {
-            "description": "CAMBIAR FILTRO DE AIRE",
-            "type": "Cambio"
-          },
-          {
-            "description": "CAMBIAR FILTRO DE AIRE ACONDICIONADO",
-            "type": "Cambio"
-          },
-          {
-            "description": "CAMBIO DE REFRIGERANTE DE MOTOR",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION Y AJUSTE NIVEL ACEITE DE TRANSMISION",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION Y AJUSTE DE NIVEL DE REFRIGERANTE",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION Y AJUSTE DE NIVEL DE ACEITE DE FRENOS",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE CORREAS",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE POLEAS Y TENSORES",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION Y AJUSTE DE NIVEL DE ACEITE DE DIRECCION",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL DEL SISTEMA DE FRENOS",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DE LA BANDA DE FRENOS",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DE TAMBOR DE FRENOS",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DE ESTADO DE LAS PASTILLAS DE FRENO",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DE LOS DISCOS DE FRENO",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DE LOS AMORTIGUADORES",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DE LOS TERMINALES DE DIRECCION",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE LAS PUNTAS DE EJE",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DE LA BARRA TRANSVERSAL",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL EMBRAGUE",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE PEDALES(FRENO-ACELERACION-EMBRAGUE)",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DE LAS LLANTAS",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DE ELEMENTOS DE CABINA (PUERTAS-ASIENTOS-VOLANTE-ESPEJOS)",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL TABLERO(LUCES-ALARMAS)",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DE FUNCIONAMIENTO DE LAS ALARMAS DE EMERGENCIA",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL SIST DE LUCES (DELANTERAS-DIRECIONALES-STOP-CABINA)",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE BATERIAS",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADOY FUNCIONAMIENTO DEL CABLEADO DEL EQUIPO",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL ALTERNADOR",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL SISTEMA DE ARRANQUE",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DEL MOTOR(FUGAS-RUIDOS)",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE MANGUERAS DEL SISTEMA",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL RADIADOR",
-            "type": "Inspección"
-          },
-          {
-            "description": "LIMPIAR Y/O LAVAR RADIADOR",
-            "type": "Inspección"
-          }
-        ],
-        "supplies": [
-          {
-            "name": "ACEITE DE MOTOR",
-            "reference": "0W20",
-            "quantity": "1"
-          },
-          {
-            "name": "REFRIGERANTE",
-            "reference": "68163848",
-            "quantity": "1"
-          },
-          {
-            "name": "FILTRO DE ACEITE DE MOTOR",
-            "reference": "7094709",
-            "quantity": "1"
-          },
-          {
-            "name": "FILTRO DE AIRE",
-            "reference": "52046268",
-            "quantity": "1"
-          },
-          {
-            "name": "FILTRO AIRE ACONDICIONADO",
-            "reference": "51842923",
-            "quantity": "1"
-          }
-        ]
-      }
-    }
-  },
-  "110000": {
-    "name": "Mantenimiento 110,000 KM",
-    "items": [],
-    "supplies": [],
-    "variants": {
-      "RAM": {
-        "name": "Mantenimiento 110,000 KM (RAM)",
-        "items": [
-          {
-            "description": "CAMBIAR ACEITE DE MOTOR",
-            "type": "Cambio"
-          },
-          {
-            "description": "CAMBIAR FILTRO DE ACEITE DEL MOTOR",
-            "type": "Cambio"
-          },
-          {
-            "description": "CAMBIAR FILTRO DE AIRE",
-            "type": "Cambio"
-          },
-          {
-            "description": "CAMBIAR FILTRO DE AIRE ACONDICIONADO",
-            "type": "Cambio"
-          },
-          {
-            "description": "REVISION Y AJUSTE NIVEL ACEITE DE TRANSMISION",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION Y AJUSTE DE NIVEL DE REFRIGERANTE",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION Y AJUSTE DE NIVEL DE ACEITE DE FRENOS",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE CORREAS",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE POLEAS Y TENSORES",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION Y AJUSTE DE NIVEL DE ACEITE DE DIRECCION",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL DEL SISTEMA DE FRENOS",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DE LA BANDA DE FRENOS",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DE TAMBOR DE FRENOS",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DE ESTADO DE LAS PASTILLAS DE FRENO",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DE LOS DISCOS DE FRENO",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DE LOS AMORTIGUADORES",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DE LOS TERMINALES DE DIRECCION",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE LAS PUNTAS DE EJE",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DE LA BARRA TRANSVERSAL",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL EMBRAGUE",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE PEDALES(FRENO-ACELERACION-EMBRAGUE)",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DE LAS LLANTAS",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DE ELEMENTOS DE CABINA (PUERTAS-ASIENTOS-VOLANTE-ESPEJOS)",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL TABLERO(LUCES-ALARMAS)",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DE FUNCIONAMIENTO DE LAS ALARMAS DE EMERGENCIA",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL SIST DE LUCES (DELANTERAS-DIRECIONALES-STOP-CABINA)",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE BATERIAS",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADOY FUNCIONAMIENTO DEL CABLEADO DEL EQUIPO",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL ALTERNADOR",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL SISTEMA DE ARRANQUE",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DEL MOTOR(FUGAS-RUIDOS)",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE MANGUERAS DEL SISTEMA",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL RADIADOR",
-            "type": "Inspección"
-          },
-          {
-            "description": "LIMPIAR Y/O LAVAR RADIADOR",
-            "type": "Inspección"
-          }
-        ],
-        "supplies": [
-          {
-            "name": "ACEITE DE MOTOR",
-            "reference": "0W20",
-            "quantity": "1"
-          },
-          {
-            "name": "FILTRO DE ACEITE DE MOTOR",
-            "reference": "7094709",
-            "quantity": "1"
-          },
-          {
-            "name": "FILTRO DE AIRE",
-            "reference": "52046268",
-            "quantity": "1"
-          },
-          {
-            "name": "FILTRO AIRE ACONDICIONADO",
-            "reference": "51842923",
-            "quantity": "1"
-          }
-        ]
-      }
-    }
-  },
-  "120000": {
-    "name": "Mantenimiento 120,000 KM",
-    "items": [],
-    "supplies": [],
-    "variants": {
-      "RAM": {
-        "name": "Mantenimiento 120,000 KM (RAM)",
-        "items": [
-          {
-            "description": "FILTRO COMBUSTIBLE",
-            "type": "Inspección"
-          },
-          {
-            "description": "CAMBIAR ACEITE DE MOTOR",
-            "type": "Cambio"
-          },
-          {
-            "description": "CAMBIAR ACEITE DE TRANSMISION",
-            "type": "Cambio"
-          },
-          {
-            "description": "CAMBIAR FILTRO DE ACEITE DEL MOTOR",
-            "type": "Cambio"
-          },
-          {
-            "description": "CAMBIAR FILTRO DE AIRE",
-            "type": "Cambio"
-          },
-          {
-            "description": "CAMBIAR FILTRO COMBUSTIBLE",
-            "type": "Cambio"
-          },
-          {
-            "description": "CAMBIAR FILTRO DE AIRE ACONDICIONADO",
-            "type": "Cambio"
-          },
-          {
-            "description": "CAMBIAR LIQUIDO DEL SISTEMA DE FRENOS",
-            "type": "Cambio"
-          },
-          {
-            "description": "CAMBIO DE BUJIAS",
-            "type": "Inspección"
-          },
-          {
-            "description": "CAMBIAR CORREA ACCESORIOS",
-            "type": "Cambio"
-          },
-          {
-            "description": "CAMBIAR TENSOR CORREA ACCESORIOS",
-            "type": "Cambio"
-          },
-          {
-            "description": "REVISION Y AJUSTE DE NIVEL DE REFRIGERANTE",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION Y AJUSTE DE NIVEL DE ACEITE DE FRENOS",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE CORREAS",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE POLEAS Y TENSORES",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION Y AJUSTE DE NIVEL DE ACEITE DE DIRECCION",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL DEL SISTEMA DE FRENOS",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DE LA BANDA DE FRENOS",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DE TAMBOR DE FRENOS",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DE ESTADO DE LAS PASTILLAS DE FRENO",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DE LOS DISCOS DE FRENO",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DE LOS AMORTIGUADORES",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DE LOS TERMINALES DE DIRECCION",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE LAS PUNTAS DE EJE",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DE LA BARRA TRANSVERSAL",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL EMBRAGUE",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE PEDALES(FRENO-ACELERACION-EMBRAGUE)",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DE LAS LLANTAS",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DE ELEMENTOS DE CABINA (PUERTAS-ASIENTOS-VOLANTE-ESPEJOS)",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL TABLERO(LUCES-ALARMAS)",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DE FUNCIONAMIENTO DE LAS ALARMAS DE EMERGENCIA",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL SIST DE LUCES (DELANTERAS-DIRECIONALES-STOP-CABINA)",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE BATERIAS",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADOY FUNCIONAMIENTO DEL CABLEADO DEL EQUIPO",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL ALTERNADOR",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL SISTEMA DE ARRANQUE",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO DEL MOTOR(FUGAS-RUIDOS)",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE MANGUERAS DEL SISTEMA",
-            "type": "Inspección"
-          },
-          {
-            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL RADIADOR",
-            "type": "Inspección"
-          },
-          {
-            "description": "LIMPIAR Y/O LAVAR RADIADOR",
-            "type": "Inspección"
-          }
-        ],
-        "supplies": [
-          {
-            "name": "ACEITE DE MOTOR",
-            "reference": "0W20",
-            "quantity": "1"
-          },
-          {
-            "name": "LIQUIDO DE FRENOS",
-            "reference": "16 107 255 80",
-            "quantity": "2"
-          },
-          {
-            "name": "ACEITE DE TRANSMISION",
-            "reference": "Lubricante Sintetico Mopar ;APIGL4;SAE75W CADA 120.000KM",
-            "quantity": "3"
-          },
-          {
-            "name": "FILTRO DE ACEITE DE MOTOR",
-            "reference": "7094709",
-            "quantity": "1"
-          },
-          {
-            "name": "FILTRO DE AIRE",
-            "reference": "52046268",
-            "quantity": "1"
-          },
-          {
-            "name": "FILTRO AIRE ACONDICIONADO",
-            "reference": "51842923",
-            "quantity": "1"
-          }
-        ]
-      }
-    }
+    ],
+    "supplies": [
+      "FILTRO DE ACEITE DE MOTOR",
+      "FILTRO DE AIRE",
+      "FILTRO DE  COMBUSTIBLE",
+      "FILTRO DE UREA",
+      "CORREA ACCESORIOS"
+    ]
   }
 };

@@ -16,8 +16,29 @@ import {
   Database,
   PieChart,
   Clock,
-  TrendingUp
+  TrendingUp,
+  Filter,
+  BarChart3,
+  Activity,
+  Users
 } from 'lucide-react';
+import { 
+  LineChart, 
+  Line, 
+  BarChart, 
+  Bar, 
+  PieChart as RechartsPieChart, 
+  Pie, 
+  Cell, 
+  XAxis, 
+  YAxis, 
+  CartesianGrid, 
+  Tooltip, 
+  Legend, 
+  ResponsiveContainer,
+  Area,
+  AreaChart
+} from 'recharts';
 import { INITIAL_FLEET, MAINTENANCE_ROUTINES } from './data';
 
 // --- Helper Functions ---
@@ -181,12 +202,15 @@ const generatePDF = async (workOrder) => {
   // --- GENERAL INFO (Grid Layout) ---
   const infoStartY = startY + headerHeight + 5; // Spacing after header
 
+  // Get area operativa from vehicle, default to 40BU-TM1-TM2
+  const areaOperativa = workOrder.area || '40BU-TM1-TM2';
+  
   const infoData = [
-    ['CENTRO OPERACION', '40BU-TRONCALES', 'AREA OPERATIVA', 'SST'],
-    ['PROCESO', 'MTTO-PREVENTIVO', 'UBICACION', 'TALLER EL HATO'],
+    ['CENTRO OPERACION', '40BU-TRONCALES', 'AREA OPERATIVA', areaOperativa],
+    ['PROCESO', 'MTTO-PREVENTIVO', 'UBICACION', workOrder.workshop || 'TALLER EL HATO'],
     ['ACTIVO', workOrder.vehicleCode || workOrder.vehicleModel, 'PLACA', workOrder.plate],
     ['FUNCION', 'TRANSPORTE DE PERSONAL', 'TIPO OT', 'S'],
-    ['DESCRIPCION CORTA', workOrder.vehicleModel, 'NO. SERIE', ''], 
+    ['DESCRIPCION CORTA', workOrder.vehicleModel, 'NO. SERIE', workOrder.vin || ''], 
     ['TRABAJO A REALIZAR', workOrder.routineName, 'APROBADA', ''],
     ['FECHA SOLICITUD', new Date().toLocaleDateString(), 'HORA SOLICITUD', '02:00 p.m.'], 
     ['FECHA REAL EJECUCION', '', 'HORA REAL EJECUCION', ''],
@@ -295,6 +319,500 @@ const generatePDF = async (workOrder) => {
 
 // --- Components ---
 
+const Dashboard = ({ fleet, workOrders, variableHistory }) => {
+  // Calcular métricas
+  const metrics = useMemo(() => {
+    const totalVehicles = fleet.length;
+    const operative = fleet.filter(v => v.status === 'OPERATIVO').length;
+    const inMaintenance = fleet.filter(v => v.status === 'MANTENIMIENTO').length;
+    const outOfService = fleet.filter(v => v.status === 'FUERA DE SERVICIO').length;
+    
+    const openOTs = workOrders.filter(ot => ot.status === 'ABIERTA').length;
+    const closedOTs = workOrders.filter(ot => ot.status === 'CERRADA').length;
+    const totalOTs = workOrders.length;
+    
+    // Calcular vehículos por estado de mantenimiento
+    const needsMaintenance = fleet.filter(v => {
+      const nextRoutine = getNextRoutine(v.mileage, v.model);
+      const kmSinceLastMtto = v.mileage - (v.lastMaintenance || 0);
+      const kmRemaining = nextRoutine.km - kmSinceLastMtto;
+      return kmRemaining < 0; // Vencido
+    }).length;
+    
+    const soonMaintenance = fleet.filter(v => {
+      const nextRoutine = getNextRoutine(v.mileage, v.model);
+      const kmSinceLastMtto = v.mileage - (v.lastMaintenance || 0);
+      const kmRemaining = nextRoutine.km - kmSinceLastMtto;
+      return kmRemaining >= 0 && kmRemaining < 3000; // Próximo
+    }).length;
+    
+    // Calcular vehículos en rango de ejecución (±10% de la rutina)
+    const inExecutionRange = fleet.filter(v => {
+      const nextRoutine = getNextRoutine(v.mileage, v.model);
+      const kmSinceLastMtto = v.mileage - (v.lastMaintenance || 0);
+      const targetKm = nextRoutine.km;
+      const rangeMin = targetKm * 0.9; // -10%
+      const rangeMax = targetKm * 1.1; // +10%
+      return kmSinceLastMtto >= rangeMin && kmSinceLastMtto <= rangeMax;
+    }).length;
+    
+    const outOfRange = totalVehicles - inExecutionRange;
+    const rangeCompliance = totalVehicles > 0 ? ((inExecutionRange / totalVehicles) * 100).toFixed(1) : 0;
+    
+    return {
+      totalVehicles,
+      operative,
+      inMaintenance,
+      outOfService,
+      openOTs,
+      closedOTs,
+      totalOTs,
+      needsMaintenance,
+      soonMaintenance,
+      inExecutionRange,
+      outOfRange,
+      rangeCompliance,
+      operativePercentage: totalVehicles > 0 ? ((operative / totalVehicles) * 100).toFixed(1) : 0,
+      completionRate: totalOTs > 0 ? ((closedOTs / totalOTs) * 100).toFixed(1) : 0
+    };
+  }, [fleet, workOrders]);
+  
+  // Datos para gráfico de estado de flota
+  const fleetStatusData = [
+    { name: 'Operativos', value: metrics.operative, color: '#10b981' },
+    { name: 'En Mantenimiento', value: metrics.inMaintenance, color: '#f59e0b' },
+    { name: 'Fuera de Servicio', value: metrics.outOfService, color: '#ef4444' }
+  ];
+  
+  // Datos para gráfico de mantenimientos
+  const maintenanceStatusData = [
+    { name: 'Vencido', value: metrics.needsMaintenance, color: '#ef4444' },
+    { name: 'Próximo', value: metrics.soonMaintenance, color: '#f59e0b' },
+    { name: 'OK', value: metrics.totalVehicles - metrics.needsMaintenance - metrics.soonMaintenance, color: '#10b981' }
+  ];
+  
+  // Datos para gráfico de OTs por mes
+  const otsByMonth = useMemo(() => {
+    const monthCounts = {};
+    workOrders.forEach(ot => {
+      if (ot.creationDate) {
+        const month = ot.creationDate.substring(0, 7); // YYYY-MM
+        monthCounts[month] = (monthCounts[month] || 0) + 1;
+      }
+    });
+    
+    return Object.entries(monthCounts)
+      .sort(([a], [b]) => a.localeCompare(b))
+      .slice(-6) // Últimos 6 meses
+      .map(([month, count]) => ({
+        month: new Date(month + '-01').toLocaleDateString('es-ES', { month: 'short', year: 'numeric' }),
+        total: count,
+        abiertas: workOrders.filter(ot => ot.creationDate?.startsWith(month) && ot.status === 'ABIERTA').length,
+        cerradas: workOrders.filter(ot => ot.creationDate?.startsWith(month) && ot.status === 'CERRADA').length
+      }));
+  }, [workOrders]);
+  
+  // Top 5 vehículos con más kilometraje
+  const topMileageVehicles = useMemo(() => {
+    return [...fleet]
+      .sort((a, b) => b.mileage - a.mileage)
+      .slice(0, 5)
+      .map(v => ({
+        name: v.code,
+        km: v.mileage
+      }));
+  }, [fleet]);
+
+  // Efectividad por taller
+  const workshopEffectiveness = useMemo(() => {
+    const workshops = ['TALLER EL HATO', 'TALLER PR 33', 'TALLER EL BURRO', 'TALLER EXTERNO'];
+    
+    return workshops.map(workshop => {
+      const workshopOTs = workOrders.filter(ot => ot.workshop === workshop);
+      const total = workshopOTs.length;
+      const closed = workshopOTs.filter(ot => ot.status === 'CERRADA').length;
+      const open = workshopOTs.filter(ot => ot.status === 'ABIERTA').length;
+      const effectiveness = total > 0 ? ((closed / total) * 100).toFixed(1) : 0;
+      
+      return {
+        name: workshop.replace('TALLER ', ''),
+        total,
+        cerradas: closed,
+        abiertas: open,
+        efectividad: parseFloat(effectiveness)
+      };
+    }).filter(w => w.total > 0); // Solo mostrar talleres con OTs
+  }, [workOrders]);
+
+  // Datos para gráfico de rango de ejecución
+  const executionRangeData = [
+    { name: 'En Rango (±10%)', value: metrics.inExecutionRange, color: '#10b981' },
+    { name: 'Fuera de Rango', value: metrics.outOfRange, color: '#ef4444' }
+  ];
+
+  return (
+    <div className="p-6 space-y-6 bg-slate-50 min-h-screen">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-bold text-slate-800 flex items-center gap-3">
+            <LayoutDashboard className="text-blue-600" size={32} />
+            Dashboard de Gestión de Mantenimiento
+          </h1>
+          <p className="text-slate-600 mt-1">Vista general de métricas y tendencias</p>
+        </div>
+        <div className="text-right">
+          <div className="text-sm text-slate-500">Última actualización</div>
+          <div className="text-lg font-bold text-slate-700">
+            {new Date().toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' })}
+          </div>
+        </div>
+      </div>
+
+      {/* KPI Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+        {/* Total Vehículos */}
+        <div className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl shadow-lg p-6 text-white">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-blue-100 text-sm font-medium">Total Vehículos</p>
+              <h3 className="text-4xl font-bold mt-2">{metrics.totalVehicles}</h3>
+            </div>
+            <div className="bg-white/20 p-3 rounded-lg">
+              <Car size={32} />
+            </div>
+          </div>
+          <div className="mt-4 flex items-center gap-2 text-sm">
+            <TrendingUp size={16} />
+            <span>{metrics.operativePercentage}% operativos</span>
+          </div>
+        </div>
+
+        {/* OTs Activas */}
+        <div className="bg-gradient-to-br from-green-500 to-green-600 rounded-xl shadow-lg p-6 text-white">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-green-100 text-sm font-medium">OTs Abiertas</p>
+              <h3 className="text-4xl font-bold mt-2">{metrics.openOTs}</h3>
+            </div>
+            <div className="bg-white/20 p-3 rounded-lg">
+              <ClipboardList size={32} />
+            </div>
+          </div>
+          <div className="mt-4 text-sm">
+            De {metrics.totalOTs} totales ({metrics.completionRate}% cerradas)
+          </div>
+        </div>
+
+        {/* Mantenimientos Vencidos */}
+        <div className="bg-gradient-to-br from-red-500 to-red-600 rounded-xl shadow-lg p-6 text-white">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-red-100 text-sm font-medium">Mtto Vencido</p>
+              <h3 className="text-4xl font-bold mt-2">{metrics.needsMaintenance}</h3>
+            </div>
+            <div className="bg-white/20 p-3 rounded-lg">
+              <AlertTriangle size={32} />
+            </div>
+          </div>
+          <div className="mt-4 text-sm">
+            Requieren atención inmediata
+          </div>
+        </div>
+
+        {/* Próximos Mantenimientos */}
+        <div className="bg-gradient-to-br from-amber-500 to-amber-600 rounded-xl shadow-lg p-6 text-white">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-amber-100 text-sm font-medium">Mtto Próximo</p>
+              <h3 className="text-4xl font-bold mt-2">{metrics.soonMaintenance}</h3>
+            </div>
+            <div className="bg-white/20 p-3 rounded-lg">
+              <Clock size={32} />
+            </div>
+          </div>
+          <div className="mt-4 text-sm">
+            Menos de 3,000 KM restantes
+          </div>
+        </div>
+
+        {/* Rango de Ejecución */}
+        <div className="bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl shadow-lg p-6 text-white">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-purple-100 text-sm font-medium">En Rango ±10%</p>
+              <h3 className="text-4xl font-bold mt-2">{metrics.inExecutionRange}</h3>
+            </div>
+            <div className="bg-white/20 p-3 rounded-lg">
+              <Activity size={32} />
+            </div>
+          </div>
+          <div className="mt-4 flex items-center gap-2 text-sm">
+            <CheckCircle size={16} />
+            <span>{metrics.rangeCompliance}% de cumplimiento</span>
+          </div>
+        </div>
+      </div>
+
+      {/* Charts Row 1 */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Estado de Flota - Pie Chart */}
+        <div className="bg-white rounded-xl shadow-lg p-6">
+          <h3 className="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
+            <PieChart className="text-blue-600" />
+            Estado de la Flota
+          </h3>
+          <ResponsiveContainer width="100%" height={300}>
+            <RechartsPieChart>
+              <Pie
+                data={fleetStatusData}
+                cx="50%"
+                cy="50%"
+                labelLine={false}
+                label={({ name, value, percent }) => `${name}: ${value} (${(percent * 100).toFixed(0)}%)`}
+                outerRadius={100}
+                fill="#8884d8"
+                dataKey="value"
+              >
+                {fleetStatusData.map((entry, index) => (
+                  <Cell key={`cell-${index}`} fill={entry.color} />
+                ))}
+              </Pie>
+              <Tooltip />
+            </RechartsPieChart>
+          </ResponsiveContainer>
+        </div>
+
+        {/* Estado de Mantenimiento - Donut */}
+        <div className="bg-white rounded-xl shadow-lg p-6">
+          <h3 className="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
+            <Activity className="text-blue-600" />
+            Estado de Mantenimiento
+          </h3>
+          <ResponsiveContainer width="100%" height={300}>
+            <RechartsPieChart>
+              <Pie
+                data={maintenanceStatusData}
+                cx="50%"
+                cy="50%"
+                labelLine={false}
+                label={({ name, value, percent }) => `${name}: ${value} (${(percent * 100).toFixed(0)}%)`}
+                innerRadius={60}
+                outerRadius={100}
+                fill="#8884d8"
+                dataKey="value"
+              >
+                {maintenanceStatusData.map((entry, index) => (
+                  <Cell key={`cell-${index}`} fill={entry.color} />
+                ))}
+              </Pie>
+              <Tooltip />
+            </RechartsPieChart>
+          </ResponsiveContainer>
+        </div>
+      </div>
+
+      {/* Charts Row 2 */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* OTs por Mes - Area Chart */}
+        <div className="bg-white rounded-xl shadow-lg p-6">
+          <h3 className="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
+            <BarChart3 className="text-blue-600" />
+            Órdenes de Trabajo - Últimos 6 Meses
+          </h3>
+          <ResponsiveContainer width="100%" height={300}>
+            <AreaChart data={otsByMonth}>
+              <defs>
+                <linearGradient id="colorTotal" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.8}/>
+                  <stop offset="95%" stopColor="#3b82f6" stopOpacity={0.1}/>
+                </linearGradient>
+                <linearGradient id="colorAbiertas" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor="#10b981" stopOpacity={0.8}/>
+                  <stop offset="95%" stopColor="#10b981" stopOpacity={0.1}/>
+                </linearGradient>
+                <linearGradient id="colorCerradas" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor="#6366f1" stopOpacity={0.8}/>
+                  <stop offset="95%" stopColor="#6366f1" stopOpacity={0.1}/>
+                </linearGradient>
+              </defs>
+              <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
+              <XAxis dataKey="month" stroke="#64748b" style={{ fontSize: '12px' }} />
+              <YAxis stroke="#64748b" style={{ fontSize: '12px' }} />
+              <Tooltip 
+                contentStyle={{ 
+                  backgroundColor: '#ffffff', 
+                  border: '1px solid #e2e8f0',
+                  borderRadius: '8px',
+                  boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)'
+                }}
+              />
+              <Legend />
+              <Area type="monotone" dataKey="total" stroke="#3b82f6" fillOpacity={1} fill="url(#colorTotal)" name="Total OTs" strokeWidth={2} />
+              <Area type="monotone" dataKey="cerradas" stroke="#6366f1" fillOpacity={1} fill="url(#colorCerradas)" name="Cerradas" strokeWidth={2} />
+            </AreaChart>
+          </ResponsiveContainer>
+        </div>
+
+        {/* Top 5 Kilometraje - Bar Chart */}
+        <div className="bg-white rounded-xl shadow-lg p-6">
+          <h3 className="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
+            <TrendingUp className="text-blue-600" />
+            Top 5 - Mayor Kilometraje
+          </h3>
+          <ResponsiveContainer width="100%" height={300}>
+            <BarChart data={topMileageVehicles} layout="vertical">
+              <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
+              <XAxis type="number" stroke="#64748b" style={{ fontSize: '12px' }} />
+              <YAxis dataKey="name" type="category" stroke="#64748b" style={{ fontSize: '12px' }} width={80} />
+              <Tooltip 
+                contentStyle={{ 
+                  backgroundColor: '#ffffff', 
+                  border: '1px solid #e2e8f0',
+                  borderRadius: '8px',
+                  boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)'
+                }}
+                formatter={(value) => [`${value.toLocaleString()} KM`, 'Kilometraje']}
+              />
+              <Bar dataKey="km" fill="#3b82f6" radius={[0, 8, 8, 0]}>
+                {topMileageVehicles.map((entry, index) => (
+                  <Cell key={`cell-${index}`} fill={`hsl(${220 - index * 10}, 80%, ${50 + index * 5}%)`} />
+                ))}
+              </Bar>
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
+      </div>
+
+      {/* Charts Row 3 - Rango de Ejecución y Efectividad */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Rango de Ejecución - Donut Chart */}
+        <div className="bg-white rounded-xl shadow-lg p-6">
+          <h3 className="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
+            <Activity className="text-purple-600" />
+            Cumplimiento de Rango de Ejecución (±10%)
+          </h3>
+          <ResponsiveContainer width="100%" height={300}>
+            <RechartsPieChart>
+              <Pie
+                data={executionRangeData}
+                cx="50%"
+                cy="50%"
+                labelLine={false}
+                label={({ name, value, percent }) => `${name}: ${value} (${(percent * 100).toFixed(0)}%)`}
+                innerRadius={60}
+                outerRadius={100}
+                fill="#8884d8"
+                dataKey="value"
+              >
+                {executionRangeData.map((entry, index) => (
+                  <Cell key={`cell-${index}`} fill={entry.color} />
+                ))}
+              </Pie>
+              <Tooltip />
+            </RechartsPieChart>
+          </ResponsiveContainer>
+          <div className="mt-4 text-center">
+            <p className="text-sm text-slate-600">
+              Los vehículos deben ejecutar mantenimiento entre <strong>-10%</strong> y <strong>+10%</strong> del kilometraje programado
+            </p>
+          </div>
+        </div>
+
+        {/* Efectividad por Taller - Bar Chart */}
+        <div className="bg-white rounded-xl shadow-lg p-6">
+          <h3 className="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
+            <Wrench className="text-blue-600" />
+            Efectividad por Taller
+          </h3>
+          <ResponsiveContainer width="100%" height={300}>
+            <BarChart data={workshopEffectiveness}>
+              <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
+              <XAxis 
+                dataKey="name" 
+                stroke="#64748b" 
+                style={{ fontSize: '11px' }}
+                angle={-15}
+                textAnchor="end"
+                height={60}
+              />
+              <YAxis 
+                stroke="#64748b" 
+                style={{ fontSize: '12px' }}
+                label={{ value: '% Efectividad', angle: -90, position: 'insideLeft' }}
+              />
+              <Tooltip 
+                contentStyle={{ 
+                  backgroundColor: '#ffffff', 
+                  border: '1px solid #e2e8f0',
+                  borderRadius: '8px',
+                  boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)'
+                }}
+                formatter={(value, name) => {
+                  if (name === 'efectividad') return [`${value}%`, 'Efectividad'];
+                  return [value, name.charAt(0).toUpperCase() + name.slice(1)];
+                }}
+              />
+              <Legend />
+              <Bar dataKey="cerradas" fill="#10b981" name="OTs Cerradas" radius={[8, 8, 0, 0]} />
+              <Bar dataKey="abiertas" fill="#f59e0b" name="OTs Abiertas" radius={[8, 8, 0, 0]} />
+              <Bar dataKey="efectividad" fill="#3b82f6" name="% Efectividad" radius={[8, 8, 0, 0]} />
+            </BarChart>
+          </ResponsiveContainer>
+          <div className="mt-4 text-center">
+            <p className="text-sm text-slate-600">
+              Efectividad = (OTs Cerradas / Total OTs) × 100
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* Stats Summary */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="bg-white rounded-lg shadow p-4 border-l-4 border-blue-500">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm text-slate-600">Tasa de Operatividad</p>
+              <p className="text-2xl font-bold text-slate-800">{metrics.operativePercentage}%</p>
+            </div>
+            <CheckCircle className="text-blue-500" size={32} />
+          </div>
+        </div>
+        
+        <div className="bg-white rounded-lg shadow p-4 border-l-4 border-green-500">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm text-slate-600">Tasa de Cierre OTs</p>
+              <p className="text-2xl font-bold text-slate-800">{metrics.completionRate}%</p>
+            </div>
+            <Activity className="text-green-500" size={32} />
+          </div>
+        </div>
+        
+        <div className="bg-white rounded-lg shadow p-4 border-l-4 border-purple-500">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm text-slate-600">Cumplimiento Rango</p>
+              <p className="text-2xl font-bold text-slate-800">{metrics.rangeCompliance}%</p>
+            </div>
+            <TrendingUp className="text-purple-500" size={32} />
+          </div>
+        </div>
+        
+        <div className="bg-white rounded-lg shadow p-4 border-l-4 border-amber-500">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm text-slate-600">Vehículos en Atención</p>
+              <p className="text-2xl font-bold text-slate-800">{metrics.inMaintenance}</p>
+            </div>
+            <Wrench className="text-amber-500" size={32} />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 const PlanningView = ({ fleet, setFleet, onCreateOT, workOrders = [], setWorkOrders, variableHistory = [], routines = MAINTENANCE_ROUTINES }) => {
   const [selectedVehicle, setSelectedVehicle] = useState(null);
   const [workshop, setWorkshop] = useState('');
@@ -305,6 +823,22 @@ const PlanningView = ({ fleet, setFleet, onCreateOT, workOrders = [], setWorkOrd
   const [bulkData, setBulkData] = useState('');
   const [manualData, setManualData] = useState({ code: '', plate: '', lastDate: '', lastKm: '' });
   const [statusFilter, setStatusFilter] = useState('ALL'); // ALL, VENCIDO, PROXIMO, OK
+  const [columnFilters, setColumnFilters] = useState({
+    code: '',
+    plate: '',
+    model: '',
+    variable: '',
+    lastMaintenance: '',
+    nextRoutine: ''
+  });
+  const [activeFilters, setActiveFilters] = useState({
+    code: false,
+    plate: false,
+    model: false,
+    variable: false,
+    lastMaintenance: false,
+    nextRoutine: false
+  });
 
   const handleBulkLoad = () => {
     const rows = bulkData.trim().split('\n');
@@ -453,6 +987,27 @@ const PlanningView = ({ fleet, setFleet, onCreateOT, workOrders = [], setWorkOrd
     setWorkshop('TALLER EL HATO'); // Default
   };
 
+  const updateColumnFilter = (column, value) => {
+    setColumnFilters(prev => ({
+      ...prev,
+      [column]: value
+    }));
+  };
+
+  const toggleFilter = (column) => {
+    setActiveFilters(prev => ({
+      ...prev,
+      [column]: !prev[column]
+    }));
+    // Si se desactiva, limpiar el filtro
+    if (activeFilters[column]) {
+      setColumnFilters(prev => ({
+        ...prev,
+        [column]: ''
+      }));
+    }
+  };
+
   const confirmGeneration = () => {
     if (!selectedVehicle) return;
     
@@ -469,6 +1024,7 @@ const PlanningView = ({ fleet, setFleet, onCreateOT, workOrders = [], setWorkOrd
       vehicleCode: selectedVehicle.code,
       vehicleModel: selectedVehicle.model,
       plate: selectedVehicle.plate,
+      vin: selectedVehicle.vin || '',
       routineName: `MANTENIMIENTO PREVENTIVO ${routine.km} KM`,
       mileage: selectedVehicle.mileage,
       items: routine.items || [],
@@ -495,6 +1051,21 @@ const PlanningView = ({ fleet, setFleet, onCreateOT, workOrders = [], setWorkOrd
     ).sort((a, b) => new Date(b.creationDate) - new Date(a.creationDate));
   };
 
+  // Helper function to parse dates in DD/MM/YYYY format
+  const parseDateDDMMYYYY = (dateStr) => {
+    if (!dateStr) return null;
+    // Handle formats like "10/12/2025 16:07:50" or "10/12/2025"
+    const parts = dateStr.split(' ')[0].split('/');
+    if (parts.length === 3) {
+      const day = parseInt(parts[0]);
+      const month = parseInt(parts[1]) - 1; // Month is 0-indexed
+      const year = parseInt(parts[2]);
+      return new Date(year, month, day);
+    }
+    // Fallback to standard parsing
+    return new Date(dateStr);
+  };
+
   const getLastVariableDate = (vehicle) => {
     // Try to find in history
     const history = variableHistory
@@ -502,7 +1073,8 @@ const PlanningView = ({ fleet, setFleet, onCreateOT, workOrders = [], setWorkOrd
       .sort((a, b) => new Date(b.date || b.uploadDate) - new Date(a.date || a.uploadDate));
     
     if (history.length > 0) return history[0].date || history[0].uploadDate?.split('T')[0];
-    return new Date().toISOString().split('T')[0]; // Default to today/initial
+    // If no history, return null to indicate no data available
+    return null;
   };
 
   const getLastMaintenanceDate = (vehicle) => {
@@ -711,8 +1283,9 @@ const PlanningView = ({ fleet, setFleet, onCreateOT, workOrders = [], setWorkOrd
                 onChange={(e) => setWorkshop(e.target.value)}
               >
                 <option value="TALLER EL HATO">TALLER EL HATO</option>
-                <option value="TALLER CENTRAL">TALLER CENTRAL</option>
-                <option value="EXTERNO">TALLER EXTERNO</option>
+                <option value="TALLER PR 33">TALLER PR 33</option>
+                <option value="TALLER EL BURRO">TALLER EL BURRO</option>
+                <option value="TALLER EXTERNO">TALLER EXTERNO</option>
               </select>
             </div>
 
@@ -766,7 +1339,13 @@ const PlanningView = ({ fleet, setFleet, onCreateOT, workOrders = [], setWorkOrd
                         <div className="text-xs text-slate-500 mt-1">{v.nextRoutine.name}</div>
                         <button 
                           onClick={(e) => handleQuickGenerateClick(e, v)}
-                          className="mt-2 text-xs bg-blue-50 text-blue-600 px-2 py-1 rounded w-full hover:bg-blue-100"
+                          disabled={v.remaining >= 3000}
+                          className={`mt-2 text-xs px-2 py-1 rounded w-full ${
+                            v.remaining >= 3000
+                              ? 'bg-slate-200 text-slate-400 cursor-not-allowed'
+                              : 'bg-blue-50 text-blue-600 hover:bg-blue-100'
+                          }`}
+                          title={v.remaining >= 3000 ? 'No requiere atención' : 'Generar OT'}
                         >
                           Generar OT
                         </button>
@@ -886,10 +1465,19 @@ const PlanningView = ({ fleet, setFleet, onCreateOT, workOrders = [], setWorkOrd
             const nextRoutine = getNextRoutineLocal(v.mileage, v.model, v.lastMaintenance);
             const kmRemaining = nextRoutine.km - v.mileage;
             
-            // Check if variable is outdated (more than 3 days old)
+            // Check if variable is outdated (more than 5 days old or no data)
             const lastVarDate = getLastVariableDate(v);
-            const varDate = new Date(lastVarDate);
-            const isOutdated = varDate < fiveDaysAgo || v.mileage === 0;
+            let isOutdated = !lastVarDate || v.mileage === 0;
+            if (lastVarDate && !isOutdated) {
+              // Parse date correctly (DD/MM/YYYY format)
+              const varDateObj = parseDateDDMMYYYY(lastVarDate);
+              if (varDateObj) {
+                varDateObj.setHours(0, 0, 0, 0);
+                const fiveDaysAgoDate = new Date(fiveDaysAgo);
+                fiveDaysAgoDate.setHours(0, 0, 0, 0);
+                isOutdated = varDateObj < fiveDaysAgoDate;
+              }
+            }
             
             if (isOutdated) acc.outdated++;
             if (kmRemaining < 0) acc.overdue++;
@@ -1018,19 +1606,179 @@ const PlanningView = ({ fleet, setFleet, onCreateOT, workOrders = [], setWorkOrd
           <table className="w-full text-sm border-collapse">
             {/* Clean Header */}
             <thead className="sticky top-0 z-10 bg-slate-50">
-              <tr className="text-slate-500 text-xs uppercase tracking-wide border-b border-slate-200">
-                <th className="px-4 py-3 text-left font-semibold w-24 border-r border-slate-100">Estado</th>
-                <th className="px-4 py-3 text-right font-semibold w-20 border-r border-slate-100">Falta</th>
-                <th className="px-4 py-3 text-left font-semibold border-r border-slate-100">Código</th>
-                <th className="px-4 py-3 text-left font-semibold border-r border-slate-100">Placa</th>
-                <th className="px-4 py-3 text-left font-semibold border-r border-slate-100">Modelo</th>
-                <th className="px-4 py-3 text-right font-semibold border-r border-slate-100">Variable</th>
-                <th className="px-4 py-3 text-center font-semibold border-r border-slate-100">F. Variable</th>
-                <th className="px-4 py-3 text-right font-semibold border-r border-slate-100">Últ. Mtto</th>
-                <th className="px-4 py-3 text-center font-semibold border-r border-slate-100">F. Últ. Mtto</th>
-                <th className="px-4 py-3 text-right font-semibold border-r border-slate-100">Próx. Rutina</th>
-                <th className="px-4 py-3 text-center font-semibold w-28">Acción</th>
+              <tr className="text-slate-500 text-[10px] uppercase tracking-wide border-b border-slate-200">
+                <th className="px-2 py-2 text-left font-semibold w-20 border-r border-slate-100">Estado</th>
+                <th className="px-2 py-2 text-center font-semibold w-16 border-r border-slate-100">Falta</th>
+                <th className="px-2 py-2 text-left font-semibold border-r border-slate-100">
+                  <div className="flex items-center justify-between gap-1">
+                    <span>Código</span>
+                    <button
+                      onClick={() => toggleFilter('code')}
+                      className={`p-0.5 rounded hover:bg-slate-200 transition-colors ${
+                        activeFilters.code ? 'text-blue-600 bg-blue-50' : 'text-slate-400'
+                      }`}
+                      title="Filtrar por código"
+                    >
+                      <Filter size={12} />
+                    </button>
+                  </div>
+                </th>
+                <th className="px-2 py-2 text-left font-semibold border-r border-slate-100">
+                  <div className="flex items-center justify-between gap-1">
+                    <span>Placa</span>
+                    <button
+                      onClick={() => toggleFilter('plate')}
+                      className={`p-0.5 rounded hover:bg-slate-200 transition-colors ${
+                        activeFilters.plate ? 'text-blue-600 bg-blue-50' : 'text-slate-400'
+                      }`}
+                      title="Filtrar por placa"
+                    >
+                      <Filter size={12} />
+                    </button>
+                  </div>
+                </th>
+                <th className="px-2 py-2 text-left font-semibold border-r border-slate-100">
+                  <div className="flex items-center justify-between gap-1">
+                    <span>Modelo</span>
+                    <button
+                      onClick={() => toggleFilter('model')}
+                      className={`p-0.5 rounded hover:bg-slate-200 transition-colors ${
+                        activeFilters.model ? 'text-blue-600 bg-blue-50' : 'text-slate-400'
+                      }`}
+                      title="Filtrar por modelo"
+                    >
+                      <Filter size={12} />
+                    </button>
+                  </div>
+                </th>
+                <th className="px-2 py-2 text-center font-semibold border-r border-slate-100">
+                  <div className="flex items-center justify-between gap-1">
+                    <span>Variable</span>
+                    <button
+                      onClick={() => toggleFilter('variable')}
+                      className={`p-0.5 rounded hover:bg-slate-200 transition-colors ${
+                        activeFilters.variable ? 'text-blue-600 bg-blue-50' : 'text-slate-400'
+                      }`}
+                      title="Filtrar por variable"
+                    >
+                      <Filter size={12} />
+                    </button>
+                  </div>
+                </th>
+                <th className="px-2 py-2 text-center font-semibold border-r border-slate-100">F. Variable</th>
+                <th className="px-2 py-2 text-center font-semibold border-r border-slate-100">
+                  <div className="flex items-center justify-between gap-1">
+                    <span>Últ. Mtto</span>
+                    <button
+                      onClick={() => toggleFilter('lastMaintenance')}
+                      className={`p-0.5 rounded hover:bg-slate-200 transition-colors ${
+                        activeFilters.lastMaintenance ? 'text-blue-600 bg-blue-50' : 'text-slate-400'
+                      }`}
+                      title="Filtrar por último mantenimiento"
+                    >
+                      <Filter size={12} />
+                    </button>
+                  </div>
+                </th>
+                <th className="px-2 py-2 text-center font-semibold border-r border-slate-100">F. Últ. Mtto</th>
+                <th className="px-2 py-2 text-center font-semibold border-r border-slate-100">
+                  <div className="flex items-center justify-between gap-1">
+                    <span>Próx. Rutina</span>
+                    <button
+                      onClick={() => toggleFilter('nextRoutine')}
+                      className={`p-0.5 rounded hover:bg-slate-200 transition-colors ${
+                        activeFilters.nextRoutine ? 'text-blue-600 bg-blue-50' : 'text-slate-400'
+                      }`}
+                      title="Filtrar por próxima rutina"
+                    >
+                      <Filter size={12} />
+                    </button>
+                  </div>
+                </th>
+                <th className="px-2 py-2 text-center font-semibold w-24">Acción</th>
               </tr>
+              {/* Filter Row - Only show if any filter is active */}
+              {Object.values(activeFilters).some(v => v) && (
+                <tr className="bg-white border-b border-slate-200">
+                  <th className="px-2 py-2 border-r border-slate-100"></th>
+                  <th className="px-2 py-2 border-r border-slate-100"></th>
+                  <th className="px-2 py-2 border-r border-slate-100">
+                    {activeFilters.code && (
+                      <input
+                        type="text"
+                        placeholder="Buscar código..."
+                        value={columnFilters.code}
+                        onChange={(e) => updateColumnFilter('code', e.target.value)}
+                        className="w-full px-2 py-1 text-xs border border-blue-300 rounded focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                        autoFocus
+                      />
+                    )}
+                  </th>
+                  <th className="px-2 py-2 border-r border-slate-100">
+                    {activeFilters.plate && (
+                      <input
+                        type="text"
+                        placeholder="Buscar placa..."
+                        value={columnFilters.plate}
+                        onChange={(e) => updateColumnFilter('plate', e.target.value)}
+                        className="w-full px-2 py-1 text-xs border border-blue-300 rounded focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                        autoFocus
+                      />
+                    )}
+                  </th>
+                  <th className="px-2 py-2 border-r border-slate-100">
+                    {activeFilters.model && (
+                      <input
+                        type="text"
+                        placeholder="Buscar modelo..."
+                        value={columnFilters.model}
+                        onChange={(e) => updateColumnFilter('model', e.target.value)}
+                        className="w-full px-2 py-1 text-xs border border-blue-300 rounded focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                        autoFocus
+                      />
+                    )}
+                  </th>
+                  <th className="px-2 py-2 border-r border-slate-100">
+                    {activeFilters.variable && (
+                      <input
+                        type="text"
+                        placeholder="KM..."
+                        value={columnFilters.variable}
+                        onChange={(e) => updateColumnFilter('variable', e.target.value)}
+                        className="w-full px-2 py-1 text-xs border border-blue-300 rounded focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                        autoFocus
+                      />
+                    )}
+                  </th>
+                  <th className="px-2 py-2 border-r border-slate-100"></th>
+                  <th className="px-2 py-2 border-r border-slate-100">
+                    {activeFilters.lastMaintenance && (
+                      <input
+                        type="text"
+                        placeholder="KM..."
+                        value={columnFilters.lastMaintenance}
+                        onChange={(e) => updateColumnFilter('lastMaintenance', e.target.value)}
+                        className="w-full px-2 py-1 text-xs border border-blue-300 rounded focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                        autoFocus
+                      />
+                    )}
+                  </th>
+                  <th className="px-2 py-2 border-r border-slate-100"></th>
+                  <th className="px-2 py-2 border-r border-slate-100">
+                    {activeFilters.nextRoutine && (
+                      <input
+                        type="text"
+                        placeholder="KM..."
+                        value={columnFilters.nextRoutine}
+                        onChange={(e) => updateColumnFilter('nextRoutine', e.target.value)}
+                        className="w-full px-2 py-1 text-xs border border-blue-300 rounded focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                        autoFocus
+                      />
+                    )}
+                  </th>
+                  <th className="px-2 py-2"></th>
+                </tr>
+              )}
             </thead>
             <tbody>
               {pickups
@@ -1043,18 +1791,38 @@ const PlanningView = ({ fleet, setFleet, onCreateOT, workOrders = [], setWorkOrd
                   const fiveDaysAgo = new Date(today);
                   fiveDaysAgo.setDate(today.getDate() - 5);
                   const lastVarDate = getLastVariableDate(vehicle);
-                  const varDate = new Date(lastVarDate);
-                  const isOutdated = varDate < fiveDaysAgo || vehicle.mileage === 0;
+                  let isOutdated = !lastVarDate || vehicle.mileage === 0;
+                  if (lastVarDate && !isOutdated) {
+                    // Parse date correctly (DD/MM/YYYY format)
+                    const varDateObj = parseDateDDMMYYYY(lastVarDate);
+                    if (varDateObj) {
+                      varDateObj.setHours(0, 0, 0, 0);
+                      const fiveDaysAgoDate = new Date(fiveDaysAgo);
+                      fiveDaysAgoDate.setHours(0, 0, 0, 0);
+                      isOutdated = varDateObj < fiveDaysAgoDate;
+                    }
+                  }
                   
                   return { ...vehicle, nextRoutine, kmRemaining, isOutdated };
                 })
                 .filter(vehicle => {
-                  if (statusFilter === 'ALL') return true;
-                  if (statusFilter === 'OUTDATED') return vehicle.isOutdated;
-                  if (statusFilter === 'VENCIDO') return vehicle.kmRemaining < 0;
-                  if (statusFilter === 'PROXIMO') return vehicle.kmRemaining >= 0 && vehicle.kmRemaining < 1000;
-                  if (statusFilter === 'INRANGE') return vehicle.kmRemaining >= 1000 && vehicle.kmRemaining < 3000;
-                  if (statusFilter === 'OK') return vehicle.kmRemaining >= 3000;
+                  // Status Filter
+                  if (statusFilter !== 'ALL') {
+                    if (statusFilter === 'OUTDATED' && !vehicle.isOutdated) return false;
+                    if (statusFilter === 'VENCIDO' && vehicle.kmRemaining >= 0) return false;
+                    if (statusFilter === 'PROXIMO' && (vehicle.kmRemaining < 0 || vehicle.kmRemaining >= 1000)) return false;
+                    if (statusFilter === 'INRANGE' && (vehicle.kmRemaining < 1000 || vehicle.kmRemaining >= 3000)) return false;
+                    if (statusFilter === 'OK' && vehicle.kmRemaining < 3000) return false;
+                  }
+                  
+                  // Column Filters
+                  if (columnFilters.code && !vehicle.code.toLowerCase().includes(columnFilters.code.toLowerCase())) return false;
+                  if (columnFilters.plate && !vehicle.plate.toLowerCase().includes(columnFilters.plate.toLowerCase())) return false;
+                  if (columnFilters.model && !vehicle.model.toLowerCase().includes(columnFilters.model.toLowerCase())) return false;
+                  if (columnFilters.variable && !vehicle.mileage.toString().includes(columnFilters.variable)) return false;
+                  if (columnFilters.lastMaintenance && !vehicle.lastMaintenance.toString().includes(columnFilters.lastMaintenance)) return false;
+                  if (columnFilters.nextRoutine && !vehicle.nextRoutine.km.toString().includes(columnFilters.nextRoutine)) return false;
+                  
                   return true;
                 })
                 .sort((a, b) => a.kmRemaining - b.kmRemaining)
@@ -1087,13 +1855,13 @@ const PlanningView = ({ fleet, setFleet, onCreateOT, workOrders = [], setWorkOrd
                       onClick={() => setViewingHistoryVehicle(vehicle)}
                     >
                       {/* Estado */}
-                      <td className="px-4 py-3 border-r border-slate-100">
-                        <div className="flex flex-col gap-1">
-                          <span className={`inline-flex items-center justify-center px-2 py-0.5 rounded text-[10px] font-semibold ${statusColor}`}>
+                      <td className="px-2 py-2 border-r border-slate-100">
+                        <div className="flex flex-col gap-0.5">
+                          <span className={`inline-flex items-center justify-center px-1.5 py-0.5 rounded text-[9px] font-semibold ${statusColor}`}>
                             {statusText}
                           </span>
                           {isOutdated && (
-                            <span className="inline-flex items-center justify-center px-1.5 py-0.5 rounded text-[9px] font-medium text-purple-600 bg-purple-50">
+                            <span className="inline-flex items-center justify-center px-1 py-0.5 rounded text-[8px] font-medium text-purple-600 bg-purple-50">
                               Sin Act.
                             </span>
                           )}
@@ -1101,64 +1869,67 @@ const PlanningView = ({ fleet, setFleet, onCreateOT, workOrders = [], setWorkOrd
                       </td>
                       
                       {/* Falta KM */}
-                      <td className={`px-4 py-3 border-r border-slate-100 ${faltaColor}`}>
-                        <div className="flex items-center justify-end gap-1.5">
-                          {kmRemaining < 0 && <X size={14} className="text-red-500" />}
-                          {kmRemaining >= 0 && kmRemaining < 1000 && <AlertTriangle size={14} className="text-amber-500" />}
-                          {kmRemaining >= 1000 && kmRemaining < 3000 && <Clock size={14} className="text-blue-500" />}
-                          {kmRemaining >= 3000 && <CheckCircle size={14} className="text-emerald-500" />}
-                          <span className="font-mono font-bold">{kmRemaining.toLocaleString()}</span>
+                      <td className={`px-2 py-2 border-r border-slate-100 ${faltaColor}`}>
+                        <div className="flex items-center justify-center gap-1">
+                          {kmRemaining < 0 && <X size={12} className="text-red-500" />}
+                          {kmRemaining >= 0 && kmRemaining < 1000 && <AlertTriangle size={12} className="text-amber-500" />}
+                          {kmRemaining >= 1000 && kmRemaining < 3000 && <Clock size={12} className="text-blue-500" />}
+                          {kmRemaining >= 3000 && <CheckCircle size={12} className="text-emerald-500" />}
+                          <span className="font-mono text-xs font-bold">{kmRemaining.toLocaleString()}</span>
                         </div>
                       </td>
                       
                       {/* Código */}
-                      <td className="px-4 py-3 border-r border-slate-100">
-                        <span className="font-mono text-slate-600">{vehicle.code}</span>
+                      <td className="px-2 py-2 border-r border-slate-100">
+                        <span className="font-mono text-[11px] text-slate-600">{vehicle.code}</span>
                       </td>
                       
                       {/* Placa */}
-                      <td className="px-4 py-3 font-semibold text-slate-800 border-r border-slate-100">
+                      <td className="px-2 py-2 text-xs font-semibold text-slate-800 border-r border-slate-100">
                         {vehicle.plate}
                       </td>
                       
                       {/* Modelo */}
-                      <td className="px-4 py-3 text-slate-500 text-xs truncate max-w-[180px] border-r border-slate-100" title={vehicle.model}>
+                      <td className="px-2 py-2 text-slate-500 text-[10px] truncate max-w-[140px] border-r border-slate-100" title={vehicle.model}>
                         {vehicle.model}
                       </td>
                       
                       {/* Variable Actual */}
-                      <td className="px-4 py-3 text-right font-mono text-slate-700 border-r border-slate-100">
+                      <td className="px-2 py-2 text-center font-mono text-[11px] text-slate-700 border-r border-slate-100">
                         {vehicle.mileage.toLocaleString()}
                       </td>
                       
                       {/* Fecha Variable */}
-                      <td className="px-4 py-3 text-center text-slate-400 text-xs border-r border-slate-100">
-                        {getLastVariableDate(vehicle)}
+                      <td className="px-2 py-2 text-center text-slate-400 text-[10px] border-r border-slate-100">
+                        {getLastVariableDate(vehicle) || '—'}
                       </td>
                       
                       {/* Último Mtto KM */}
-                      <td className="px-4 py-3 text-right font-mono text-slate-500 border-r border-slate-100">
+                      <td className="px-2 py-2 text-center font-mono text-[11px] text-slate-500 border-r border-slate-100">
                         {vehicle.lastMaintenance > 0 ? vehicle.lastMaintenance.toLocaleString() : '—'}
                       </td>
                       
                       {/* Fecha Último Mtto */}
-                      <td className="px-4 py-3 text-center text-slate-400 text-xs border-r border-slate-100">
+                      <td className="px-2 py-2 text-center text-slate-400 text-[10px] border-r border-slate-100">
                         {getLastMaintenanceDate(vehicle)}
                       </td>
                       
                       {/* Próxima Rutina */}
-                      <td className="px-4 py-3 text-right border-r border-slate-100">
-                        <div className="font-mono font-semibold text-slate-700">{nextRoutine.km.toLocaleString()}</div>
-                        <div className="text-[10px] text-slate-400 truncate max-w-[100px]" title={nextRoutine.name}>
-                          {nextRoutine.name}
-                        </div>
+                      <td className="px-2 py-2 text-center border-r border-slate-100">
+                        <div className="font-mono text-xs font-semibold text-slate-700">{nextRoutine.km.toLocaleString()}</div>
                       </td>
                       
                       {/* Acción */}
-                      <td className="px-4 py-3 text-center">
+                      <td className="px-2 py-2 text-center">
                         <button 
                           onClick={(e) => handleQuickGenerateClick(e, vehicle)}
-                          className="bg-slate-800 text-white px-3 py-1.5 rounded-md text-xs font-medium hover:bg-slate-700 transition-colors"
+                          disabled={kmRemaining >= 3000}
+                          className={`px-2 py-1 rounded text-[10px] font-medium transition-colors whitespace-nowrap ${
+                            kmRemaining >= 3000 
+                              ? 'bg-slate-300 text-slate-500 cursor-not-allowed' 
+                              : 'bg-slate-800 text-white hover:bg-slate-700'
+                          }`}
+                          title={kmRemaining >= 3000 ? 'El mantenimiento aún no requiere atención' : 'Generar Orden de Trabajo'}
                         >
                           Generar OT
                         </button>
@@ -1521,7 +2292,668 @@ const RoutinesManager = ({ routines, setRoutines }) => {
   );
 };
 
-const MaintenanceAdminView = ({ workOrders, setWorkOrders, setFleet, routines, setRoutines }) => {
+const AssetManager = ({ fleet, setFleet, routines = MAINTENANCE_ROUTINES }) => {
+  const [filter, setFilter] = useState('');
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [showImportModal, setShowImportModal] = useState(false);
+  const [importData, setImportData] = useState('');
+  const [importPreview, setImportPreview] = useState([]);
+  const [importMode, setImportMode] = useState('replace'); // 'replace' o 'merge'
+  const [editingVehicle, setEditingVehicle] = useState(null);
+  const [formData, setFormData] = useState({
+    code: '',
+    plate: '',
+    model: '',
+    year: new Date().getFullYear(),
+    mileage: 0,
+    status: 'OPERATIVO',
+    lastMaintenance: 0,
+    driver: 'PENDIENTE',
+    assignedRoutine: '', // KM de la rutina asignada
+    vin: '' // Número de serie / VIN
+  });
+
+  const filteredFleet = fleet.filter(v => 
+    v.code.toLowerCase().includes(filter.toLowerCase()) ||
+    v.plate.toLowerCase().includes(filter.toLowerCase()) ||
+    v.model.toLowerCase().includes(filter.toLowerCase())
+  );
+
+  const handleEdit = (vehicle) => {
+    setEditingVehicle(vehicle);
+    setFormData({
+      code: vehicle.code,
+      plate: vehicle.plate,
+      model: vehicle.model,
+      year: vehicle.year,
+      mileage: vehicle.mileage,
+      status: vehicle.status,
+      lastMaintenance: vehicle.lastMaintenance || 0,
+      driver: vehicle.driver || 'PENDIENTE',
+      assignedRoutine: vehicle.assignedRoutine || '',
+      vin: vehicle.vin || ''
+    });
+    setShowAddModal(true);
+  };
+
+  const handleDelete = (vehicleId) => {
+    if (!window.confirm('¿Está seguro de eliminar este activo? Esta acción no se puede deshacer.')) return;
+    setFleet(prev => prev.filter(v => v.id !== vehicleId));
+  };
+
+  const handleClearAll = () => {
+    if (!window.confirm('⚠️ ¿Está seguro de LIMPIAR TODA LA BASE DE DATOS? Esta acción eliminará todos los activos y NO se puede deshacer.')) return;
+    if (!window.confirm('⚠️⚠️ ÚLTIMA CONFIRMACIÓN: Se eliminarán todos los activos permanentemente.')) return;
+    setFleet([]);
+  };
+
+  const parseImportData = (text) => {
+    const lines = text.trim().split('\n');
+    if (lines.length < 2) return [];
+
+    const headers = lines[0].split('\t').map(h => h.trim().toLowerCase());
+    const vehicles = [];
+
+    // Helper function to find column index by multiple possible names
+    const findColumn = (possibleNames) => {
+      for (const name of possibleNames) {
+        const idx = headers.indexOf(name.toLowerCase());
+        if (idx >= 0) return idx;
+      }
+      return -1;
+    };
+
+    for (let i = 1; i < lines.length; i++) {
+      const values = lines[i].split('\t');
+      if (values.length < 3) continue; // Mínimo necesita código, placa, modelo
+
+      const codeIdx = findColumn(['codigo', 'código', 'code']);
+      const plateIdx = findColumn(['placa', 'plate']);
+      const modelIdx = findColumn(['modelo', 'model']);
+      const yearIdx = findColumn(['año', 'ano', 'year']);
+      const mileageIdx = findColumn(['kilometraje', 'km', 'mileage', 'odometro']);
+      const statusIdx = findColumn(['estado', 'status']);
+      const lastMttoIdx = findColumn(['ultimo mtto', 'último mtto', 'last maintenance', 'ultimo mantenimiento']);
+      const driverIdx = findColumn(['conductor', 'driver', 'responsable']);
+      const vinIdx = findColumn(['vin', 'serie', 'serie chasis', 'numero de serie']);
+      const routineIdx = findColumn(['rutina', 'routine', 'rutina asignada']);
+
+      const vehicle = {
+        code: (values[codeIdx >= 0 ? codeIdx : 0] || '').trim().toUpperCase(),
+        plate: (values[plateIdx >= 0 ? plateIdx : 1] || '').trim().toUpperCase(),
+        model: (values[modelIdx >= 0 ? modelIdx : 2] || '').trim(),
+        year: parseInt(values[yearIdx >= 0 ? yearIdx : 3]) || new Date().getFullYear(),
+        mileage: parseInt(values[mileageIdx >= 0 ? mileageIdx : 4]?.replace(/[^\d]/g, '')) || 0,
+        status: (values[statusIdx >= 0 ? statusIdx : 5] || 'OPERATIVO').trim().toUpperCase(),
+        lastMaintenance: parseInt(values[lastMttoIdx >= 0 ? lastMttoIdx : 6]?.replace(/[^\d]/g, '')) || 0,
+        driver: (values[driverIdx >= 0 ? driverIdx : 7] || 'PENDIENTE').trim(),
+        vin: (values[vinIdx >= 0 ? vinIdx : 8] || '').trim(),
+        assignedRoutine: (values[routineIdx >= 0 ? routineIdx : 9] || '').trim()
+      };
+
+      if (vehicle.code && vehicle.plate) {
+        vehicles.push(vehicle);
+      }
+    }
+
+    return vehicles;
+  };
+
+  const handleImportPreview = () => {
+    const parsed = parseImportData(importData);
+    setImportPreview(parsed);
+  };
+
+  const handleImportConfirm = () => {
+    if (importPreview.length === 0) {
+      alert('No hay datos válidos para importar');
+      return;
+    }
+
+    if (importMode === 'replace') {
+      // Reemplazar toda la BD
+      if (!window.confirm(`⚠️ Se reemplazará TODA la base de datos con ${importPreview.length} activos. ¿Continuar?`)) return;
+      
+      const vehiclesWithIds = importPreview.map((v, idx) => ({
+        id: idx + 1,
+        ...v
+      }));
+      setFleet(vehiclesWithIds);
+    } else {
+      // Merge: actualizar existentes y agregar nuevos
+      const currentMaxId = fleet.length > 0 ? Math.max(...fleet.map(v => v.id)) : 0;
+      let nextId = currentMaxId + 1;
+      
+      const updatedFleet = [...fleet];
+      const newVehicles = [];
+
+      importPreview.forEach(importVehicle => {
+        const existingIndex = updatedFleet.findIndex(v => 
+          v.code === importVehicle.code || v.plate === importVehicle.plate
+        );
+
+        if (existingIndex >= 0) {
+          // Actualizar existente
+          updatedFleet[existingIndex] = {
+            ...updatedFleet[existingIndex],
+            ...importVehicle
+          };
+        } else {
+          // Agregar nuevo
+          newVehicles.push({
+            id: nextId++,
+            ...importVehicle
+          });
+        }
+      });
+
+      setFleet([...updatedFleet, ...newVehicles]);
+    }
+
+    // Reset
+    setShowImportModal(false);
+    setImportData('');
+    setImportPreview([]);
+    alert(`✅ Importación exitosa: ${importPreview.length} activos procesados`);
+  };
+
+  const handleFileUpload = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      setImportData(event.target.result);
+    };
+    reader.readAsText(file);
+  };
+
+  const handleSave = () => {
+    if (!formData.code || !formData.plate || !formData.model) {
+      alert('Por favor complete los campos obligatorios: Código, Placa y Modelo');
+      return;
+    }
+
+    if (editingVehicle) {
+      // Update existing
+      setFleet(prev => prev.map(v => 
+        v.id === editingVehicle.id ? { ...v, ...formData } : v
+      ));
+    } else {
+      // Add new
+      const newId = fleet.length > 0 ? Math.max(...fleet.map(v => v.id)) + 1 : 1;
+      setFleet(prev => [...prev, { id: newId, ...formData }]);
+    }
+
+    // Reset
+    setShowAddModal(false);
+    setEditingVehicle(null);
+    setFormData({
+      code: '',
+      plate: '',
+      model: '',
+      year: new Date().getFullYear(),
+      mileage: 0,
+      status: 'OPERATIVO',
+      lastMaintenance: 0,
+      driver: 'PENDIENTE'
+    });
+  };
+
+  const handleCancel = () => {
+    setShowAddModal(false);
+    setEditingVehicle(null);
+    setFormData({
+      code: '',
+      plate: '',
+      model: '',
+      year: new Date().getFullYear(),
+      mileage: 0,
+      status: 'OPERATIVO',
+      lastMaintenance: 0,
+      driver: 'PENDIENTE',
+      assignedRoutine: '',
+      vin: ''
+    });
+  };
+
+  return (
+    <div className="space-y-4">
+      {/* Add/Edit Modal */}
+      {showAddModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded-lg shadow-xl w-[600px] max-h-[90vh] overflow-y-auto">
+            <h3 className="text-lg font-bold mb-4">
+              {editingVehicle ? 'Editar Activo' : 'Agregar Nuevo Activo'}
+            </h3>
+            
+            <div className="space-y-3">
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 mb-1">Código *</label>
+                  <input 
+                    type="text"
+                    value={formData.code}
+                    onChange={(e) => setFormData({...formData, code: e.target.value})}
+                    className="w-full p-2 border rounded text-sm"
+                    placeholder="P0BL001"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 mb-1">Placa *</label>
+                  <input 
+                    type="text"
+                    value={formData.plate}
+                    onChange={(e) => setFormData({...formData, plate: e.target.value})}
+                    className="w-full p-2 border rounded text-sm"
+                    placeholder="ABC123"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-700 mb-1">Modelo *</label>
+                <input 
+                  type="text"
+                  value={formData.model}
+                  onChange={(e) => setFormData({...formData, model: e.target.value})}
+                  className="w-full p-2 border rounded text-sm"
+                  placeholder="CAMIONETA DOBLE CABINA"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 mb-1">Año</label>
+                  <input 
+                    type="number"
+                    value={formData.year}
+                    onChange={(e) => setFormData({...formData, year: parseInt(e.target.value)})}
+                    className="w-full p-2 border rounded text-sm"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 mb-1">Estado</label>
+                  <select 
+                    value={formData.status}
+                    onChange={(e) => setFormData({...formData, status: e.target.value})}
+                    className="w-full p-2 border rounded text-sm"
+                  >
+                    <option value="OPERATIVO">OPERATIVO</option>
+                    <option value="MANTENIMIENTO">MANTENIMIENTO</option>
+                    <option value="FUERA DE SERVICIO">FUERA DE SERVICIO</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 mb-1">Kilometraje Actual</label>
+                  <input 
+                    type="number"
+                    value={formData.mileage}
+                    onChange={(e) => setFormData({...formData, mileage: parseInt(e.target.value)})}
+                    className="w-full p-2 border rounded text-sm"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 mb-1">Último Mtto (KM)</label>
+                  <input 
+                    type="number"
+                    value={formData.lastMaintenance}
+                    onChange={(e) => setFormData({...formData, lastMaintenance: parseInt(e.target.value)})}
+                    className="w-full p-2 border rounded text-sm"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-700 mb-1">Número de Serie / VIN</label>
+                <input 
+                  type="text"
+                  value={formData.vin}
+                  onChange={(e) => setFormData({...formData, vin: e.target.value})}
+                  className="w-full p-2 border rounded text-sm"
+                  placeholder="VIN o número de chasis"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-700 mb-1">Rutina de Mantenimiento Asignada</label>
+                <select 
+                  value={formData.assignedRoutine}
+                  onChange={(e) => setFormData({...formData, assignedRoutine: e.target.value})}
+                  className="w-full p-2 border rounded text-sm"
+                >
+                  <option value="">Sin rutina específica (usar por defecto)</option>
+                  {Object.keys(routines).sort((a, b) => Number(a) - Number(b)).map(km => (
+                    <option key={km} value={km}>
+                      {Number(km).toLocaleString()} KM - {routines[km].name}
+                    </option>
+                  ))}
+                </select>
+                <p className="text-xs text-slate-500 mt-1">
+                  Si se asigna una rutina, el activo usará este plan específico en lugar del ciclo automático
+                </p>
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-700 mb-1">Conductor/Responsable</label>
+                <input 
+                  type="text"
+                  value={formData.driver}
+                  onChange={(e) => setFormData({...formData, driver: e.target.value})}
+                  className="w-full p-2 border rounded text-sm"
+                  placeholder="Nombre del conductor"
+                />
+              </div>
+            </div>
+
+            <div className="flex justify-end gap-2 mt-6">
+              <button 
+                onClick={handleCancel}
+                className="px-4 py-2 text-slate-600 hover:bg-slate-100 rounded text-sm"
+              >
+                Cancelar
+              </button>
+              <button 
+                onClick={handleSave}
+                className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 font-bold text-sm"
+              >
+                {editingVehicle ? 'Actualizar' : 'Guardar'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Import Modal */}
+      {showImportModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded-lg shadow-xl w-[900px] max-h-[90vh] overflow-y-auto">
+            <h3 className="text-xl font-bold mb-4 flex items-center gap-2">
+              <Upload className="text-green-600" /> Importar Activos desde Excel
+            </h3>
+            
+            <div className="bg-blue-50 border border-blue-200 p-4 rounded-lg mb-4">
+              <h4 className="font-bold text-blue-900 mb-2">📋 Instrucciones:</h4>
+              <ol className="text-sm text-blue-800 space-y-1 ml-4 list-decimal">
+                <li>Copia los datos desde Excel (incluye la fila de encabezados)</li>
+                <li>Pega en el área de texto abajo</li>
+                <li>O selecciona un archivo CSV/TXT con datos separados por tabulaciones</li>
+                <li>Formato esperado: <code className="bg-blue-100 px-1">Codigo | Placa | Modelo | Año | Kilometraje | Estado | Ultimo Mtto | Conductor | VIN | Rutina</code></li>
+                <li>Click en "Vista Previa" para validar antes de importar</li>
+              </ol>
+            </div>
+
+            {/* Import Mode */}
+            <div className="mb-4">
+              <label className="block text-sm font-bold text-slate-700 mb-2">Modo de Importación:</label>
+              <div className="flex gap-4">
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input 
+                    type="radio" 
+                    value="replace"
+                    checked={importMode === 'replace'}
+                    onChange={(e) => setImportMode(e.target.value)}
+                    className="w-4 h-4"
+                  />
+                  <span className="text-sm">
+                    <strong>Reemplazar</strong> - Borra toda la BD actual y carga los nuevos datos
+                  </span>
+                </label>
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input 
+                    type="radio" 
+                    value="merge"
+                    checked={importMode === 'merge'}
+                    onChange={(e) => setImportMode(e.target.value)}
+                    className="w-4 h-4"
+                  />
+                  <span className="text-sm">
+                    <strong>Combinar</strong> - Actualiza existentes y agrega nuevos (por código/placa)
+                  </span>
+                </label>
+              </div>
+            </div>
+
+            {/* File Upload */}
+            <div className="mb-4">
+              <label className="block text-sm font-bold text-slate-700 mb-2">Cargar desde archivo:</label>
+              <input 
+                type="file"
+                accept=".csv,.txt,.tsv"
+                onChange={handleFileUpload}
+                className="w-full p-2 border rounded text-sm"
+              />
+            </div>
+
+            {/* Text Area */}
+            <div className="mb-4">
+              <label className="block text-sm font-bold text-slate-700 mb-2">O pegar datos aquí:</label>
+              <textarea 
+                value={importData}
+                onChange={(e) => setImportData(e.target.value)}
+                placeholder="Codigo&#9;Placa&#9;Modelo&#9;Año&#9;Kilometraje&#9;Estado&#9;Ultimo Mtto&#9;Conductor&#9;VIN&#9;Rutina&#10;PVHC001&#9;H1234-1&#9;CAMIONETA RAM&#9;2023&#9;45000&#9;OPERATIVO&#9;40000&#9;JUAN PEREZ&#9;VIN123456&#9;5000"
+                className="w-full p-3 border rounded text-xs font-mono h-40"
+              />
+            </div>
+
+            {/* Preview Button */}
+            <div className="flex gap-2 mb-4">
+              <button 
+                onClick={handleImportPreview}
+                className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 text-sm"
+                disabled={!importData.trim()}
+              >
+                📊 Vista Previa
+              </button>
+              {importPreview.length > 0 && (
+                <div className="text-sm text-green-600 flex items-center gap-2">
+                  ✅ {importPreview.length} activos listos para importar
+                </div>
+              )}
+            </div>
+
+            {/* Preview Table */}
+            {importPreview.length > 0 && (
+              <div className="mb-4 border rounded-lg overflow-hidden max-h-80 overflow-y-auto">
+                <table className="w-full text-xs">
+                  <thead className="bg-slate-100 sticky top-0">
+                    <tr>
+                      <th className="px-2 py-2 text-left">Código</th>
+                      <th className="px-2 py-2 text-left">Placa</th>
+                      <th className="px-2 py-2 text-left">Modelo</th>
+                      <th className="px-2 py-2 text-center">Año</th>
+                      <th className="px-2 py-2 text-center">KM</th>
+                      <th className="px-2 py-2 text-center">Estado</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {importPreview.map((v, idx) => (
+                      <tr key={idx} className="border-t hover:bg-slate-50">
+                        <td className="px-2 py-2">{v.code}</td>
+                        <td className="px-2 py-2">{v.plate}</td>
+                        <td className="px-2 py-2">{v.model}</td>
+                        <td className="px-2 py-2 text-center">{v.year}</td>
+                        <td className="px-2 py-2 text-center">{v.mileage}</td>
+                        <td className="px-2 py-2 text-center">{v.status}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+
+            {/* Action Buttons */}
+            <div className="flex justify-end gap-2">
+              <button 
+                onClick={() => {
+                  setShowImportModal(false);
+                  setImportData('');
+                  setImportPreview([]);
+                }}
+                className="px-4 py-2 text-slate-600 hover:bg-slate-100 rounded text-sm"
+              >
+                Cancelar
+              </button>
+              <button 
+                onClick={handleImportConfirm}
+                disabled={importPreview.length === 0}
+                className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 font-bold text-sm disabled:bg-slate-300 disabled:cursor-not-allowed"
+              >
+                ✅ Confirmar Importación ({importPreview.length} activos)
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Header Actions */}
+      <div className="flex justify-between items-center gap-4">
+        <div className="relative flex-1 max-w-md">
+          <Search className="absolute left-3 top-3 text-slate-400" size={20} />
+          <input 
+            type="text" 
+            placeholder="Buscar por código, placa o modelo..."
+            value={filter}
+            onChange={(e) => setFilter(e.target.value)}
+            className="w-full pl-10 pr-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:border-blue-500"
+          />
+        </div>
+        <div className="flex gap-2">
+          <button 
+            onClick={() => setShowAddModal(true)}
+            className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 text-sm flex items-center gap-2"
+          >
+            <Plus size={16} /> Agregar Activo
+          </button>
+          <button 
+            onClick={() => setShowImportModal(true)}
+            className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 text-sm flex items-center gap-2"
+          >
+            <Upload size={16} /> Importar Datos
+          </button>
+          <button 
+            onClick={handleClearAll}
+            className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 text-sm flex items-center gap-2"
+          >
+            <X size={16} /> Limpiar BD
+          </button>
+        </div>
+      </div>
+
+      {/* Stats */}
+      <div className="grid grid-cols-4 gap-4">
+        <div className="bg-white p-4 rounded-lg shadow-sm border border-slate-200">
+          <div className="text-xs text-slate-500">Total Activos</div>
+          <div className="text-2xl font-bold text-slate-800">{fleet.length}</div>
+        </div>
+        <div className="bg-green-50 p-4 rounded-lg shadow-sm border border-green-200">
+          <div className="text-xs text-green-600">Operativos</div>
+          <div className="text-2xl font-bold text-green-700">
+            {fleet.filter(v => v.status === 'OPERATIVO').length}
+          </div>
+        </div>
+        <div className="bg-amber-50 p-4 rounded-lg shadow-sm border border-amber-200">
+          <div className="text-xs text-amber-600">En Mantenimiento</div>
+          <div className="text-2xl font-bold text-amber-700">
+            {fleet.filter(v => v.status === 'MANTENIMIENTO').length}
+          </div>
+        </div>
+        <div className="bg-red-50 p-4 rounded-lg shadow-sm border border-red-200">
+          <div className="text-xs text-red-600">Fuera de Servicio</div>
+          <div className="text-2xl font-bold text-red-700">
+            {fleet.filter(v => v.status === 'FUERA DE SERVICIO').length}
+          </div>
+        </div>
+      </div>
+
+      {/* Table */}
+      <div className="bg-white rounded-lg shadow-sm border border-slate-200 overflow-hidden">
+        <div className="overflow-x-auto max-h-[calc(100vh-400px)]">
+          <table className="w-full text-sm">
+            <thead className="bg-slate-50 sticky top-0">
+              <tr className="text-slate-600 text-xs uppercase">
+                <th className="px-4 py-3 text-left">Código</th>
+                <th className="px-4 py-3 text-left">Placa</th>
+                <th className="px-4 py-3 text-left">Modelo</th>
+                <th className="px-4 py-3 text-center">Año</th>
+                <th className="px-4 py-3 text-center">KM Actual</th>
+                <th className="px-4 py-3 text-center">Último Mtto</th>
+                <th className="px-4 py-3 text-center">Rutina Asignada</th>
+                <th className="px-4 py-3 text-center">Estado</th>
+                <th className="px-4 py-3 text-left">Conductor</th>
+                <th className="px-4 py-3 text-center">Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              {filteredFleet.map((vehicle) => (
+                <tr key={vehicle.id} className="border-b border-slate-100 hover:bg-slate-50">
+                  <td className="px-4 py-3 font-mono text-xs">{vehicle.code}</td>
+                  <td className="px-4 py-3 font-semibold">{vehicle.plate}</td>
+                  <td className="px-4 py-3 text-xs">{vehicle.model}</td>
+                  <td className="px-4 py-3 text-center">{vehicle.year}</td>
+                  <td className="px-4 py-3 text-center font-mono">{vehicle.mileage.toLocaleString()}</td>
+                  <td className="px-4 py-3 text-center font-mono">
+                    {vehicle.lastMaintenance > 0 ? vehicle.lastMaintenance.toLocaleString() : '—'}
+                  </td>
+                  <td className="px-4 py-3 text-center">
+                    {vehicle.assignedRoutine ? (
+                      <span className="px-2 py-1 rounded text-xs font-semibold bg-blue-100 text-blue-700">
+                        {Number(vehicle.assignedRoutine).toLocaleString()} KM
+                      </span>
+                    ) : (
+                      <span className="text-xs text-slate-400">Auto</span>
+                    )}
+                  </td>
+                  <td className="px-4 py-3 text-center">
+                    <span className={`px-2 py-1 rounded text-xs font-semibold ${
+                      vehicle.status === 'OPERATIVO' ? 'bg-green-100 text-green-700' :
+                      vehicle.status === 'MANTENIMIENTO' ? 'bg-amber-100 text-amber-700' :
+                      'bg-red-100 text-red-700'
+                    }`}>
+                      {vehicle.status}
+                    </span>
+                  </td>
+                  <td className="px-4 py-3 text-xs">{vehicle.driver}</td>
+                  <td className="px-4 py-3">
+                    <div className="flex items-center justify-center gap-2">
+                      <button 
+                        onClick={() => handleEdit(vehicle)}
+                        className="text-blue-600 hover:text-blue-800 p-1"
+                        title="Editar"
+                      >
+                        <Wrench size={16} />
+                      </button>
+                      <button 
+                        onClick={() => handleDelete(vehicle.id)}
+                        className="text-red-600 hover:text-red-800 p-1"
+                        title="Eliminar"
+                      >
+                        <X size={16} />
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      {filteredFleet.length === 0 && (
+        <div className="text-center py-12 text-slate-400">
+          <Database size={48} className="mx-auto mb-4 opacity-50" />
+          <p className="text-lg font-medium">No se encontraron activos</p>
+          <p className="text-sm">Agregue un nuevo activo para comenzar</p>
+        </div>
+      )}
+    </div>
+  );
+};
+
+const MaintenanceAdminView = ({ workOrders, setWorkOrders, fleet, setFleet, routines, setRoutines }) => {
   const [filter, setFilter] = useState('');
   const [activeTab, setActiveTab] = useState('ots'); // 'ots' or 'routines'
   const [closingOT, setClosingOT] = useState(null);
@@ -1591,9 +3023,17 @@ const MaintenanceAdminView = ({ workOrders, setWorkOrders, setFleet, routines, s
         >
           Gestión de Rutinas
         </button>
+        <button 
+          onClick={() => setActiveTab('assets')}
+          className={`px-4 py-2 font-bold border-b-2 transition-colors ${activeTab === 'assets' ? 'text-blue-600 border-blue-600' : 'text-slate-500 border-transparent hover:text-slate-700'}`}
+        >
+          Administración de Activos
+        </button>
       </div>
 
-      {activeTab === 'routines' ? (
+      {activeTab === 'assets' ? (
+        <AssetManager fleet={fleet} setFleet={setFleet} routines={routines} />
+      ) : activeTab === 'routines' ? (
         <RoutinesManager routines={routines} setRoutines={setRoutines} />
       ) : (
         <>
@@ -1643,24 +3083,37 @@ const MaintenanceAdminView = ({ workOrders, setWorkOrders, setFleet, routines, s
                       <td className="p-4 text-slate-600">{ot.workshop}</td>
                       <td className="p-4">{ot.creationDate}</td>
                       <td className="p-4">
-                        {ot.status === 'ABIERTA' && (
+                        <div className="flex items-center gap-2">
+                          {ot.status === 'ABIERTA' && (
+                            <button 
+                              onClick={() => setClosingOT(ot)}
+                              className="text-green-600 hover:underline font-medium"
+                            >
+                              Cerrar OT
+                            </button>
+                          )}
+                          {ot.status === 'CERRADA' && (
+                            <span className="text-slate-400 italic text-xs">Cerrada el {ot.closingDate}</span>
+                          )}
                           <button 
-                            onClick={() => setClosingOT(ot)}
-                            className="text-green-600 hover:underline font-medium"
+                            onClick={() => generatePDF(ot)}
+                            className="text-slate-600 hover:text-blue-600"
+                            title="Descargar PDF"
                           >
-                            Cerrar OT
+                            <FileText size={18} />
                           </button>
-                        )}
-                        {ot.status === 'CERRADA' && (
-                          <span className="text-slate-400 italic text-xs">Cerrada el {ot.closingDate}</span>
-                        )}
-                        <button 
-                          onClick={() => generatePDF(ot)}
-                          className="ml-2 text-slate-600 hover:text-blue-600"
-                          title="Descargar PDF"
-                        >
-                          <FileText size={18} />
-                        </button>
+                          <button 
+                            onClick={() => {
+                              if (window.confirm(`¿Está seguro de eliminar la OT #${ot.id}?`)) {
+                                setWorkOrders(prev => prev.filter(o => o.id !== ot.id));
+                              }
+                            }}
+                            className="text-red-600 hover:text-red-800"
+                            title="Eliminar OT"
+                          >
+                            <X size={18} />
+                          </button>
+                        </div>
                       </td>
                     </tr>
                   ))
@@ -2452,7 +3905,7 @@ const DatabaseView = ({ fleet, setFleet }) => {
 // --- Main App Component ---
 
 function App() {
-  const [currentView, setCurrentView] = useState('planning'); // Default to planning view
+  const [currentView, setCurrentView] = useState('dashboard'); // Default to dashboard view
   
   // Initialize state from localStorage or defaults
   const [fleet, setFleet] = useState(() => {
@@ -2500,86 +3953,126 @@ function App() {
 
   const renderView = () => {
     switch(currentView) {
+      case 'dashboard': return <Dashboard fleet={fleet} workOrders={workOrders} variableHistory={variableHistory} />;
       case 'planning': return <PlanningView fleet={fleet} setFleet={setFleet} onCreateOT={handleCreateOT} workOrders={workOrders} setWorkOrders={setWorkOrders} variableHistory={variableHistory} routines={routines} />;
-      case 'maintenance-admin': return <MaintenanceAdminView workOrders={workOrders} setWorkOrders={setWorkOrders} setFleet={setFleet} routines={routines} setRoutines={setRoutines} />;
+      case 'maintenance-admin': return <MaintenanceAdminView workOrders={workOrders} setWorkOrders={setWorkOrders} fleet={fleet} setFleet={setFleet} routines={routines} setRoutines={setRoutines} />;
       case 'work-orders': return <WorkOrders fleet={fleet} />;
       case 'drivers': return <DriverAssignment fleet={fleet} setFleet={setFleet} />;
       case 'dataload': return <DataLoad fleet={fleet} setFleet={setFleet} setVariableHistory={setVariableHistory} />;
-      default: return <PlanningView fleet={fleet} onCreateOT={handleCreateOT} workOrders={workOrders} />;
+      default: return <Dashboard fleet={fleet} workOrders={workOrders} variableHistory={variableHistory} />;
     }
   };
 
   const getTitle = () => {
     switch(currentView) {
+      case 'dashboard': return 'Dashboard - Métricas y Análisis';
       case 'planning': return 'Planeación de Mantenimiento (Camionetas)';
       case 'maintenance-admin': return 'Administración de Mantenimiento';
       case 'work-orders': return 'Generador de Órdenes de Trabajo';
       case 'drivers': return 'Asignación de Conductores';
       case 'dataload': return 'Carga Masiva de Variables';
-      default: return 'Fleet Pro';
+      default: return 'Dashboard - Métricas y Análisis';
     }
   };
 
   return (
     <div className="flex h-screen bg-slate-100">
       {/* Sidebar */}
-      <aside className={`${isSidebarOpen ? 'w-64' : 'w-20'} bg-slate-900 text-white transition-all duration-300 flex flex-col`}>
-        <div className="p-4 flex items-center justify-between border-b border-slate-700">
-          {isSidebarOpen && <h1 className="font-bold text-xl tracking-wider">FLEET PRO</h1>}
-          <button onClick={() => setIsSidebarOpen(!isSidebarOpen)} className="p-1 hover:bg-slate-800 rounded">
-            {isSidebarOpen ? <X size={20} /> : <Menu size={20} />}
-          </button>
+      <aside className={`${isSidebarOpen ? 'w-64' : 'w-20'} bg-white shadow-lg transition-all duration-300 flex flex-col border-r border-gray-200`}>
+        {/* Logo Section */}
+        <div className="p-4 flex items-center justify-between border-b border-gray-200">
+          {isSidebarOpen ? (
+            <div className="flex items-center gap-3 flex-1">
+              <img src="/logo-sidebar.png" alt="Fleet Pro Logo" className="h-12 w-auto" />
+            </div>
+          ) : (
+            <img src="/logo-sidebar.png" alt="Fleet Pro Logo" className="h-10 w-auto mx-auto" />
+          )}
+          {isSidebarOpen && (
+            <button onClick={() => setIsSidebarOpen(!isSidebarOpen)} className="p-1 hover:bg-gray-100 rounded text-gray-600">
+              <X size={20} />
+            </button>
+          )}
+          {!isSidebarOpen && (
+            <button onClick={() => setIsSidebarOpen(!isSidebarOpen)} className="absolute top-4 left-16 p-1 hover:bg-gray-100 rounded text-gray-600 bg-white shadow-sm">
+              <Menu size={20} />
+            </button>
+          )}
         </div>
 
         <nav className="flex-1 py-6">
           <ul className="space-y-2">
             <li>
               <button 
-                onClick={() => setCurrentView('planning')}
-                className={`w-full flex items-center gap-4 px-4 py-3 hover:bg-slate-800 transition-colors ${currentView === 'planning' ? 'bg-blue-600' : ''}`}
+                onClick={() => setCurrentView('dashboard')}
+                className={`w-full flex items-center gap-4 px-4 py-3 hover:bg-blue-50 transition-colors ${currentView === 'dashboard' ? 'bg-blue-100 text-blue-600 border-r-4 border-blue-600' : 'text-gray-700'}`}
               >
-                <Calendar size={20} />
-                {isSidebarOpen && <span>Planeación</span>}
+                <LayoutDashboard size={20} className={currentView === 'dashboard' ? 'text-blue-600' : 'text-gray-600'} />
+                {isSidebarOpen && <span className="font-medium">Dashboard</span>}
+              </button>
+            </li>
+            <li>
+              <button 
+                onClick={() => setCurrentView('planning')}
+                className={`w-full flex items-center gap-4 px-4 py-3 hover:bg-blue-50 transition-colors ${currentView === 'planning' ? 'bg-blue-100 text-blue-600 border-r-4 border-blue-600' : 'text-gray-700'}`}
+              >
+                <Calendar size={20} className={currentView === 'planning' ? 'text-blue-600' : 'text-gray-600'} />
+                {isSidebarOpen && <span className="font-medium">Planeación</span>}
               </button>
             </li>
             <li>
               <button 
                 onClick={() => setCurrentView('maintenance-admin')}
-                className={`w-full flex items-center gap-4 px-4 py-3 hover:bg-slate-800 transition-colors ${currentView === 'maintenance-admin' ? 'bg-blue-600' : ''}`}
+                className={`w-full flex items-center gap-4 px-4 py-3 hover:bg-blue-50 transition-colors ${currentView === 'maintenance-admin' ? 'bg-blue-100 text-blue-600 border-r-4 border-blue-600' : 'text-gray-700'}`}
               >
-                <Wrench size={20} />
-                {isSidebarOpen && <span>Admin. Mantenimiento</span>}
+                <Wrench size={20} className={currentView === 'maintenance-admin' ? 'text-blue-600' : 'text-gray-600'} />
+                {isSidebarOpen && <span className="font-medium">Admin. Mantenimiento</span>}
               </button>
             </li>
             <li>
               <button 
                 onClick={() => setCurrentView('work-orders')}
-                className={`w-full flex items-center gap-4 px-4 py-3 hover:bg-slate-800 transition-colors ${currentView === 'work-orders' ? 'bg-blue-600' : ''}`}
+                className={`w-full flex items-center gap-4 px-4 py-3 hover:bg-blue-50 transition-colors ${currentView === 'work-orders' ? 'bg-blue-100 text-blue-600 border-r-4 border-blue-600' : 'text-gray-700'}`}
               >
-                <ClipboardList size={20} />
-                {isSidebarOpen && <span>Generar OTs</span>}
+                <ClipboardList size={20} className={currentView === 'work-orders' ? 'text-blue-600' : 'text-gray-600'} />
+                {isSidebarOpen && <span className="font-medium">Generar OTs</span>}
               </button>
             </li>
             <li>
               <button 
                 onClick={() => setCurrentView('drivers')}
-                className={`w-full flex items-center gap-4 px-4 py-3 hover:bg-slate-800 transition-colors ${currentView === 'drivers' ? 'bg-blue-600' : ''}`}
+                className={`w-full flex items-center gap-4 px-4 py-3 hover:bg-blue-50 transition-colors ${currentView === 'drivers' ? 'bg-blue-100 text-blue-600 border-r-4 border-blue-600' : 'text-gray-700'}`}
               >
-                <Car size={20} />
-                {isSidebarOpen && <span>Conductores</span>}
+                <Car size={20} className={currentView === 'drivers' ? 'text-blue-600' : 'text-gray-600'} />
+                {isSidebarOpen && <span className="font-medium">Conductores</span>}
               </button>
             </li>
             <li>
               <button 
                 onClick={() => setCurrentView('dataload')}
-                className={`w-full flex items-center gap-4 px-4 py-3 hover:bg-slate-800 transition-colors ${currentView === 'dataload' ? 'bg-blue-600' : ''}`}
+                className={`w-full flex items-center gap-4 px-4 py-3 hover:bg-blue-50 transition-colors ${currentView === 'dataload' ? 'bg-blue-100 text-blue-600 border-r-4 border-blue-600' : 'text-gray-700'}`}
               >
-                <Upload size={20} />
-                {isSidebarOpen && <span>Cargar Variables</span>}
+                <Upload size={20} className={currentView === 'dataload' ? 'text-blue-600' : 'text-gray-600'} />
+                {isSidebarOpen && <span className="font-medium">Cargar Variables</span>}
               </button>
             </li>
           </ul>
         </nav>
+
+        {/* Footer Credits */}
+        <div className="p-4 border-t border-gray-200">
+          {isSidebarOpen ? (
+            <div className="text-center text-gray-500 text-[10px] leading-tight">
+              <p className="font-medium">Desarrollador</p>
+              <p>Juan Felipe Granados</p>
+              <p className="mt-1">2025 V0.1</p>
+            </div>
+          ) : (
+            <div className="text-center text-gray-500 text-[8px]">
+              <p>V0.1</p>
+            </div>
+          )}
+        </div>
       </aside>
 
       {/* Main Content */}

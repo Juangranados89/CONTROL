@@ -28,7 +28,8 @@ def extract_fleet():
                 "mileage": row.get('HR/KM INICIAL (REVISAR)', 0),
                 "status": row.get('ESTADO ACTUAL', 'Activo'),
                 "lastMaintenance": 0, # Default as not found in this sheet
-                "driver": str(row.get('OPERADOR ASIGNADO', 'Sin Asignar')).strip()
+                "driver": str(row.get('OPERADOR ASIGNADO', 'Sin Asignar')).strip(),
+                "vin": str(row.get('SERIE CHASIS / VIN', '')).strip()
             }
             
             # Clean up mileage
