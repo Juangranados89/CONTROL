@@ -2,7 +2,7 @@
 # Replace <REPO_URL> with your repository (e.g. github.com/owner/repo)
 # You can also leave `repo` empty and connect the site in the Render dashboard.
 static_sites:
-  - name: fleet-manager-pro
+  - name: controlfleet
     repo: <REPO_URL>
     branch: main
     buildCommand: npm install && npm run build
@@ -22,7 +22,7 @@ static_sites:
 # Web service (API) using Node + Prisma
 services:
   - type: web
-    name: fleet-manager-pro-api
+    name: controlfleet-api
     env: node
     plan: free
     repo: <REPO_URL>
