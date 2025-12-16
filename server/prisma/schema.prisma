@@ -8,9 +8,69 @@ datasource db {
 }
 
 model User {
-  id           String   @id @default(cuid())
-  email        String   @unique
+  id           String      @id @default(cuid())
+  email        String      @unique
   passwordHash String
-  role         String   @default("user")
-  createdAt    DateTime @default(now())
+  role         String      @default("user")
+  createdAt    DateTime    @default(now())
+  workOrders   WorkOrder[]
+}
+
+model Vehicle {
+  id                   String            @id @default(cuid())
+  code                 String            @unique
+  plate                String            @unique
+  model                String
+  brand                String?
+  owner                String?
+  mileage              Int               @default(0)
+  lastMaintenance      Int?
+  lastMaintenanceDate  String?
+  vin                  String?
+  area                 String?
+  createdAt            DateTime          @default(now())
+  updatedAt            DateTime          @updatedAt
+  workOrders           WorkOrder[]
+  variableHistory      VariableHistory[]
+  
+  @@index([plate])
+  @@index([code])
+}
+
+model WorkOrder {
+  id              String   @id @default(cuid())
+  vehicleId       String
+  vehicle         Vehicle  @relation(fields: [vehicleId], references: [id])
+  vehicleCode     String
+  plate           String
+  vehicleModel    String
+  mileage         Int
+  routine         String
+  status          String   @default("PENDIENTE") // PENDIENTE, CERRADA
+  createdBy       String?
+  user            User?    @relation(fields: [createdBy], references: [id])
+  createdAt       DateTime @default(now())
+  closingDate     String?
+  workshop        String?
+  area            String?
+  vin             String?
+  
+  @@index([vehicleId])
+  @@index([plate])
+  @@index([status])
+}
+
+model VariableHistory {
+  id          String   @id @default(cuid())
+  vehicleId   String
+  vehicle     Vehicle  @relation(fields: [vehicleId], references: [id])
+  plate       String
+  code        String
+  km          Int
+  date        String
+  uploadDate  DateTime @default(now())
+  
+  @@index([vehicleId])
+  @@index([plate])
+  @@index([date])
 }
