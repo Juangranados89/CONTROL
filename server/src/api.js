@@ -107,14 +107,16 @@ router.get('/variables', async (req, res) => {
   }
 });
 
-// Save variable history (bulk)
+// Save variable history (bulk) - Resilient & Intelligent
 router.post('/variables', async (req, res) => {
   try {
     const records = req.body;
+    const results = [];
+    const errors = [];
     
-    // Update vehicles mileage and create history records
-    const results = await Promise.all(
-      records.map(async (record) => {
+    // Process each record individually for resilience
+    for (const record of records) {
+      try {
         // Find vehicle
         const vehicle = await prisma.vehicle.findFirst({
           where: {
@@ -125,16 +127,42 @@ router.post('/variables', async (req, res) => {
           }
         });
         
-        if (!vehicle) return null;
+        if (!vehicle) {
+          errors.push({ record, error: 'Vehicle not found' });
+          continue;
+        }
         
-        // Update vehicle mileage
+        // Find last closed work order for this vehicle
+        const lastClosedOT = await prisma.workOrder.findFirst({
+          where: {
+            vehicleId: vehicle.id,
+            status: 'CERRADA'
+          },
+          orderBy: [
+            { closingDate: 'desc' },
+            { mileage: 'desc' }
+          ]
+        });
+        
+        // Prepare update data
+        const updateData = {
+          mileage: record.km
+        };
+        
+        // Intelligent update: if we have a closed OT, update lastMaintenance fields
+        if (lastClosedOT) {
+          updateData.lastMaintenance = lastClosedOT.mileage;
+          updateData.lastMaintenanceDate = lastClosedOT.closingDate || null;
+        }
+        
+        // Update vehicle with mileage and intelligent maintenance data
         await prisma.vehicle.update({
           where: { id: vehicle.id },
-          data: { mileage: record.km }
+          data: updateData
         });
         
         // Create history record
-        return prisma.variableHistory.create({
+        const historyRecord = await prisma.variableHistory.create({
           data: {
             vehicleId: vehicle.id,
             plate: record.plate,
@@ -143,10 +171,21 @@ router.post('/variables', async (req, res) => {
             date: record.date
           }
         });
-      })
-    );
+        
+        results.push(historyRecord);
+        
+      } catch (error) {
+        errors.push({ record, error: error.message });
+      }
+    }
     
-    res.json({ count: results.filter(r => r).length, records: results.filter(r => r) });
+    res.json({ 
+      success: true,
+      count: results.length, 
+      records: results,
+      failed: errors.length,
+      errors: errors.length > 0 ? errors : undefined
+    });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -234,6 +273,47 @@ router.patch('/workorders/:id', async (req, res) => {
     }
     
     res.json(workOrder);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Sync all vehicles with their latest closed work orders (intelligent sync)
+router.post('/vehicles/sync-maintenance', async (req, res) => {
+  try {
+    const vehicles = await prisma.vehicle.findMany();
+    const updates = [];
+    
+    for (const vehicle of vehicles) {
+      // Find last closed work order
+      const lastClosedOT = await prisma.workOrder.findFirst({
+        where: {
+          vehicleId: vehicle.id,
+          status: 'CERRADA'
+        },
+        orderBy: [
+          { closingDate: 'desc' },
+          { mileage: 'desc' }
+        ]
+      });
+      
+      if (lastClosedOT) {
+        await prisma.vehicle.update({
+          where: { id: vehicle.id },
+          data: {
+            lastMaintenance: lastClosedOT.mileage,
+            lastMaintenanceDate: lastClosedOT.closingDate
+          }
+        });
+        updates.push({ code: vehicle.code, lastMaintenance: lastClosedOT.mileage });
+      }
+    }
+    
+    res.json({ 
+      success: true, 
+      updated: updates.length, 
+      vehicles: updates 
+    });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

@@ -51,6 +51,12 @@ class ApiClient {
     });
   }
 
+  async syncMaintenanceData() {
+    return this.request('/api/vehicles/sync-maintenance', {
+      method: 'POST',
+    });
+  }
+
   // ========== VARIABLES (MILEAGE HISTORY) ==========
   async getVariables(filters = {}) {
     const params = new URLSearchParams(filters);

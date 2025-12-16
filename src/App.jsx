@@ -45,6 +45,7 @@ import UserInfoHeader from './components/UserInfoHeader';
 import Login from './components/Login';
 import NotificationBadge from './components/NotificationBadge';
 import ExportMenu from './components/ExportMenu';
+import VariableHistory from './components/VariableHistory';
 
 // --- Helper Functions ---
 
@@ -3835,15 +3836,18 @@ const DataLoad = ({ fleet, setFleet, setVariableHistory }) => {
     // Save to API
     const saveToApi = async () => {
       try {
-        // Save variable history to API (which also updates vehicle mileage)
-        await api.saveVariables(recordsToProcess.map(p => ({
+        // Save variable history to API (which also updates vehicle mileage and intelligent maintenance data)
+        const response = await api.saveVariables(recordsToProcess.map(p => ({
           plate: p.plate,
           code: p.code,
           km: p.km,
           date: p.date
         })));
         
-        // Reload fleet data to get updated mileages
+        // Intelligent sync: Update all vehicles with latest closed work orders
+        await api.syncMaintenanceData();
+        
+        // Reload fleet data to get updated mileages and maintenance info
         const updatedFleet = await api.getVehicles();
         setFleet(updatedFleet);
         
@@ -3851,11 +3855,29 @@ const DataLoad = ({ fleet, setFleet, setVariableHistory }) => {
         const updatedHistory = await api.getVariables();
         setVariableHistory(updatedHistory);
         
-        alert(`✅ ${recordsToProcess.length} registro(s) guardado(s) en la base de datos.`);
+        const successMsg = response.failed > 0 
+          ? `✅ ${response.count} registro(s) guardado(s), ${response.failed} fallaron. Datos de mantenimiento sincronizados.`
+          : `✅ ${response.count} registro(s) guardado(s) y datos de mantenimiento sincronizados.`;
+        
+        alert(successMsg);
         
       } catch (error) {
         console.error('Error saving to API:', error);
-        alert(`⚠️ Error guardando en servidor: ${error.message}\n\nGuardando localmente como respaldo...`);
+        const errorDetails = `
+Error guardando en servidor:
+${error.message}
+
+URL del API: ${api.baseURL}
+Registros a guardar: ${recordsToProcess.length}
+
+Posibles causas:
+- El servidor backend no está activo en Render
+- Las variables de entorno no están configuradas
+- Error en la base de datos PostgreSQL
+
+Guardando localmente como respaldo...
+        `;
+        alert(`⚠️ ${errorDetails.trim()}`);
         
         // Fallback: Update local state
         setFleet(prev => {
@@ -4580,6 +4602,7 @@ function App() {
       case 'work-orders': return <WorkOrders fleet={fleet} />;
       case 'drivers': return <DriverAssignment fleet={fleet} setFleet={setFleet} />;
       case 'dataload': return <DataLoad fleet={fleet} setFleet={setFleet} setVariableHistory={setVariableHistory} />;
+      case 'variablehistory': return <VariableHistory variableHistory={variableHistory} fleet={fleet} />;
       default: return <Dashboard fleet={fleet} workOrders={workOrders} variableHistory={variableHistory} />;
     }
   };
@@ -4592,6 +4615,7 @@ function App() {
       case 'work-orders': return 'Generador de Órdenes de Trabajo';
       case 'drivers': return 'Asignación de Conductores';
       case 'dataload': return 'Carga Masiva de Variables';
+      case 'variablehistory': return 'Historial de Variables';
       default: return 'Dashboard - Métricas y Análisis';
     }
   };
@@ -4680,6 +4704,15 @@ function App() {
               >
                 <Upload size={20} className={currentView === 'dataload' ? 'text-blue-600' : 'text-gray-600'} />
                 {isSidebarOpen && <span className="font-medium">Cargar Variables</span>}
+              </button>
+            </li>
+            <li>
+              <button 
+                onClick={() => setCurrentView('variablehistory')}
+                className={`w-full flex items-center gap-4 px-4 py-3 hover:bg-blue-50 transition-colors ${currentView === 'variablehistory' ? 'bg-blue-100 text-blue-600 border-r-4 border-blue-600' : 'text-gray-700'}`}
+              >
+                <Calendar size={20} className={currentView === 'variablehistory' ? 'text-blue-600' : 'text-gray-600'} />
+                {isSidebarOpen && <span className="font-medium">Historial Variables</span>}
               </button>
             </li>
           </ul>
