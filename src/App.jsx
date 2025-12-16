@@ -1080,7 +1080,13 @@ const PlanningView = ({ fleet, setFleet, onCreateOT, workOrders = [], setWorkOrd
   const getLastMaintenanceDate = (vehicle) => {
     // First check if we have it from bulk load
     if (vehicle.lastMaintenanceDate) {
-      return vehicle.lastMaintenanceDate;
+      // Validate that it's actually a date and not a number/kilometraje
+      const dateValue = String(vehicle.lastMaintenanceDate);
+      // Check if it looks like a date (contains - or / separators)
+      if (dateValue.includes('-') || dateValue.includes('/')) {
+        return vehicle.lastMaintenanceDate;
+      }
+      // If it's just a number, it's probably kilometraje incorrectly saved, ignore it
     }
     
     // Fallback: Check closed OTs
@@ -3517,13 +3523,48 @@ const DataLoad = ({ fleet, setFleet, setVariableHistory }) => {
   const [pasteData, setPasteData] = useState('');
   const [preview, setPreview] = useState([]);
   const [hasErrors, setHasErrors] = useState(false);
+  const [filterView, setFilterView] = useState('ALL'); // ALL, ERRORS, WARNINGS, VALID
+  const [isProcessing, setIsProcessing] = useState(false);
+
+  // Helper: Get last known variable from history
+  const getLastKnownVariable = (plate, code, beforeDate) => {
+    const history = JSON.parse(localStorage.getItem('variable_history') || '[]');
+    const vehicleHistory = history
+      .filter(h => (h.plate === plate || h.code === code))
+      .map(h => {
+        const [d, t] = (h.date || '').split(' ');
+        const [day, month, year] = (d || '').split('/');
+        const dateObj = new Date(`${year}-${month}-${day}T${t || '00:00:00'}`);
+        return { ...h, dateObj };
+      })
+      .filter(h => h.dateObj < beforeDate)
+      .sort((a, b) => b.dateObj - a.dateObj);
+    
+    return vehicleHistory[0] || null;
+  };
+
+  // Helper: Detect common typos (extra digit, transposed digits)
+  const suggestCorrection = (value, expected, tolerance = 10000) => {
+    // Check if adding/removing a leading digit makes it valid
+    const valueStr = String(value);
+    
+    // Try removing first digit: 39112 -> 9112, 3112, etc.
+    for (let i = 0; i < valueStr.length; i++) {
+      const modified = parseInt(valueStr.slice(0, i) + valueStr.slice(i + 1));
+      if (!isNaN(modified) && modified >= expected && modified <= expected + tolerance) {
+        return modified;
+      }
+    }
+    
+    return null;
+  };
 
   const parseData = () => {
     const rows = pasteData.trim().split('\n');
     let errorFound = false;
-    const latestRecords = {};
+    const groupedRecords = {};
 
-    // 1. Parse and Deduplicate (Keep latest date per plate)
+    // 1. Parse ALL records and group by plate (no deduplication yet)
     rows.forEach(row => {
       // Expecting: Date | KM | Plate | Code (Tab separated)
       // Example: 12/12/2025 08:20:25 | 33.394,000 | NTW668 | (empty)
@@ -3546,51 +3587,154 @@ const DataLoad = ({ fleet, setFleet, setVariableHistory }) => {
       const isoDate = `${year}-${month}-${day}T${t}`;
       const dateObj = new Date(isoDate);
 
-      if (!latestRecords[plate] || dateObj > latestRecords[plate].dateObj) {
-        latestRecords[plate] = {
-          dateRaw,
-          dateObj,
-          km: newKm,
-          plate,
-          originalRow: row
-        };
+      if (!groupedRecords[plate]) {
+        groupedRecords[plate] = [];
       }
+      
+      groupedRecords[plate].push({
+        dateRaw,
+        dateObj,
+        km: newKm,
+        plate,
+        originalRow: row
+      });
     });
 
-    // 2. Validate against Fleet
-    const parsed = Object.values(latestRecords).map(record => {
-      // Find current vehicle data by Plate
-      const currentVehicle = fleet.find(v => v.plate === record.plate);
+    // 2. Analyze sequence for each vehicle
+    const parsed = [];
+    
+    Object.entries(groupedRecords).forEach(([plate, records]) => {
+      // Sort records by date
+      const sortedRecords = records.sort((a, b) => a.dateObj - b.dateObj);
       
-      let status = 'VALID';
-      let message = 'OK';
-      let code = currentVehicle?.code || '---';
-
+      // Find current vehicle
+      const currentVehicle = fleet.find(v => v.plate === plate);
+      const code = currentVehicle?.code || '---';
+      const storedKm = currentVehicle?.mileage || 0;
+      
       if (!currentVehicle) {
-        status = 'ERROR';
-        message = 'Vehículo no encontrado por Placa';
+        // Vehicle not found - mark all records as error
+        sortedRecords.forEach(record => {
+          parsed.push({
+            date: record.dateRaw,
+            km: record.km,
+            originalKm: record.km,
+            code: '---',
+            plate: record.plate,
+            status: 'ERROR',
+            message: 'Vehículo no encontrado',
+            previousKm: null,
+            daysSince: null,
+            kmPerDay: null,
+            suggestedKm: null,
+            editable: true,
+            batchSize: sortedRecords.length,
+            shouldSkip: true
+          });
+        });
         errorFound = true;
-      } else {
-        const currentKm = currentVehicle.mileage;
-        
-        if (record.km < currentKm) {
-          status = 'ERROR';
-          message = `KM Menor al actual (${currentKm})`;
-          errorFound = true;
-        } else if (currentKm > 0 && record.km > currentKm + 30000) { 
-          status = 'WARNING';
-          message = `Salto de KM alto (>30k)`;
-        }
+        return;
       }
-
-      return {
-        date: record.dateRaw,
-        km: record.km,
-        code: code,
-        plate: record.plate,
-        status,
-        message
-      };
+      
+      // Get last known variable from storage
+      const lastStored = getLastKnownVariable(plate, code, sortedRecords[0].dateObj);
+      
+      // Build complete sequence: [stored] -> [batch records]
+      const fullSequence = [];
+      if (lastStored) {
+        fullSequence.push({
+          dateObj: lastStored.dateObj,
+          km: lastStored.km,
+          isStored: true
+        });
+      } else if (storedKm > 0) {
+        fullSequence.push({
+          dateObj: new Date(0),
+          km: storedKm,
+          isStored: true
+        });
+      }
+      fullSequence.push(...sortedRecords.map(r => ({ ...r, isStored: false })));
+      
+      // Analyze each record in the batch
+      sortedRecords.forEach((record, idx) => {
+        let status = 'VALID';
+        let message = 'OK';
+        let previousKm = null;
+        let daysSince = null;
+        let kmPerDay = null;
+        let suggestedKm = null;
+        let shouldSkip = false;
+        
+        // Find previous record in full sequence
+        const recordIdx = fullSequence.findIndex(r => r === record);
+        if (recordIdx > 0) {
+          const prevRecord = fullSequence[recordIdx - 1];
+          previousKm = prevRecord.km;
+          daysSince = Math.floor((record.dateObj - prevRecord.dateObj) / (1000 * 60 * 60 * 24));
+          
+          if (daysSince > 0) {
+            const kmDiff = record.km - previousKm;
+            kmPerDay = Math.round(kmDiff / daysSince);
+          }
+        }
+        
+        // VALIDATION RULES
+        if (record.km < storedKm) {
+          status = 'ERROR';
+          message = `Retrocede vs almacenado (${storedKm.toLocaleString()})`;
+          errorFound = true;
+          shouldSkip = true;
+          
+          suggestedKm = suggestCorrection(record.km, storedKm, 5000);
+          if (suggestedKm) {
+            message += ` - ¿${suggestedKm.toLocaleString()}?`;
+            shouldSkip = false;
+          }
+        } else if (previousKm && record.km < previousKm) {
+          status = 'ERROR';
+          message = `Retrocede en el lote (${previousKm.toLocaleString()})`;
+          errorFound = true;
+          shouldSkip = true;
+        } else if (kmPerDay !== null && kmPerDay > 500) {
+          status = 'ERROR';
+          message = `${kmPerDay} km/día es anormal (${daysSince}d) - REVISAR`;
+          errorFound = true;
+          
+          suggestedKm = suggestCorrection(record.km, previousKm, daysSince * 500);
+          if (suggestedKm) {
+            const newKmPerDay = Math.round((suggestedKm - previousKm) / daysSince);
+            message += ` | Sugerencia: ${suggestedKm.toLocaleString()} (${newKmPerDay} km/d)`;
+          } else {
+            message += ' | Considera DESCARTAR este registro';
+            shouldSkip = true;
+          }
+        } else if (kmPerDay !== null && kmPerDay > 300) {
+          status = 'WARNING';
+          message = `${kmPerDay} km/día es alto - Verificar`;
+        } else if (kmPerDay !== null && kmPerDay === 0 && daysSince > 0) {
+          status = 'WARNING';
+          message = `Sin cambio de KM en ${daysSince} días`;
+        }
+        
+        parsed.push({
+          date: record.dateRaw,
+          km: record.km,
+          originalKm: record.km,
+          code: code,
+          plate: record.plate,
+          status,
+          message,
+          previousKm,
+          daysSince,
+          kmPerDay,
+          suggestedKm,
+          editable: true,
+          batchSize: sortedRecords.length,
+          batchIndex: idx + 1,
+          shouldSkip
+        });
+      });
     });
 
     setPreview(parsed);
@@ -3598,17 +3742,26 @@ const DataLoad = ({ fleet, setFleet, setVariableHistory }) => {
   };
 
   const applyChanges = () => {
-    let recordsToProcess = preview;
+    // Always filter out records marked to skip or with ERROR status
+    let recordsToProcess = preview.filter(p => p.status !== 'ERROR' && !p.shouldSkip);
+    
+    if (recordsToProcess.length === 0) {
+      alert("❌ No hay registros válidos para procesar.");
+      return;
+    }
 
-    if (hasErrors) {
-      if (!window.confirm("Hay errores en algunos registros. ¿Desea omitirlos y cargar SOLO los registros válidos (OK)?")) {
-        return;
-      }
-      // Filter only valid records
-      recordsToProcess = preview.filter(p => p.status !== 'ERROR');
-      
-      if (recordsToProcess.length === 0) {
-        alert("No hay registros válidos para procesar.");
+    // Check if we're excluding any records and ask for confirmation
+    const totalRecords = preview.length;
+    const excludedRecords = totalRecords - recordsToProcess.length;
+    
+    if (excludedRecords > 0) {
+      if (!window.confirm(
+        `📊 Resumen:\n` +
+        `• Total registros: ${totalRecords}\n` +
+        `• A cargar: ${recordsToProcess.length}\n` +
+        `• A omitir: ${excludedRecords}\n\n` +
+        `¿Desea continuar?`
+      )) {
         return;
       }
     }
@@ -3619,104 +3772,460 @@ const DataLoad = ({ fleet, setFleet, setVariableHistory }) => {
       recordsToProcess.forEach(update => {
         const index = newFleet.findIndex(v => v.code === update.code || v.plate === update.plate);
         if (index !== -1) {
+          console.log(`[Fleet] Actualizando ${update.plate}: ${newFleet[index].mileage} → ${update.km} km`);
           newFleet[index] = {
             ...newFleet[index],
             mileage: update.km
-            // Do NOT update lastMaintenance here - it should only change when a maintenance OT is closed
           };
         }
       });
       return newFleet;
     });
 
-    // 2. Save to History
-    setVariableHistory(prev => [...prev, ...recordsToProcess.map(p => ({
-      ...p,
-      uploadDate: new Date().toISOString()
-    }))]);
+    // 2. Save to History with localStorage backup
+    setVariableHistory(prev => {
+      const updated = [...prev, ...recordsToProcess.map(p => ({
+        date: p.date,
+        km: p.km,
+        code: p.code,
+        plate: p.plate,
+        uploadDate: new Date().toISOString()
+      }))];
+      
+      // Also save to localStorage
+      localStorage.setItem('variable_history', JSON.stringify(updated));
+      console.log(`[History] ${recordsToProcess.length} registros guardados`);
+      
+      return updated;
+    });
 
-    alert(`Se procesaron ${recordsToProcess.length} registros correctamente.`);
-    setPasteData('');
-    setPreview([]);
-    setHasErrors(false);
+    setIsProcessing(true);
+    
+    // Show success message and reset form
+    setTimeout(() => {
+      alert(`✅ ${recordsToProcess.length} registro(s) cargado(s) exitosamente.\n\nFlota actualizada.`);
+      setPasteData('');
+      setPreview([]);
+      setHasErrors(false);
+      setFilterView('ALL');
+      setIsProcessing(false);
+    }, 300);
   };
 
-  return (
-    <div className="p-6 space-y-6">
-      <h2 className="text-2xl font-bold text-slate-800 flex items-center gap-2">
-        <Upload className="text-blue-600" /> Carga Masiva de Variables
-      </h2>
+  // Auto-parse on paste
+  const handlePaste = (e) => {
+    e.preventDefault();
+    const text = e.clipboardData.getData('text');
+    setPasteData(text);
+    
+    // Parse immediately with the pasted text (not waiting for state update)
+    parseDataFromText(text);
+  };
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="bg-white p-6 rounded-lg shadow">
-          <h3 className="font-semibold mb-4">1. Pegar Datos (Excel)</h3>
-          <p className="text-sm text-slate-500 mb-2">
-            Formato esperado: <strong>Fecha | Kilometraje | Placa | Código</strong><br/>
-            <span className="text-xs italic">El sistema tomará automáticamente el registro más reciente por placa.</span>
-          </p>
-          <textarea 
-            className="w-full h-64 p-4 border rounded-lg font-mono text-sm bg-slate-50 whitespace-pre"
-            placeholder={`12/12/2025 08:20:25\t33.394,000\tNTW668\t\n12/12/2025 08:13:40\t28.577,000\tNNL597\t`}
-            value={pasteData}
-            onChange={e => setPasteData(e.target.value)}
-          />
-          <button 
-            onClick={parseData}
-            className="mt-4 bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 w-full"
-          >
-            Validar y Previsualizar
-          </button>
+  // Parse from explicit text input (for paste handler)
+  const parseDataFromText = (textInput) => {
+    const rows = textInput.trim().split('\n');
+    let errorFound = false;
+    const groupedRecords = {};
+
+    // Parse ALL records and group by plate (no deduplication yet)
+    rows.forEach(row => {
+      const cols = row.split(/\t/);
+      if (cols.length < 3) return;
+
+      const dateRaw = cols[0]?.trim();
+      const kmRaw = cols[1]?.trim();
+      const plate = cols[2]?.trim();
+      
+      const kmClean = kmRaw?.split(',')[0].replace(/\./g, '');
+      const newKm = parseInt(kmClean) || 0;
+
+      const [d, t] = dateRaw.split(' ');
+      const [day, month, year] = d.split('/');
+      const isoDate = `${year}-${month}-${day}T${t}`;
+      const dateObj = new Date(isoDate);
+
+      if (!groupedRecords[plate]) {
+        groupedRecords[plate] = [];
+      }
+      
+      groupedRecords[plate].push({
+        dateRaw,
+        dateObj,
+        km: newKm,
+        plate,
+        originalRow: row
+      });
+    });
+
+    // Analyze sequence for each vehicle
+    const parsed = [];
+    
+    Object.entries(groupedRecords).forEach(([plate, records]) => {
+      const sortedRecords = records.sort((a, b) => a.dateObj - b.dateObj);
+      const currentVehicle = fleet.find(v => v.plate === plate);
+      const code = currentVehicle?.code || '---';
+      const storedKm = currentVehicle?.mileage || 0;
+      
+      if (!currentVehicle) {
+        sortedRecords.forEach(record => {
+          parsed.push({
+            date: record.dateRaw,
+            km: record.km,
+            originalKm: record.km,
+            code: '---',
+            plate: record.plate,
+            status: 'ERROR',
+            message: 'Vehículo no encontrado',
+            previousKm: null,
+            daysSince: null,
+            kmPerDay: null,
+            suggestedKm: null,
+            editable: true,
+            batchSize: sortedRecords.length,
+            shouldSkip: true
+          });
+        });
+        errorFound = true;
+        return;
+      }
+      
+      const lastStored = getLastKnownVariable(plate, code, sortedRecords[0].dateObj);
+      const fullSequence = [];
+      if (lastStored) {
+        fullSequence.push({
+          dateObj: lastStored.dateObj,
+          km: lastStored.km,
+          isStored: true
+        });
+      } else if (storedKm > 0) {
+        fullSequence.push({
+          dateObj: new Date(0),
+          km: storedKm,
+          isStored: true
+        });
+      }
+      fullSequence.push(...sortedRecords.map(r => ({ ...r, isStored: false })));
+      
+      sortedRecords.forEach((record, idx) => {
+        let status = 'VALID';
+        let message = 'OK';
+        let previousKm = null;
+        let daysSince = null;
+        let kmPerDay = null;
+        let suggestedKm = null;
+        let shouldSkip = false;
+        
+        const recordIdx = fullSequence.findIndex(r => r === record);
+        if (recordIdx > 0) {
+          const prevRecord = fullSequence[recordIdx - 1];
+          previousKm = prevRecord.km;
+          daysSince = Math.floor((record.dateObj - prevRecord.dateObj) / (1000 * 60 * 60 * 24));
+          
+          if (daysSince > 0) {
+            const kmDiff = record.km - previousKm;
+            kmPerDay = Math.round(kmDiff / daysSince);
+          }
+        }
+        
+        if (record.km < storedKm) {
+          status = 'ERROR';
+          message = `Retrocede vs almacenado (${storedKm.toLocaleString()})`;
+          errorFound = true;
+          shouldSkip = true;
+          
+          suggestedKm = suggestCorrection(record.km, storedKm, 5000);
+          if (suggestedKm) {
+            message += ` - ¿${suggestedKm.toLocaleString()}?`;
+            shouldSkip = false;
+          }
+        } else if (previousKm && record.km < previousKm) {
+          status = 'ERROR';
+          message = `Retrocede en el lote (${previousKm.toLocaleString()})`;
+          errorFound = true;
+          shouldSkip = true;
+        } else if (kmPerDay !== null && kmPerDay > 500) {
+          status = 'ERROR';
+          message = `${kmPerDay} km/día es anormal (${daysSince}d) - REVISAR`;
+          errorFound = true;
+          
+          suggestedKm = suggestCorrection(record.km, previousKm, daysSince * 500);
+          if (suggestedKm) {
+            const newKmPerDay = Math.round((suggestedKm - previousKm) / daysSince);
+            message += ` | Sugerencia: ${suggestedKm.toLocaleString()} (${newKmPerDay} km/d)`;
+          } else {
+            message += ' | Considera DESCARTAR este registro';
+            shouldSkip = true;
+          }
+        } else if (kmPerDay !== null && kmPerDay > 300) {
+          status = 'WARNING';
+          message = `${kmPerDay} km/día es alto - Verificar`;
+        } else if (kmPerDay !== null && kmPerDay === 0 && daysSince > 0) {
+          status = 'WARNING';
+          message = `Sin cambio de KM en ${daysSince} días`;
+        }
+        
+        parsed.push({
+          date: record.dateRaw,
+          km: record.km,
+          originalKm: record.km,
+          code: code,
+          plate: record.plate,
+          status,
+          message,
+          previousKm,
+          daysSince,
+          kmPerDay,
+          suggestedKm,
+          editable: true,
+          batchSize: sortedRecords.length,
+          batchIndex: idx + 1,
+          shouldSkip
+        });
+      });
+    });
+
+    setPreview(parsed);
+    setHasErrors(errorFound);
+  };
+
+  // Stats calculation
+  const stats = {
+    total: preview.length,
+    valid: preview.filter(p => p.status === 'VALID' && !p.shouldSkip).length,
+    warnings: preview.filter(p => p.status === 'WARNING').length,
+    errors: preview.filter(p => p.status === 'ERROR' || p.shouldSkip).length
+  };
+
+  // Filtered preview
+  const filteredPreview = preview.filter(row => {
+    if (filterView === 'ERRORS') return row.status === 'ERROR' || row.shouldSkip;
+    if (filterView === 'WARNINGS') return row.status === 'WARNING';
+    if (filterView === 'VALID') return row.status === 'VALID' && !row.shouldSkip;
+    return true; // ALL
+  });
+
+  return (
+    <div className="p-4 space-y-4">
+      <div className="flex items-center justify-between">
+        <h2 className="text-2xl font-bold text-slate-800 flex items-center gap-2">
+          <Upload className="text-blue-600" /> Carga de Variables
+        </h2>
+        {preview.length > 0 && (
+          <div className="flex gap-2 items-center text-sm">
+            <span className="px-2 py-1 bg-green-100 text-green-700 rounded font-semibold">{stats.valid} OK</span>
+            {stats.warnings > 0 && <span className="px-2 py-1 bg-yellow-100 text-yellow-700 rounded font-semibold">{stats.warnings} Alertas</span>}
+            {stats.errors > 0 && <span className="px-2 py-1 bg-red-100 text-red-700 rounded font-semibold">{stats.errors} Errores</span>}
+          </div>
+        )}
+      </div>
+
+      <div className="bg-white rounded-lg shadow">
+        <div className="p-4 border-b">
+          <div className="flex items-center gap-4">
+            <div className="flex-1">
+              <label className="block text-sm font-semibold mb-2">
+                📋 Pegar desde Excel (Ctrl+V) - Auto-valida instantáneamente
+              </label>
+              <textarea 
+                className="w-full h-24 p-3 border-2 border-dashed border-blue-300 rounded-lg font-mono text-xs bg-blue-50 focus:border-blue-500 focus:bg-white transition-colors"
+                placeholder="Copiar columnas de Excel y pegar aquí (Fecha | KM | Placa)&#10;&#10;Ejemplo:&#10;12/12/2025 08:20:25    33.394,000    NTW668&#10;12/12/2025 08:13:40    28.577,000    NNL597"
+                value={pasteData}
+                onChange={e => setPasteData(e.target.value)}
+                onPaste={handlePaste}
+              />
+            </div>
+            {pasteData && (
+              <button 
+                onClick={() => { setPasteData(''); setPreview([]); setHasErrors(false); }}
+                className="px-4 py-2 bg-slate-200 text-slate-700 rounded hover:bg-slate-300 text-sm font-semibold"
+              >
+                Limpiar
+              </button>
+            )}
+          </div>
         </div>
 
-        <div className="bg-white p-6 rounded-lg shadow flex flex-col">
-          <h3 className="font-semibold mb-4">2. Validación</h3>
-          <div className="flex-1 overflow-auto border rounded-lg bg-slate-50">
-            {preview.length > 0 ? (
-              <table className="w-full text-sm text-left">
-                <thead className="bg-slate-200 text-slate-700">
+        {preview.length > 0 && (
+          <>
+            <div className="p-4 bg-slate-50 border-b flex items-center justify-between">
+              <div className="flex gap-2">
+                <button 
+                  onClick={() => setFilterView('ALL')}
+                  className={`px-3 py-1 rounded text-sm font-semibold ${filterView === 'ALL' ? 'bg-slate-700 text-white' : 'bg-white text-slate-600 hover:bg-slate-200'}`}
+                >
+                  Todos ({stats.total})
+                </button>
+                <button 
+                  onClick={() => setFilterView('VALID')}
+                  className={`px-3 py-1 rounded text-sm font-semibold ${filterView === 'VALID' ? 'bg-green-600 text-white' : 'bg-white text-green-600 hover:bg-green-50'}`}
+                >
+                  Válidos ({stats.valid})
+                </button>
+                {stats.warnings > 0 && (
+                  <button 
+                    onClick={() => setFilterView('WARNINGS')}
+                    className={`px-3 py-1 rounded text-sm font-semibold ${filterView === 'WARNINGS' ? 'bg-yellow-600 text-white' : 'bg-white text-yellow-600 hover:bg-yellow-50'}`}
+                  >
+                    Alertas ({stats.warnings})
+                  </button>
+                )}
+                {stats.errors > 0 && (
+                  <button 
+                    onClick={() => setFilterView('ERRORS')}
+                    className={`px-3 py-1 rounded text-sm font-semibold ${filterView === 'ERRORS' ? 'bg-red-600 text-white' : 'bg-white text-red-600 hover:bg-red-50'}`}
+                  >
+                    Errores ({stats.errors})
+                  </button>
+                )}
+              </div>
+              <button 
+                onClick={applyChanges}
+                disabled={stats.valid === 0 || isProcessing}
+                className="px-6 py-2 bg-green-600 text-white rounded-lg font-bold hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+              >
+                {isProcessing ? '⏳ Procesando...' : `✓ Cargar ${stats.valid} Registro${stats.valid !== 1 ? 's' : ''}`}
+              </button>
+            </div>
+
+            <div className="overflow-auto" style={{ maxHeight: 'calc(100vh - 400px)' }}>
+              <h3 className="font-semibold mb-4">2. Validación Inteligente</h3>
+              <table className="w-full text-sm">
+                <thead className="bg-slate-700 text-white sticky top-0">
                   <tr>
-                    <th className="p-2">Estado</th>
-                    <th className="p-2">KM Nuevo</th>
-                    <th className="p-2">Vehículo</th>
-                    <th className="p-2">Mensaje</th>
+                    <th className="p-2 text-left">Estado</th>
+                    <th className="p-2 text-left">Fecha</th>
+                    <th className="p-2 text-left">Vehículo</th>
+                    <th className="p-2 text-right">KM Ant.</th>
+                    <th className="p-2 text-right">KM Nuevo</th>
+                    <th className="p-2 text-center">Días</th>
+                    <th className="p-2 text-center">km/d</th>
+                    <th className="p-2 text-left">Análisis</th>
+                    <th className="p-2 text-center">Acción</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {preview.map((row, i) => (
-                    <tr key={i} className={`border-b ${row.status === 'ERROR' ? 'bg-red-50' : ''}`}>
-                      <td className="p-2">
-                        {row.status === 'ERROR' ? (
-                          <span className="text-red-600 font-bold flex items-center gap-1"><AlertTriangle size={14}/> Error</span>
-                        ) : (
-                          <span className="text-green-600 font-bold flex items-center gap-1"><CheckCircle size={14}/> OK</span>
-                        )}
-                      </td>
-                      <td className="p-2 font-bold">{row.km}</td>
-                      <td className="p-2">
-                        <div>{row.plate}</div>
-                        <div className="text-xs text-slate-500">{row.code}</div>
-                      </td>
-                      <td className={`p-2 text-xs ${row.status === 'ERROR' ? 'text-red-600 font-bold' : 'text-slate-500'}`}>
-                        {row.message}
-                      </td>
-                    </tr>
-                  ))}
+                  {filteredPreview.map((row, i) => {
+                    const actualIndex = preview.indexOf(row);
+                    const bgColor = row.shouldSkip ? 'bg-red-100 line-through' : row.status === 'ERROR' ? 'bg-red-50' : row.status === 'WARNING' ? 'bg-yellow-50' : '';
+                    return (
+                      <tr key={actualIndex} className={`border-b hover:bg-slate-100 ${bgColor}`}>
+                        <td className="p-2">
+                          {row.shouldSkip ? (
+                            <span className="text-red-700 text-xs font-bold">⊗ Omitir</span>
+                          ) : row.status === 'ERROR' ? (
+                            <span className="text-red-600 text-xs font-bold">✕ Error</span>
+                          ) : row.status === 'WARNING' ? (
+                            <span className="text-yellow-600 text-xs font-bold">⚠ Alerta</span>
+                          ) : (
+                            <span className="text-green-600 text-xs font-bold">✓ OK</span>
+                          )}
+                        </td>
+                        <td className="p-2 text-xs text-slate-700">
+                          {row.date.split(' ')[0]}
+                          {row.batchSize > 1 && (
+                            <span className="ml-1 text-[10px] text-blue-600 font-semibold">
+                              [{row.batchIndex}/{row.batchSize}]
+                            </span>
+                          )}
+                        </td>
+                        <td className="p-2">
+                          <div className="font-semibold text-sm">{row.plate}</div>
+                          <div className="text-[10px] text-slate-500">{row.code}</div>
+                        </td>
+                        <td className="p-2 text-right text-slate-600 font-mono text-xs">
+                          {row.previousKm ? row.previousKm.toLocaleString() : '—'}
+                        </td>
+                        <td className="p-2 text-right">
+                          <input
+                            type="text"
+                            value={row.km.toLocaleString()}
+                            onChange={(e) => {
+                              const newKm = parseInt(e.target.value.replace(/\D/g, '')) || 0;
+                              setPreview(prev => {
+                                const updated = [...prev];
+                                updated[actualIndex] = { ...updated[actualIndex], km: newKm };
+                                return updated;
+                              });
+                            }}
+                            className="w-20 px-2 py-1 border rounded font-mono text-xs font-bold text-right focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          />
+                        </td>
+                        <td className="p-2 text-center text-xs text-slate-600">
+                          {row.daysSince !== null ? row.daysSince : '—'}
+                        </td>
+                        <td className="p-2 text-center font-mono text-xs font-bold">
+                          {row.kmPerDay !== null ? (
+                            <span className={`px-1 rounded ${row.kmPerDay > 500 ? 'bg-red-200 text-red-800' : row.kmPerDay > 300 ? 'bg-yellow-200 text-yellow-800' : 'text-slate-700'}`}>
+                              {row.kmPerDay}
+                            </span>
+                          ) : '—'}
+                        </td>
+                        <td className={`p-2 text-xs ${row.status === 'ERROR' ? 'text-red-700 font-semibold' : row.status === 'WARNING' ? 'text-yellow-700' : 'text-slate-600'}`}>
+                          {row.message}
+                        </td>
+                        <td className="p-2">
+                          <div className="flex gap-1 justify-center">
+                            {row.suggestedKm && !row.shouldSkip && (
+                              <button
+                                onClick={() => {
+                                  setPreview(prev => {
+                                    const updated = [...prev];
+                                    updated[actualIndex] = { ...updated[actualIndex], km: row.suggestedKm, shouldSkip: false };
+                                    return updated;
+                                  });
+                                }}
+                                className="px-2 py-1 bg-blue-500 text-white text-[10px] rounded hover:bg-blue-600 font-semibold"
+                                title={`Corregir a ${row.suggestedKm.toLocaleString()}`}
+                              >
+                                ✓ {row.suggestedKm.toLocaleString()}
+                              </button>
+                            )}
+                            {row.shouldSkip ? (
+                              <button
+                                onClick={() => {
+                                  setPreview(prev => {
+                                    const updated = [...prev];
+                                    updated[actualIndex] = { ...updated[actualIndex], shouldSkip: false };
+                                    return updated;
+                                  });
+                                }}
+                                className="px-2 py-1 bg-green-500 text-white text-[10px] rounded hover:bg-green-600 font-semibold"
+                              >
+                                ↺ Incluir
+                              </button>
+                            ) : row.status === 'ERROR' && (
+                              <button
+                                onClick={() => {
+                                  setPreview(prev => {
+                                    const updated = [...prev];
+                                    updated[actualIndex] = { ...updated[actualIndex], shouldSkip: true };
+                                    return updated;
+                                  });
+                                }}
+                                className="px-2 py-1 bg-slate-400 text-white text-[10px] rounded hover:bg-slate-500 font-semibold"
+                              >
+                                ⊗ Omitir
+                              </button>
+                            )}
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })}
                 </tbody>
               </table>
-            ) : (
-              <div className="h-full flex items-center justify-center text-slate-400 italic">
-                Pegue datos para validar...
-              </div>
-            )}
+            </div>
+          </>
+        )}
+
+        {preview.length === 0 && (
+          <div className="p-12 text-center text-slate-400">
+            <Upload size={48} className="mx-auto mb-4 opacity-50" />
+            <p className="text-lg font-semibold">Esperando datos...</p>
+            <p className="text-sm mt-2">Copia las columnas de Excel y pégalas arriba</p>
           </div>
-          <button 
-            onClick={applyChanges}
-            disabled={preview.length === 0}
-            className={`mt-4 text-white px-6 py-2 rounded w-full disabled:opacity-50 disabled:cursor-not-allowed font-bold ${hasErrors ? 'bg-yellow-600 hover:bg-yellow-700' : 'bg-green-600 hover:bg-green-700'}`}
-          >
-            {hasErrors ? 'Omitir Errores y Cargar Válidos' : 'Aplicar Cambios a la Flota'}
-          </button>
-        </div>
+        )}
       </div>
     </div>
   );

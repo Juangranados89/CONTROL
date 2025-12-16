@@ -3,16 +3,22 @@
 # You can also leave `repo` empty and connect the site in the Render dashboard.
 static_sites:
   - name: controlfleet
-    repo: <REPO_URL>
+    repo: https://github.com/Juangranados89/CONTROL
     branch: main
     buildCommand: npm install && npm run build
     publishPath: dist
     plan: free
-    healthCheckPath: /index.html
+    healthCheckPath: /
+    headers:
+      - path: /*
+        name: Cache-Control
+        value: public, max-age=0, must-revalidate
+      - path: /assets/*
+        name: Cache-Control
+        value: public, max-age=31536000, immutable
     env:
-      # Optional: pin Node version used by Render build image
       - key: NODE_VERSION
-        value: "18"
+        value: "20"
 
 # Notes:
 # - Build command installs dependencies and builds the app to `dist/` (Vite).
