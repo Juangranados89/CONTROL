@@ -41,6 +41,10 @@ import {
 } from 'recharts';
 import { INITIAL_FLEET, MAINTENANCE_ROUTINES } from './data';
 import api from './api';
+import UserInfoHeader from './components/UserInfoHeader';
+import Login from './components/Login';
+import NotificationBadge from './components/NotificationBadge';
+import ExportMenu from './components/ExportMenu';
 
 // --- Helper Functions ---
 
@@ -552,6 +556,65 @@ const Dashboard = ({ fleet, workOrders, variableHistory }) => {
             <CheckCircle size={16} />
             <span>{metrics.rangeCompliance}% de cumplimiento</span>
           </div>
+        </div>
+      </div>
+
+      {/* KPIs Detallados en Tiempo Real */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        {/* Costo Promedio - Placeholder */}
+        <div className="bg-white rounded-xl shadow-lg p-5 border-l-4 border-l-blue-500">
+          <div className="flex items-center justify-between mb-2">
+            <p className="text-sm font-semibold text-slate-600">Disponibilidad Flota</p>
+            <Activity className="w-5 h-5 text-blue-600" />
+          </div>
+          <p className="text-3xl font-bold text-slate-800">
+            {((fleet.filter(v => v.status === 'Activo').length / fleet.length) * 100).toFixed(1)}%
+          </p>
+          <p className="text-xs text-slate-500 mt-2">
+            {fleet.filter(v => v.status === 'Activo').length} de {fleet.length} vehículos
+          </p>
+        </div>
+
+        {/* Kilometraje Total */}
+        <div className="bg-white rounded-xl shadow-lg p-5 border-l-4 border-l-green-500">
+          <div className="flex items-center justify-between mb-2">
+            <p className="text-sm font-semibold text-slate-600">KM Total Flota</p>
+            <TrendingUp className="w-5 h-5 text-green-600" />
+          </div>
+          <p className="text-3xl font-bold text-slate-800">
+            {fleet.reduce((sum, v) => sum + (v.currentKm || 0), 0).toLocaleString()}
+          </p>
+          <p className="text-xs text-slate-500 mt-2">
+            Promedio: {fleet.length > 0 ? Math.round(fleet.reduce((sum, v) => sum + (v.currentKm || 0), 0) / fleet.length).toLocaleString() : 0} KM
+          </p>
+        </div>
+
+        {/* OT Completadas */}
+        <div className="bg-white rounded-xl shadow-lg p-5 border-l-4 border-l-purple-500">
+          <div className="flex items-center justify-between mb-2">
+            <p className="text-sm font-semibold text-slate-600">Tasa Cumplimiento</p>
+            <CheckCircle className="w-5 h-5 text-purple-600" />
+          </div>
+          <p className="text-3xl font-bold text-slate-800">
+            {metrics.completionRate}%
+          </p>
+          <p className="text-xs text-slate-500 mt-2">
+            {workOrders.filter(ot => ot.status === 'completed').length} OT completadas
+          </p>
+        </div>
+
+        {/* Alertas Activas */}
+        <div className="bg-white rounded-xl shadow-lg p-5 border-l-4 border-l-red-500">
+          <div className="flex items-center justify-between mb-2">
+            <p className="text-sm font-semibold text-slate-600">Alertas Críticas</p>
+            <AlertTriangle className="w-5 h-5 text-red-600" />
+          </div>
+          <p className="text-3xl font-bold text-slate-800">
+            {metrics.needsMaintenance + metrics.soonMaintenance}
+          </p>
+          <p className="text-xs text-slate-500 mt-2">
+            {metrics.needsMaintenance} vencidos, {metrics.soonMaintenance} próximos
+          </p>
         </div>
       </div>
 
@@ -4426,6 +4489,8 @@ const DatabaseView = ({ fleet, setFleet }) => {
 // --- Main App Component ---
 
 function App() {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [currentUser, setCurrentUser] = useState(null);
   const [currentView, setCurrentView] = useState('dashboard');
   const [fleet, setFleet] = useState([]);
   const [workOrders, setWorkOrders] = useState([]);
@@ -4434,6 +4499,27 @@ function App() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [isLoading, setIsLoading] = useState(true);
   const [apiError, setApiError] = useState(null);
+
+  // Check for existing session on mount
+  useEffect(() => {
+    const savedUser = localStorage.getItem('authenticated_user');
+    if (savedUser) {
+      const userData = JSON.parse(savedUser);
+      setCurrentUser(userData);
+      setIsAuthenticated(true);
+    }
+  }, []);
+
+  const handleLogin = (user) => {
+    setCurrentUser({ username: user.username, name: user.name });
+    setIsAuthenticated(true);
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem('authenticated_user');
+    setCurrentUser(null);
+    setIsAuthenticated(false);
+  };
 
   // Load initial data from API
   useEffect(() => {
@@ -4509,6 +4595,11 @@ function App() {
       default: return 'Dashboard - Métricas y Análisis';
     }
   };
+
+  // Show login if not authenticated
+  if (!isAuthenticated) {
+    return <Login onLogin={handleLogin} />;
+  }
 
   return (
     <div className="flex h-screen bg-slate-100">
@@ -4616,6 +4707,35 @@ function App() {
           <h2 className="text-xl font-semibold text-slate-800 capitalize">
             {getTitle()}
           </h2>
+          
+          {/* User Info Header - Horizontal Layout */}
+          <div className="flex items-center gap-2">
+            <UserInfoHeader horizontal={true} userName={currentUser?.name} />
+            <div className="h-6 w-px bg-slate-200 mx-1"></div>
+            <ExportMenu 
+              fleet={fleet}
+              workOrders={workOrders}
+              variableHistory={variableHistory}
+              dashboardStats={{
+                totalVehicles: fleet.length,
+                activeVehicles: fleet.filter(v => v.status === 'Activo').length,
+                completedOTs: workOrders.filter(ot => ot.status === 'completed').length,
+                pendingOTs: workOrders.filter(ot => ot.status !== 'completed').length,
+                totalKm: fleet.reduce((sum, v) => sum + (v.currentKm || 0), 0),
+                avgKm: fleet.length > 0 ? Math.round(fleet.reduce((sum, v) => sum + (v.currentKm || 0), 0) / fleet.length) : 0
+              }}
+            />
+            <NotificationBadge fleet={fleet} workOrders={workOrders} />
+            <button
+              onClick={handleLogout}
+              className="p-2 hover:bg-slate-100 rounded-lg transition-colors"
+              title="Cerrar Sesión"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-slate-600" viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M3 3a1 1 0 00-1 1v12a1 1 0 102 0V4a1 1 0 00-1-1zm10.293 9.293a1 1 0 001.414 1.414l3-3a1 1 0 000-1.414l-3-3a1 1 0 10-1.414 1.414L14.586 9H7a1 1 0 100 2h7.586l-1.293 1.293z" clipRule="evenodd" />
+              </svg>
+            </button>
+          </div>
         </header>
         
         {renderView()}
