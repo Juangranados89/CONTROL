@@ -40,6 +40,7 @@ import {
   AreaChart
 } from 'recharts';
 import { INITIAL_FLEET, MAINTENANCE_ROUTINES } from './data';
+import api from './api';
 
 // --- Helper Functions ---
 
@@ -3766,50 +3767,61 @@ const DataLoad = ({ fleet, setFleet, setVariableHistory }) => {
       }
     }
 
-    // 1. Update Fleet (Only mileage, NOT lastMaintenance)
-    setFleet(prev => {
-      const newFleet = [...prev];
-      recordsToProcess.forEach(update => {
-        const index = newFleet.findIndex(v => v.code === update.code || v.plate === update.plate);
-        if (index !== -1) {
-          console.log(`[Fleet] Actualizando ${update.plate}: ${newFleet[index].mileage} → ${update.km} km`);
-          newFleet[index] = {
-            ...newFleet[index],
-            mileage: update.km
-          };
-        }
-      });
-      return newFleet;
-    });
-
-    // 2. Save to History with localStorage backup
-    setVariableHistory(prev => {
-      const updated = [...prev, ...recordsToProcess.map(p => ({
-        date: p.date,
-        km: p.km,
-        code: p.code,
-        plate: p.plate,
-        uploadDate: new Date().toISOString()
-      }))];
-      
-      // Also save to localStorage
-      localStorage.setItem('variable_history', JSON.stringify(updated));
-      console.log(`[History] ${recordsToProcess.length} registros guardados`);
-      
-      return updated;
-    });
-
     setIsProcessing(true);
     
-    // Show success message and reset form
-    setTimeout(() => {
-      alert(`✅ ${recordsToProcess.length} registro(s) cargado(s) exitosamente.\n\nFlota actualizada.`);
-      setPasteData('');
-      setPreview([]);
-      setHasErrors(false);
-      setFilterView('ALL');
-      setIsProcessing(false);
-    }, 300);
+    // Save to API
+    const saveToApi = async () => {
+      try {
+        // Save variable history to API (which also updates vehicle mileage)
+        await api.saveVariables(recordsToProcess.map(p => ({
+          plate: p.plate,
+          code: p.code,
+          km: p.km,
+          date: p.date
+        })));
+        
+        // Reload fleet data to get updated mileages
+        const updatedFleet = await api.getVehicles();
+        setFleet(updatedFleet);
+        
+        // Reload variable history
+        const updatedHistory = await api.getVariables();
+        setVariableHistory(updatedHistory);
+        
+        alert(`✅ ${recordsToProcess.length} registro(s) guardado(s) en la base de datos.`);
+        
+      } catch (error) {
+        console.error('Error saving to API:', error);
+        alert(`⚠️ Error guardando en servidor: ${error.message}\n\nGuardando localmente como respaldo...`);
+        
+        // Fallback: Update local state
+        setFleet(prev => {
+          const newFleet = [...prev];
+          recordsToProcess.forEach(update => {
+            const index = newFleet.findIndex(v => v.code === update.code || v.plate === update.plate);
+            if (index !== -1) {
+              newFleet[index] = { ...newFleet[index], mileage: update.km };
+            }
+          });
+          localStorage.setItem('fleet_data', JSON.stringify(newFleet));
+          return newFleet;
+        });
+        
+        setVariableHistory(prev => {
+          const updated = [...prev, ...recordsToProcess];
+          localStorage.setItem('variable_history', JSON.stringify(updated));
+          return updated;
+        });
+      } finally {
+        setPasteData('');
+        setPreview([]);
+        setHasErrors(false);
+        setFilterView('ALL');
+        setIsProcessing(false);
+      }
+    };
+    
+    saveToApi();
   };
 
   // Auto-parse on paste
@@ -4414,47 +4426,61 @@ const DatabaseView = ({ fleet, setFleet }) => {
 // --- Main App Component ---
 
 function App() {
-  const [currentView, setCurrentView] = useState('dashboard'); // Default to dashboard view
-  
-  // Initialize state from localStorage or defaults
-  const [fleet, setFleet] = useState(() => {
-    const saved = localStorage.getItem('fleet_data');
-    return saved ? JSON.parse(saved) : INITIAL_FLEET;
-  });
-  
-  const [workOrders, setWorkOrders] = useState(() => {
-    const saved = localStorage.getItem('work_orders');
-    return saved ? JSON.parse(saved) : [];
-  });
-  
-  const [variableHistory, setVariableHistory] = useState(() => {
-    const saved = localStorage.getItem('variable_history');
-    return saved ? JSON.parse(saved) : [];
-  });
-  
-  const [routines, setRoutines] = useState(() => {
-    const saved = localStorage.getItem('maintenance_routines');
-    return saved ? JSON.parse(saved) : MAINTENANCE_ROUTINES;
-  });
-  
+  const [currentView, setCurrentView] = useState('dashboard');
+  const [fleet, setFleet] = useState([]);
+  const [workOrders, setWorkOrders] = useState([]);
+  const [variableHistory, setVariableHistory] = useState([]);
+  const [routines, setRoutines] = useState(MAINTENANCE_ROUTINES);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
+  const [apiError, setApiError] = useState(null);
 
-  // Persist data to localStorage when it changes
+  // Load initial data from API
   useEffect(() => {
-    localStorage.setItem('fleet_data', JSON.stringify(fleet));
-  }, [fleet]);
-
-  useEffect(() => {
-    localStorage.setItem('work_orders', JSON.stringify(workOrders));
-  }, [workOrders]);
-
-  useEffect(() => {
-    localStorage.setItem('variable_history', JSON.stringify(variableHistory));
-  }, [variableHistory]);
-
-  useEffect(() => {
-    localStorage.setItem('maintenance_routines', JSON.stringify(routines));
-  }, [routines]);
+    const loadData = async () => {
+      try {
+        setIsLoading(true);
+        setApiError(null);
+        
+        // Load vehicles
+        const vehicles = await api.getVehicles();
+        if (vehicles.length === 0) {
+          // If DB is empty, seed with initial data
+          console.log('Seeding database with initial fleet...');
+          await api.saveVehiclesBulk(INITIAL_FLEET);
+          const seededVehicles = await api.getVehicles();
+          setFleet(seededVehicles);
+        } else {
+          setFleet(vehicles);
+        }
+        
+        // Load work orders
+        const orders = await api.getWorkOrders();
+        setWorkOrders(orders);
+        
+        // Load variable history
+        const history = await api.getVariables();
+        setVariableHistory(history);
+        
+      } catch (error) {
+        console.error('Error loading data:', error);
+        setApiError(error.message);
+        
+        // Fallback to localStorage if API fails
+        const savedFleet = localStorage.getItem('fleet_data');
+        const savedOrders = localStorage.getItem('work_orders');
+        const savedHistory = localStorage.getItem('variable_history');
+        
+        setFleet(savedFleet ? JSON.parse(savedFleet) : INITIAL_FLEET);
+        setWorkOrders(savedOrders ? JSON.parse(savedOrders) : []);
+        setVariableHistory(savedHistory ? JSON.parse(savedHistory) : []);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    
+    loadData();
+  }, []);
 
   const handleCreateOT = (newOT) => {
     setWorkOrders(prev => [newOT, ...prev]);

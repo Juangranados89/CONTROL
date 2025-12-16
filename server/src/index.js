@@ -4,6 +4,7 @@ import dotenv from 'dotenv';
 import { PrismaClient } from '@prisma/client';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
+import apiRouter from './api.js';
 
 dotenv.config();
 
@@ -12,9 +13,12 @@ const prisma = new PrismaClient();
 const PORT = process.env.PORT || 4000;
 
 app.use(cors());
-app.use(express.json());
+app.use(express.json({ limit: '10mb' }));
 
-app.get('/health', (req, res) => res.json({ ok: true }));
+app.get('/health', (req, res) => res.json({ ok: true, timestamp: new Date().toISOString() }));
+
+// Mount API routes
+app.use('/api', apiRouter);
 
 app.post('/api/login', async (req, res) => {
   const { email, password } = req.body;
