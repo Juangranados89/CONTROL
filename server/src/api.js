@@ -79,6 +79,29 @@ router.post('/vehicles/bulk', async (req, res) => {
   }
 });
 
+// Delete vehicle by ID
+router.delete('/vehicles/:id', async (req, res) => {
+  try {
+    // Delete related records first
+    await prisma.variableHistory.deleteMany({
+      where: { vehicleId: req.params.id }
+    });
+    
+    await prisma.workOrder.deleteMany({
+      where: { vehicleId: req.params.id }
+    });
+    
+    // Delete vehicle
+    const vehicle = await prisma.vehicle.delete({
+      where: { id: req.params.id }
+    });
+    
+    res.json({ success: true, vehicle });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 // ============ VARIABLES (MILEAGE HISTORY) ============
 
 // Get variable history

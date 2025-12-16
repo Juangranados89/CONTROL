@@ -2412,10 +2412,27 @@ const AssetManager = ({ fleet, setFleet, routines = MAINTENANCE_ROUTINES }) => {
     setFleet(prev => prev.filter(v => v.id !== vehicleId));
   };
 
-  const handleClearAll = () => {
+  const handleClearAll = async () => {
     if (!window.confirm('⚠️ ¿Está seguro de LIMPIAR TODA LA BASE DE DATOS? Esta acción eliminará todos los activos y NO se puede deshacer.')) return;
     if (!window.confirm('⚠️⚠️ ÚLTIMA CONFIRMACIÓN: Se eliminarán todos los activos permanentemente.')) return;
-    setFleet([]);
+    
+    try {
+      // Delete all vehicles from API
+      const vehicles = await api.getVehicles();
+      for (const vehicle of vehicles) {
+        await api.request(`/api/vehicles/${vehicle.id}`, { method: 'DELETE' });
+      }
+      
+      // Clear local state
+      setFleet([]);
+      localStorage.removeItem('fleet_data');
+      alert('✅ Base de datos limpiada exitosamente.');
+    } catch (error) {
+      console.error('Error clearing database:', error);
+      alert('❌ Error al limpiar la base de datos. Limpiando estado local...');
+      setFleet([]);
+      localStorage.removeItem('fleet_data');
+    }
   };
 
   const parseImportData = (text) => {
@@ -4550,17 +4567,9 @@ function App() {
         setIsLoading(true);
         setApiError(null);
         
-        // Load vehicles
+        // Load vehicles (allow empty DB)
         const vehicles = await api.getVehicles();
-        if (vehicles.length === 0) {
-          // If DB is empty, seed with initial data
-          console.log('Seeding database with initial fleet...');
-          await api.saveVehiclesBulk(INITIAL_FLEET);
-          const seededVehicles = await api.getVehicles();
-          setFleet(seededVehicles);
-        } else {
-          setFleet(vehicles);
-        }
+        setFleet(vehicles); // Don't auto-seed, allow empty DB
         
         // Load work orders
         const orders = await api.getWorkOrders();
@@ -4574,12 +4583,12 @@ function App() {
         console.error('Error loading data:', error);
         setApiError(error.message);
         
-        // Fallback to localStorage if API fails
+        // Fallback to localStorage if API fails (but don't auto-populate)
         const savedFleet = localStorage.getItem('fleet_data');
         const savedOrders = localStorage.getItem('work_orders');
         const savedHistory = localStorage.getItem('variable_history');
         
-        setFleet(savedFleet ? JSON.parse(savedFleet) : INITIAL_FLEET);
+        setFleet(savedFleet ? JSON.parse(savedFleet) : []);
         setWorkOrders(savedOrders ? JSON.parse(savedOrders) : []);
         setVariableHistory(savedHistory ? JSON.parse(savedHistory) : []);
       } finally {
