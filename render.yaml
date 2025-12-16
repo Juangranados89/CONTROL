@@ -35,7 +35,6 @@ services:
   - type: web
     name: controlfleet
     runtime: static
-    plan: free
     repo: https://github.com/Juangranados89/CONTROL
     branch: main
     buildCommand: npm install && npm run build
