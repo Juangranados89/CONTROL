@@ -1,18 +1,17 @@
-## Render Configuration - Full Stack
+## Render Blueprint Configuration - Full Stack
 ## Frontend (Static) + Backend (Web Service) + PostgreSQL
 
-# Base de datos PostgreSQL
 databases:
   - name: controlfleet-db
     plan: free
     databaseName: controlfleet
     user: controlfleet
 
-# Backend API (Node + Express + Prisma)
 services:
+  # Backend API (Node + Express + Prisma)
   - type: web
     name: controlfleet-api
-    env: node
+    runtime: node
     plan: free
     repo: https://github.com/Juangranados89/CONTROL
     branch: main
@@ -32,15 +31,15 @@ services:
       - key: PORT
         value: "4000"
 
-# Frontend Static Site (React + Vite)
-static_sites:
-  - name: controlfleet
+  # Frontend Static Site (React + Vite)
+  - type: web
+    name: controlfleet
+    runtime: static
+    plan: free
     repo: https://github.com/Juangranados89/CONTROL
     branch: main
     buildCommand: npm install && npm run build
-    publishPath: dist
-    plan: free
-    healthCheckPath: /
+    staticPublishPath: dist
     headers:
       - path: /*
         name: Cache-Control
@@ -48,6 +47,10 @@ static_sites:
       - path: /assets/*
         name: Cache-Control
         value: public, max-age=31536000, immutable
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
     envVars:
       - key: NODE_VERSION
         value: "20"
