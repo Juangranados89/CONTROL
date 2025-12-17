@@ -44,12 +44,24 @@ router.get('/vehicles/:identifier', async (req, res) => {
 // Create or update vehicle
 router.post('/vehicles', async (req, res) => {
   try {
-    const { code, plate, model, brand, owner, mileage, lastMaintenance, lastMaintenanceDate, vin, area } = req.body;
+    const { 
+      code, plate, model, brand, owner, mileage, lastMaintenance, lastMaintenanceDate, 
+      vin, area, familiaTipologia, descripcion, serieChasis, serieMotor, anioModelo, 
+      estadoActual, ubicacionFrente 
+    } = req.body;
     
     const vehicle = await prisma.vehicle.upsert({
       where: { code },
-      update: { plate, model, brand, owner, mileage, lastMaintenance, lastMaintenanceDate, vin, area },
-      create: { code, plate, model, brand, owner, mileage, lastMaintenance, lastMaintenanceDate, vin, area }
+      update: { 
+        plate, model, brand, owner, mileage, lastMaintenance, lastMaintenanceDate, 
+        vin, area, familiaTipologia, descripcion, serieChasis, serieMotor, anioModelo, 
+        estadoActual, ubicacionFrente 
+      },
+      create: { 
+        code, plate, model, brand, owner, mileage, lastMaintenance, lastMaintenanceDate, 
+        vin, area, familiaTipologia, descripcion, serieChasis, serieMotor, anioModelo, 
+        estadoActual, ubicacionFrente 
+      }
     });
     
     res.json(vehicle);
@@ -58,22 +70,117 @@ router.post('/vehicles', async (req, res) => {
   }
 });
 
-// Bulk update vehicles
+// Bulk update vehicles (Resilient with filtering for CAMIONETA + PROPIO)
 router.post('/vehicles/bulk', async (req, res) => {
   try {
     const vehicles = req.body;
+    const results = [];
+    const filtered = [];
+    const errors = [];
     
-    const results = await Promise.all(
-      vehicles.map(v => 
-        prisma.vehicle.upsert({
+    for (const v of vehicles) {
+      try {
+        // Filtrado resiliente: solo CAMIONETAS y PROPIOS
+        const familia = (v.familiaTipologia || '').toUpperCase().trim();
+        const propietario = (v.owner || '').toUpperCase().trim();
+        
+        // Verificar que sea CAMIONETA
+        const esCamioneta = familia.includes('CAMIONETA') || familia.includes('PICKUP');
+        
+        // Verificar que sea PROPIO
+        const esPropio = propietario.includes('PROPIO') || propietario === 'PROPIO';
+        
+        if (!esCamioneta) {
+          filtered.push({ 
+            code: v.code, 
+            plate: v.plate,
+            reason: `Familia/Tipología "${v.familiaTipologia}" no es CAMIONETA` 
+          });
+          continue;
+        }
+        
+        if (!esPropio) {
+          filtered.push({ 
+            code: v.code, 
+            plate: v.plate,
+            reason: `Owner "${v.owner}" no es PROPIO` 
+          });
+          continue;
+        }
+        
+        // Validar campos requeridos
+        if (!v.code || !v.plate) {
+          errors.push({ 
+            record: v, 
+            error: 'Código y Placa son requeridos' 
+          });
+          continue;
+        }
+        
+        // Crear o actualizar vehículo
+        const vehicle = await prisma.vehicle.upsert({
           where: { code: v.code },
-          update: v,
-          create: v
-        })
-      )
-    );
+          update: {
+            plate: v.plate,
+            model: v.model || v.modeloLinea,
+            brand: v.brand || v.marca,
+            owner: v.owner,
+            familiaTipologia: v.familiaTipologia,
+            descripcion: v.descripcion,
+            serieChasis: v.serieChasis || v.vin,
+            serieMotor: v.serieMotor,
+            anioModelo: v.anioModelo,
+            estadoActual: v.estadoActual,
+            ubicacionFrente: v.ubicacionFrente,
+            mileage: v.mileage || 0,
+            lastMaintenance: v.lastMaintenance,
+            lastMaintenanceDate: v.lastMaintenanceDate,
+            vin: v.vin || v.serieChasis,
+            area: v.area || v.ubicacionFrente
+          },
+          create: {
+            code: v.code,
+            plate: v.plate,
+            model: v.model || v.modeloLinea || 'N/A',
+            brand: v.brand || v.marca,
+            owner: v.owner,
+            familiaTipologia: v.familiaTipologia,
+            descripcion: v.descripcion,
+            serieChasis: v.serieChasis || v.vin,
+            serieMotor: v.serieMotor,
+            anioModelo: v.anioModelo,
+            estadoActual: v.estadoActual,
+            ubicacionFrente: v.ubicacionFrente,
+            mileage: v.mileage || 0,
+            lastMaintenance: v.lastMaintenance,
+            lastMaintenanceDate: v.lastMaintenanceDate,
+            vin: v.vin || v.serieChasis,
+            area: v.area || v.ubicacionFrente
+          }
+        });
+        
+        results.push(vehicle);
+        
+      } catch (error) {
+        errors.push({ record: v, error: error.message });
+      }
+    }
     
-    res.json({ count: results.length, vehicles: results });
+    res.json({ 
+      success: true,
+      imported: results.length, 
+      vehicles: results,
+      filtered: filtered.length,
+      filteredRecords: filtered,
+      failed: errors.length,
+      errors: errors.length > 0 ? errors : undefined,
+      summary: {
+        total: vehicles.length,
+        imported: results.length,
+        filteredOut: filtered.length,
+        failed: errors.length
+      }
+    });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

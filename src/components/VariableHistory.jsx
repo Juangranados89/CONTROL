@@ -1,10 +1,47 @@
 import { useState, useMemo } from 'react';
-import { Calendar, Filter, Download, Search } from 'lucide-react';
+import { Calendar, Filter, Download, Search, Trash2 } from 'lucide-react';
 
-export default function VariableHistory({ variableHistory, fleet }) {
+export default function VariableHistory({ variableHistory, fleet, setVariableHistory, setFleet }) {
   const [searchTerm, setSearchTerm] = useState('');
   const [dateRange, setDateRange] = useState({ start: '', end: '' });
   const [selectedVehicle, setSelectedVehicle] = useState('ALL');
+
+  // Function to delete a record
+  const handleDeleteRecord = (recordId) => {
+    if (confirm('¿Está seguro de eliminar este registro del historial?')) {
+      const deletedRecord = variableHistory.find(h => h.id === recordId);
+      const updatedHistory = variableHistory.filter(h => h.id !== recordId);
+      setVariableHistory(updatedHistory);
+      localStorage.setItem('variable_history', JSON.stringify(updatedHistory));
+      
+      // Recalcular última variable del vehículo desde historial restante
+      if (deletedRecord && setFleet && fleet) {
+        const vehicleHistory = updatedHistory
+          .filter(h => h.plate === deletedRecord.plate || h.code === deletedRecord.code)
+          .sort((a, b) => {
+            const dateA = new Date(a.date?.split(' ')[0]?.split('/').reverse().join('-') + ' ' + (a.date?.split(' ')[1] || '00:00:00'));
+            const dateB = new Date(b.date?.split(' ')[0]?.split('/').reverse().join('-') + ' ' + (b.date?.split(' ')[1] || '00:00:00'));
+            return dateB - dateA;
+          });
+        
+        const lastRecord = vehicleHistory[0];
+        const vehicleIndex = fleet.findIndex(v => v.plate === deletedRecord.plate || v.code === deletedRecord.code);
+        
+        if (vehicleIndex !== -1) {
+          const updatedFleet = [...fleet];
+          updatedFleet[vehicleIndex] = {
+            ...updatedFleet[vehicleIndex],
+            mileage: lastRecord ? lastRecord.mileage || lastRecord.km : 0,
+            lastVariableDate: lastRecord ? lastRecord.date : ''
+          };
+          setFleet(updatedFleet);
+          localStorage.setItem('fleet_data', JSON.stringify(updatedFleet));
+        }
+      }
+      
+      alert('✅ Registro eliminado correctamente');
+    }
+  };
 
   // Filter and sort history
   const filteredHistory = useMemo(() => {
@@ -206,12 +243,13 @@ export default function VariableHistory({ variableHistory, fleet }) {
                   <th className="px-4 py-3 text-right text-sm font-semibold text-slate-700">Kilometraje</th>
                   <th className="px-4 py-3 text-right text-sm font-semibold text-slate-700">Cambio</th>
                   <th className="px-4 py-3 text-left text-sm font-semibold text-slate-700">Usuario</th>
+                  <th className="px-4 py-3 text-center text-sm font-semibold text-slate-700">Acción</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-200">
                 {filteredHistory.length === 0 ? (
                   <tr>
-                    <td colSpan="6" className="px-4 py-8 text-center text-slate-500">
+                    <td colSpan="7" className="px-4 py-8 text-center text-slate-500">
                       No hay registros para mostrar
                     </td>
                   </tr>
@@ -237,6 +275,15 @@ export default function VariableHistory({ variableHistory, fleet }) {
                       </td>
                       <td className="px-4 py-3 text-sm text-slate-600">
                         {record.updatedBy || 'Sistema'}
+                      </td>
+                      <td className="px-4 py-3 text-center">
+                        <button
+                          onClick={() => handleDeleteRecord(record.id)}
+                          className="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded transition-colors"
+                          title="Eliminar registro"
+                        >
+                          <Trash2 size={16} />
+                        </button>
                       </td>
                     </tr>
                   ))

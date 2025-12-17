@@ -20,7 +20,13 @@ import {
   Filter,
   BarChart3,
   Activity,
-  Users
+  Users,
+  History,
+  Download,
+  Check,
+  CheckCircle2,
+  Circle,
+  AlertCircle
 } from 'lucide-react';
 import { 
   LineChart, 
@@ -46,6 +52,7 @@ import Login from './components/Login';
 import NotificationBadge from './components/NotificationBadge';
 import ExportMenu from './components/ExportMenu';
 import VariableHistory from './components/VariableHistory';
+import BulkImportGrid from './components/BulkImportGrid';
 
 // --- Helper Functions ---
 
@@ -878,16 +885,23 @@ const Dashboard = ({ fleet, workOrders, variableHistory }) => {
   );
 };
 
-const PlanningView = ({ fleet, setFleet, onCreateOT, workOrders = [], setWorkOrders, variableHistory = [], routines = MAINTENANCE_ROUTINES }) => {
+const PlanningView = ({ fleet, setFleet, onCreateOT, workOrders = [], setWorkOrders, variableHistory = [], setVariableHistory, routines = MAINTENANCE_ROUTINES }) => {
   const [selectedVehicle, setSelectedVehicle] = useState(null);
   const [workshop, setWorkshop] = useState('');
   const [viewingHistoryVehicle, setViewingHistoryVehicle] = useState(null);
   const [showWeeklyPlan, setShowWeeklyPlan] = useState(false);
   const [showManualUpdate, setShowManualUpdate] = useState(false);
+  const [showGanttChart, setShowGanttChart] = useState(false);
+  const [bulkLoadMode, setBulkLoadMode] = useState('individual'); // 'individual' o 'masiva'
   const [showBulkLoad, setShowBulkLoad] = useState(false);
   const [bulkData, setBulkData] = useState('');
   const [manualData, setManualData] = useState({ code: '', plate: '', lastDate: '', lastKm: '' });
   const [statusFilter, setStatusFilter] = useState('ALL'); // ALL, VENCIDO, PROXIMO, OK
+  
+  // Estado para edición inline
+  const [editingCell, setEditingCell] = useState(null); // { vehicleId, field }
+  const [editValue, setEditValue] = useState('');
+  
   const [columnFilters, setColumnFilters] = useState({
     code: '',
     plate: '',
@@ -905,23 +919,235 @@ const PlanningView = ({ fleet, setFleet, onCreateOT, workOrders = [], setWorkOrd
     nextRoutine: false
   });
 
+  // Handler para doble clic en celda editable
+  const handleCellDoubleClick = (vehicleId, field, currentValue) => {
+    setEditingCell({ vehicleId, field });
+    setEditValue(currentValue || '');
+  };
+
+  // Handler para guardar cambio de celda
+  const handleCellSave = (vehicleId, field) => {
+    const vehicleIndex = fleet.findIndex(v => v.id === vehicleId);
+    if (vehicleIndex === -1) return;
+
+    const newFleet = [...fleet];
+    
+    if (field === 'lastMaintenance') {
+      const newValue = parseInt(editValue.replace(/[^\d]/g, '')) || 0;
+      newFleet[vehicleIndex] = {
+        ...newFleet[vehicleIndex],
+        lastMaintenance: newValue
+      };
+    } else if (field === 'lastMaintenanceDate') {
+      newFleet[vehicleIndex] = {
+        ...newFleet[vehicleIndex],
+        lastMaintenanceDate: editValue || null
+      };
+    }
+
+    setFleet(newFleet);
+    localStorage.setItem('fleet_data', JSON.stringify(newFleet));
+    setEditingCell(null);
+    setEditValue('');
+  };
+
+  // Handler para cancelar edición
+  const handleCellCancel = () => {
+    setEditingCell(null);
+    setEditValue('');
+  };
+
+  // Handler para teclas en edición
+  const handleCellKeyDown = (e, vehicleId, field) => {
+    if (e.key === 'Enter') {
+      handleCellSave(vehicleId, field);
+    } else if (e.key === 'Escape') {
+      handleCellCancel();
+    }
+  };
+
+  // Estado para edición completa de vehículo
+  const [editingVehicle, setEditingVehicle] = useState(null);
+  const [vehicleEditData, setVehicleEditData] = useState({});
+
+  // Abrir modal de edición
+  const handleRowClick = (vehicle) => {
+    // Obtener la última fecha de variable del historial
+    const lastVarEntry = variableHistory
+      .filter(v => v.code === vehicle.code || v.plate === vehicle.plate)
+      .sort((a, b) => new Date(b.date) - new Date(a.date))[0];
+    
+    setEditingVehicle(vehicle);
+    setVehicleEditData({
+      code: vehicle.code || '',
+      plate: vehicle.plate || '',
+      model: vehicle.model || '',
+      brand: vehicle.brand || '',
+      year: vehicle.year || new Date().getFullYear(),
+      mileage: vehicle.mileage || 0,
+      lastVariableDate: lastVarEntry?.date || '',
+      lastMaintenance: vehicle.lastMaintenance || 0,
+      lastMaintenanceDate: vehicle.lastMaintenanceDate || '',
+      status: vehicle.status || 'OPERATIVO',
+      driver: vehicle.driver || 'PENDIENTE',
+      vin: vehicle.vin || '',
+      area: vehicle.area || ''
+    });
+  };
+
+  // Guardar edición completa
+  const handleVehicleEditSave = () => {
+    if (!editingVehicle) return;
+    
+    const vehicleIndex = fleet.findIndex(v => v.id === editingVehicle.id);
+    if (vehicleIndex === -1) return;
+
+    const newMileage = parseInt(vehicleEditData.mileage) || 0;
+    const oldMileage = editingVehicle.mileage || 0;
+    const mileageChanged = newMileage !== oldMileage;
+    const lastMaintenanceChanged = (parseInt(vehicleEditData.lastMaintenance) || 0) !== (editingVehicle.lastMaintenance || 0);
+
+    const newFleet = [...fleet];
+    newFleet[vehicleIndex] = {
+      ...newFleet[vehicleIndex],
+      mileage: newMileage,
+      lastVariableDate: vehicleEditData.lastVariableDate || newFleet[vehicleIndex].lastVariableDate,
+      maintenanceCycle: parseInt(vehicleEditData.maintenanceCycle) || newFleet[vehicleIndex].maintenanceCycle || 5000,
+      lastMaintenance: parseInt(vehicleEditData.lastMaintenance) || 0,
+      lastMaintenanceDate: vehicleEditData.lastMaintenanceDate || newFleet[vehicleIndex].lastMaintenanceDate,
+      year: parseInt(vehicleEditData.year) || new Date().getFullYear()
+    };
+
+    setFleet(newFleet);
+    localStorage.setItem('fleet_data', JSON.stringify(newFleet));
+
+    // Si cambió el kilometraje, registrar en historial de variables
+    if (mileageChanged && setVariableHistory) {
+      const now = new Date();
+      let dateStr = vehicleEditData.lastVariableDate;
+      
+      // Si no hay fecha o está vacía, usar fecha actual
+      if (!dateStr || dateStr.trim() === '') {
+        dateStr = `${now.getDate().toString().padStart(2, '0')}/${(now.getMonth() + 1).toString().padStart(2, '0')}/${now.getFullYear()}`;
+      }
+      
+      const timeStr = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}:${now.getSeconds().toString().padStart(2, '0')}`;
+      
+      const newRecord = {
+        id: Date.now(),
+        code: newFleet[vehicleIndex].code,
+        plate: newFleet[vehicleIndex].plate,
+        date: `${dateStr} ${timeStr}`,
+        km: newMileage,
+        mileage: newMileage,
+        change: newMileage - oldMileage,
+        updatedBy: 'Manual',
+        source: 'MANUAL_EDIT'
+      };
+      
+      setVariableHistory(prev => {
+        const updated = [...prev, newRecord];
+        localStorage.setItem('variable_history', JSON.stringify(updated));
+        return updated;
+      });
+    }
+
+    alert(`✅ Datos actualizados correctamente\n${newFleet[vehicleIndex].plate} - ${newFleet[vehicleIndex].code}`);
+    setEditingVehicle(null);
+    setVehicleEditData({});
+  };
   const handleBulkLoad = () => {
     const rows = bulkData.trim().split('\n');
     const newFleet = [...fleet];
     let updatesCount = 0;
+    let skippedCount = 0;
+    let notFoundList = [];
 
-    rows.forEach(row => {
+    // Debug: mostrar primera fila para verificar formato
+    console.log('=== DEBUG CARGA MASIVA ===');
+    console.log('Total filas:', rows.length);
+    console.log('Primera fila (primeras 10 cols):', rows[0]?.split(/\t/).slice(0, 10));
+
+    rows.forEach((row, idx) => {
       const cols = row.split(/\t/);
-      if (cols.length < 9) return; // Need at least 9 columns
+      
+      // Detectar y omitir encabezados
+      if (idx === 0) {
+        const firstCol = cols[0]?.trim().toUpperCase();
+        if (firstCol.includes('INTERNO') || firstCol.includes('CODIGO') || firstCol.includes('#INTERNO')) {
+          console.log('Encabezado detectado, omitiendo fila 0');
+          return;
+        }
+      }
 
-      // #INTERNO | PLACA | DESCRIPCION | FRECUENCIA | CLASE | MARCA | UBICACIÓN | FECHA ACT. | HR ULTIMA EJEC. | FECHA ULTIMA EJEC.
-      // Index:  0       1            2            3         4       5          6             7                 8                    9
+      console.log(`Fila ${idx}: ${cols.length} columnas`);
+
+      if (cols.length < 10) {
+        console.log(`Fila ${idx}: Solo ${cols.length} columnas, omitiendo`);
+        skippedCount++;
+        return;
+      }
+
+      // Formato EXACTO del Excel del cliente:
+      // 0: #INTERNO | 1: PLACA | 2: DESCRIPCION | 3: FRECUENCIA | 4: CLA | 5: MARCA | 6: UBICACIÓN | 7: DILER | 8: FECHA ACT | 9: HR/KM | 10: HR ULTIMA EJEC | 11: FECHA ULTIMA EJEC
       const code = cols[0]?.trim();
       const plate = cols[1]?.trim();
-      const lastExecValRaw = cols[8]?.trim(); // HR ULTIMA EJECUCION (índice 8)
-      const lastExecDateRaw = cols[9]?.trim(); // FECHA ULTIMA EJECUCION (índice 9)
+      const frequencyRaw = cols[3]?.trim(); // FRECUENCIA (índice 3) - Ciclo de mantenimiento (5000, 7000, 10000)
+      const variableDateRaw = cols[8]?.trim(); // FECHA ACTUALIZACIÓN (índice 8) - Fecha de la variable
+      const mileageRaw = cols[9]?.trim(); // HR/KM (índice 9) - Variable actual
+      const lastExecValRaw = cols.length > 10 ? cols[10]?.trim() : null; // HR ULTIMA EJECUCION (índice 10)
+      const lastExecDateRaw = cols.length > 11 ? cols[11]?.trim() : null; // FECHA ULTIMA EJECUCION (índice 11)
 
-      if (!code && !plate) return;
+      // Parsear frecuencia/ciclo
+      let frequency = 5000; // Default
+      if (frequencyRaw) {
+        const freq = parseInt(frequencyRaw.replace(/[,\.\s]/g, '')) || 5000;
+        frequency = freq;
+      }
+
+      console.log(`Fila ${idx}: Code=${code}, Plate=${plate}, Freq=${frequency}, Mileage=${mileageRaw}, VarDate=${variableDateRaw}`);
+
+      if (!code && !plate) {
+        console.log(`Fila ${idx}: Sin código ni placa, omitiendo`);
+        skippedCount++;
+        return;
+      }
+
+      // Parsear kilometraje actual (variable actual) - SIEMPRE actualizar, incluso si es 0
+      let mileage = 0;
+      if (mileageRaw && mileageRaw !== '#N/D') {
+        mileage = parseInt(mileageRaw.replace(/[,\.\s]/g, '')) || 0;
+      }
+
+      // Parsear fecha de variable (DD/MM/YYYY)
+      let variableDate = null;
+      if (variableDateRaw && variableDateRaw !== '#N/D') {
+        const dateParts = variableDateRaw.split('/');
+        if (dateParts.length === 3) {
+          const day = dateParts[0].padStart(2, '0');
+          const month = dateParts[1].padStart(2, '0');
+          const year = dateParts[2];
+          variableDate = `${day}/${month}/${year}`;
+        }
+      }
+
+      // Parsear último mantenimiento ejecutado - SIEMPRE actualizar, incluso si es 0
+      let lastExecVal = 0;
+      if (lastExecValRaw && lastExecValRaw !== '#N/D') {
+        lastExecVal = parseInt(lastExecValRaw.replace(/[,\.\s]/g, '')) || 0;
+      }
+
+      // Parsear fecha de último mtto (DD/MM/YYYY)
+      let lastExecDate = null;
+      if (lastExecDateRaw && lastExecDateRaw !== '#N/D') {
+        const dateParts = lastExecDateRaw.split('/');
+        if (dateParts.length === 3) {
+          const day = dateParts[0].padStart(2, '0');
+          const month = dateParts[1].padStart(2, '0');
+          const year = dateParts[2];
+          lastExecDate = `${day}/${month}/${year}`;
+        }
+      }
 
       // Search by code OR plate
       const vehicleIndex = newFleet.findIndex(v => 
@@ -930,37 +1156,81 @@ const PlanningView = ({ fleet, setFleet, onCreateOT, workOrders = [], setWorkOrd
       );
       
       if (vehicleIndex !== -1) {
-        const lastExecVal = parseInt(lastExecValRaw?.replace(/,/g, '').replace(/\./g, '')) || 0;
+        console.log(`✓ ${code} / ${plate} -> Freq: ${frequency}, Variable: ${mileage} (${variableDate}), Último Mtto: ${lastExecVal} (${lastExecDate})`);
         
-        // Parse date (handles DD/MM/YYYY format)
-        let lastExecDate = null;
-        if (lastExecDateRaw && lastExecDateRaw !== '#N/D') {
-          const dateParts = lastExecDateRaw.split('/');
-          if (dateParts.length === 3) {
-            // Convert DD/MM/YYYY to YYYY-MM-DD
-            lastExecDate = `${dateParts[2]}-${dateParts[1].padStart(2, '0')}-${dateParts[0].padStart(2, '0')}`;
-          }
-        }
-        
-        if (lastExecVal > 0) {
-          newFleet[vehicleIndex] = {
-            ...newFleet[vehicleIndex],
-            lastMaintenance: lastExecVal,
-            lastMaintenanceDate: lastExecDate // Store the date too
-          };
-          updatesCount++;
-        }
+        // SIEMPRE actualizar, incluso si el valor es 0 (para limpiar datos incorrectos)
+        newFleet[vehicleIndex] = {
+          ...newFleet[vehicleIndex],
+          maintenanceCycle: frequency, // Ciclo de mantenimiento específico (5000, 7000, 10000)
+          mileage: mileage, // Kilometraje actual / Variable actual
+          lastVariableDate: variableDate, // Fecha de la variable
+          lastMaintenance: lastExecVal, // Último mtto ejecutado
+          lastMaintenanceDate: lastExecDate // Fecha último mtto
+        };
+        updatesCount++;
+      } else {
+        console.log(`✗ No encontrado: ${code} / ${plate}`);
+        notFoundList.push(code || plate);
+        skippedCount++;
       }
     });
 
+    console.log(`=== FIN: ${updatesCount} actualizados, ${skippedCount} omitidos ===`);
+    if (notFoundList.length > 0) {
+      console.log('No encontrados:', notFoundList.join(', '));
+    }
+
+    // Registrar variables en historial
+    const updatedHistory = [...variableHistory];
+    const now = new Date();
+    const dateStr = `${now.getDate().toString().padStart(2, '0')}/${(now.getMonth() + 1).toString().padStart(2, '0')}/${now.getFullYear()}`;
+    const timeStr = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
+
+    newFleet.forEach((vehicle, idx) => {
+      if (fleet[idx].mileage !== vehicle.mileage && vehicle.mileage > 0) {
+        updatedHistory.push({
+          id: updatedHistory.length + 1,
+          code: vehicle.code,
+          plate: vehicle.plate,
+          date: dateStr,
+          time: timeStr,
+          mileage: vehicle.mileage,
+          source: 'BULK_IMPORT'
+        });
+      }
+    });
+
+    // Actualizar estado inmediatamente
     setFleet(newFleet);
-    alert(`Se actualizaron ${updatesCount} vehículos con información de último mantenimiento.`);
+    setVariableHistory(updatedHistory);
+    
+    // Guardar en localStorage de inmediato
+    localStorage.setItem('fleet_data', JSON.stringify(newFleet));
+    localStorage.setItem('variable_history', JSON.stringify(updatedHistory));
+    
+    // Intentar guardar en API en segundo plano
+    newFleet.forEach(async (vehicle) => {
+      try {
+        // Actualizar SIEMPRE, incluso si los valores son 0 (puede haber fecha sin kilometraje)
+        await api.updateVehicle(vehicle.id, {
+          maintenanceCycle: vehicle.maintenanceCycle,
+          mileage: vehicle.mileage,
+          lastVariableDate: vehicle.lastVariableDate,
+          lastMaintenance: vehicle.lastMaintenance,
+          lastMaintenanceDate: vehicle.lastMaintenanceDate
+        });
+      } catch (error) {
+        console.warn('Error actualizando en API (guardado local OK):', error);
+      }
+    });
+    
+    alert(`✅ Se actualizaron ${updatesCount} vehículos con información de variable y último mantenimiento.`);
     setShowBulkLoad(false);
     setBulkData('');
   };
 
   // Helper to get next routine using the passed routines prop
-  const getNextRoutineLocal = (mileage, vehicleModel = '', lastMaintenance = 0) => {
+  const getNextRoutineLocal = (mileage, vehicleModel = '', lastMaintenance = 0, maintenanceCycle = null) => {
     let intervals = Object.keys(routines).map(Number).sort((a, b) => a - b);
 
     // Filter intervals based on model availability
@@ -976,31 +1246,18 @@ const PlanningView = ({ fleet, setFleet, onCreateOT, workOrders = [], setWorkOrd
 
     if (intervals.length === 0) return { km: 5000, name: 'Mantenimiento Estándar', items: [], supplies: [] };
 
-    const cycle = intervals[0]; // Assume smallest interval is the cycle (e.g. 5000 or 7000)
+    // Use the specific maintenance cycle if provided, otherwise use the first interval
+    const cycle = maintenanceCycle || intervals[0];
     let targetKm;
 
-    // 1. Calculate Target KM
+    // 1. Calculate Target KM - LÓGICA DEL CLIENTE
     if (lastMaintenance > 0) {
-        // If we have last maintenance, next is Last + Cycle
+        // PRÓXIMO = ÚLTIMO MTTO + CICLO
         targetKm = lastMaintenance + cycle;
-        
-        // Logic to prevent "High Negatives" (e.g. Last=100k, Current=236k -> Target=107k -> Remaining=-129k)
-        // If the calculated target is way behind current mileage (more than 1 cycle),
-        // we assume the schedule should "catch up" to the current mileage.
-        // We find the most recent standard interval that was passed.
-        if (targetKm < mileage - cycle) {
-             // Snap to the nearest previous multiple of cycle
-             targetKm = Math.floor(mileage / cycle) * cycle;
-        }
     } else {
-        // No history: Find next interval > mileage
-        const next = intervals.find(interval => interval > mileage);
-        if (next) {
-            targetKm = next;
-        } else {
-            // Mileage exceeds all defined intervals: Calculate next multiple
-            targetKm = Math.ceil((mileage + 1) / cycle) * cycle;
-        }
+        // Sin historial: PRÓXIMO = CICLO BASE (no múltiplos)
+        // Ejemplo: Si ciclo es 10000 y variable es 17782, próximo es 10000 (desfase -7782)
+        targetKm = cycle;
     }
     
     // 2. Find Routine Definition (Content)
@@ -1076,7 +1333,7 @@ const PlanningView = ({ fleet, setFleet, onCreateOT, workOrders = [], setWorkOrd
   const confirmGeneration = () => {
     if (!selectedVehicle) return;
     
-    const routine = getNextRoutineLocal(selectedVehicle.mileage, selectedVehicle.model, selectedVehicle.lastMaintenance);
+    const routine = getNextRoutineLocal(selectedVehicle.mileage, selectedVehicle.model, selectedVehicle.lastMaintenance, selectedVehicle.maintenanceCycle);
     
     // Generate consecutive ID
     const maxId = workOrders.length > 0 
@@ -1166,7 +1423,7 @@ const PlanningView = ({ fleet, setFleet, onCreateOT, workOrders = [], setWorkOrd
   const weeklyPlan = useMemo(() => {
     // 1. Identify candidates (Remaining < 3000km or Vencido)
     const candidates = pickups.map(v => {
-        const next = getNextRoutineLocal(v.mileage, v.model, v.lastMaintenance);
+        const next = getNextRoutineLocal(v.mileage, v.model, v.lastMaintenance, v.maintenanceCycle);
         return { ...v, nextRoutine: next, remaining: next.km - v.mileage };
     }).filter(v => v.remaining < 3000);
 
@@ -1180,7 +1437,7 @@ const PlanningView = ({ fleet, setFleet, onCreateOT, workOrders = [], setWorkOrd
     });
     
     return plan;
-  }, [pickups, routines]);
+  }, [pickups, routines, fleet]);
 
   const handleManualUpdateSubmit = () => {
     const { code, plate, lastDate, lastKm } = manualData;
@@ -1230,15 +1487,51 @@ const PlanningView = ({ fleet, setFleet, onCreateOT, workOrders = [], setWorkOrd
       {/* Modal for Manual Update */}
       {showManualUpdate && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-white p-6 rounded-lg shadow-xl w-96">
-            <h3 className="text-lg font-bold mb-4 flex items-center gap-2">
-              <Upload size={20} className="text-blue-600"/> Cargar Datos Históricos
-            </h3>
-            <p className="text-sm text-slate-600 mb-4">
-              Actualice manualmente el último mantenimiento conocido.
-            </p>
-            
-            <div className="space-y-3">
+          <div className="bg-white p-6 rounded-lg shadow-xl w-[800px] max-h-[90vh] overflow-y-auto">
+            <div className="flex justify-between items-center mb-4 border-b pb-4">
+              <h3 className="text-xl font-bold flex items-center gap-2">
+                <Upload size={24} className="text-emerald-600"/> Actualizar Variables y Mantenimiento
+              </h3>
+              <button 
+                onClick={() => setShowManualUpdate(false)}
+                className="text-slate-400 hover:text-slate-600"
+              >
+                <X size={24} />
+              </button>
+            </div>
+
+            {/* Tabs */}
+            <div className="flex gap-2 mb-6 bg-slate-100 p-1 rounded-lg">
+              <button
+                onClick={() => setBulkLoadMode('individual')}
+                className={`flex-1 py-2 px-4 rounded-md text-sm font-bold transition-colors ${
+                  bulkLoadMode === 'individual' 
+                    ? 'bg-white text-slate-800 shadow-sm' 
+                    : 'text-slate-600 hover:text-slate-800'
+                }`}
+              >
+                📝 Individual
+              </button>
+              <button
+                onClick={() => setBulkLoadMode('masiva')}
+                className={`flex-1 py-2 px-4 rounded-md text-sm font-bold transition-colors ${
+                  bulkLoadMode === 'masiva' 
+                    ? 'bg-white text-slate-800 shadow-sm' 
+                    : 'text-slate-600 hover:text-slate-800'
+                }`}
+              >
+                📊 Carga Masiva
+              </button>
+            </div>
+
+            {/* Contenido según pestaña */}
+            {bulkLoadMode === 'individual' ? (
+              <div>
+                <p className="text-sm text-slate-600 mb-4">
+                  Actualice un vehículo específico con sus datos de variable y mantenimiento.
+                </p>
+                
+                <div className="space-y-3">
               <div>
                 <label className="block text-xs font-bold text-slate-700 mb-1">Código Interno</label>
                 <input 
@@ -1291,11 +1584,60 @@ const PlanningView = ({ fleet, setFleet, onCreateOT, workOrders = [], setWorkOrd
               </button>
               <button 
                 onClick={handleManualUpdateSubmit}
-                className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 font-bold text-sm"
+                className="px-4 py-2 bg-emerald-600 text-white rounded hover:bg-emerald-700 font-bold text-sm"
               >
-                Guardar
+                💾 Guardar
               </button>
             </div>
+          </div>
+            ) : (
+              <div>
+                <p className="text-sm text-slate-600 mb-4">
+                  Pegue la tabla de Excel con todas las columnas. El sistema detectará automáticamente los encabezados y cargará:
+                  <strong className="block mt-2 text-slate-800">📊 Variable Actual | 📅 Fecha Variable | 🔄 Ciclo | 🔧 Último Mtto | 📅 Fecha Último Mtto</strong>
+                </p>
+
+                <div className="bg-slate-50 p-3 rounded-lg mb-4">
+                  <h4 className="text-xs font-bold text-slate-700 mb-2">📋 Formato esperado (copiar desde Excel):</h4>
+                  <code className="text-[10px] text-slate-600 block">
+                    #INTERNO | PLACA | DESCRIPCION | FRECUENCIA | ... | FECHA ACT | HR/KM | ... | HR ULTIMA EJEC | FECHA ULTIMA EJEC
+                  </code>
+                </div>
+                
+                <textarea
+                  placeholder="Pegue aquí los datos copiados directamente desde Excel (Ctrl+C en Excel, Ctrl+V aquí)..."
+                  className="w-full p-3 border-2 border-slate-300 rounded-lg text-sm font-mono h-64 focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200"
+                  value={bulkData}
+                  onChange={(e) => setBulkData(e.target.value)}
+                />
+                
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mt-3">
+                  <p className="text-xs text-blue-800">
+                    <strong>💡 Tip:</strong> Seleccione todas las filas en Excel (incluidos encabezados), presione Ctrl+C, y luego Ctrl+V en el cuadro de arriba.
+                  </p>
+                </div>
+
+                <div className="flex justify-end gap-2 mt-6">
+                  <button 
+                    onClick={() => setShowManualUpdate(false)}
+                    className="px-4 py-2 text-slate-600 hover:bg-slate-100 rounded text-sm"
+                  >
+                    Cancelar
+                  </button>
+                  <button 
+                    onClick={handleBulkLoad}
+                    disabled={!bulkData.trim()}
+                    className={`px-6 py-2 rounded font-bold text-sm ${
+                      bulkData.trim() 
+                        ? 'bg-emerald-600 text-white hover:bg-emerald-700' 
+                        : 'bg-slate-300 text-slate-500 cursor-not-allowed'
+                    }`}
+                  >
+                    ⚡ Cargar Datos
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       )}
@@ -1303,18 +1645,18 @@ const PlanningView = ({ fleet, setFleet, onCreateOT, workOrders = [], setWorkOrd
       {/* Modal for Bulk Load (Plan) */}
       {showBulkLoad && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-white p-6 rounded-lg shadow-xl w-[700px]">
+          <div className="bg-white p-6 rounded-lg shadow-xl w-[750px]">
             <h3 className="text-lg font-bold mb-4 flex items-center gap-2">
               <Database size={20} className="text-blue-600"/> Carga Masiva de Plan (Último Mantenimiento)
             </h3>
             <p className="text-xs text-slate-600 mb-4">
-              Pegue la tabla de Excel con las columnas (10 columnas):<br/>
-              <strong>#INTERNO | PLACA | DESCRIPCION | FRECUENCIA | CLASE | MARCA | UBICACIÓN | FECHA ACT. | HR ULTIMA EJEC. | FECHA ULTIMA EJEC.</strong>
+              Pegue la tabla de Excel con las columnas (11 columnas):<br/>
+              <strong>#INTERNO | PLACA | DESCRIPCION | FRECUENCIA | CLASE | MARCA | UBICACIÓN | DILER | FECHA ACT. | HR ULTIMA EJEC. | FECHA ULTIMA EJEC.</strong>
             </p>
             
             <textarea 
               className="w-full h-64 p-4 border rounded-lg font-mono text-xs bg-slate-50 whitespace-pre mb-4"
-              placeholder={`PVHC001\tKFZ321\tCAMIONETA DOBLE CABINA\t5000\tKM\tToyota Hilux\tMAQUINARIA\t10/12/2025\t231200\t18/11/2025`}
+              placeholder={`PVHC001\tKFZ321\tCAMIONETA DOBLE CABINA\t5000\tKM\tTOYOTA HILUX\tMAQUINARIA\tCAMIONETAS\t10/12/2025\t231200\t18/11/2025`}
               value={bulkData}
               onChange={e => setBulkData(e.target.value)}
             />
@@ -1432,6 +1774,170 @@ const PlanningView = ({ fleet, setFleet, onCreateOT, workOrders = [], setWorkOrd
         </div>
       )}
 
+      {/* Modal Cronograma Gantt */}
+      {showGanttChart && (
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 backdrop-blur-sm">
+          <div className="bg-white rounded-xl shadow-2xl w-[95vw] h-[90vh] flex flex-col overflow-hidden">
+            {/* Header minimalista */}
+            <div className="flex justify-between items-center px-6 py-4 bg-slate-800 text-white">
+              <div className="flex items-center gap-4">
+                <BarChart3 size={22} />
+                <div>
+                  <h3 className="text-lg font-semibold">Cronograma de Ejecución</h3>
+                  <p className="text-xs text-slate-400">Historial y proyección de mantenimientos preventivos</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-3">
+                <button className="px-3 py-1.5 bg-slate-700 hover:bg-slate-600 rounded text-xs font-medium flex items-center gap-1.5 transition-colors">
+                  <Download size={14} /> Exportar
+                </button>
+                <button 
+                  onClick={() => setShowGanttChart(false)} 
+                  className="p-1.5 hover:bg-slate-700 rounded-lg transition-colors"
+                >
+                  <X size={20} />
+                </button>
+              </div>
+            </div>
+            
+            <div className="flex-1 flex flex-col overflow-hidden bg-slate-50">
+              {/* Tabla estilo ROOMS RACK */}
+              <div className="flex-1 overflow-auto">
+                <table className="w-full border-collapse min-w-max">
+                  <thead className="sticky top-0 z-20">
+                    {/* Fila de encabezados PM */}
+                    <tr className="bg-slate-700 text-white text-[11px]">
+                      <th className="py-2 px-3 text-left font-semibold border-r border-slate-600 sticky left-0 bg-slate-700 z-30 min-w-[100px]">VEHÍCULO</th>
+                      <th className="py-2 px-2 text-center font-semibold border-r border-slate-600 min-w-[70px]">VARIABLE</th>
+                      <th className="py-2 px-2 text-center font-semibold border-r border-slate-600 min-w-[55px]">CICLO</th>
+                      <th className="py-2 px-2 text-center font-semibold border-r border-slate-600 min-w-[60px]">ÚLT.MTTO</th>
+                      {Array.from({ length: 6 }, (_, i) => (
+                        <th key={i} className="py-2 px-1 text-center font-semibold border-r border-slate-600 min-w-[70px]">
+                          PM{i + 1}
+                        </th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody className="text-[11px]">
+                    {pickups.slice(0, 40).map((vehicle, idx) => {
+                      const cycle = vehicle.maintenanceCycle || 5000;
+                      const currentMileage = vehicle.mileage || 0;
+                      const lastMaintenance = vehicle.lastMaintenance || 0;
+                      
+                      // Calcular el número de PM ejecutado basado en lastMaintenance
+                      const completedPMs = lastMaintenance > 0 ? Math.floor(lastMaintenance / cycle) : 0;
+                      
+                      // Calcular próximo PM
+                      const nextPMNumber = completedPMs + 1;
+                      const nextPMKm = nextPMNumber * cycle;
+                      
+                      // Verificar si está vencido (solo el próximo PM puede estar vencido)
+                      const isNextOverdue = currentMileage >= nextPMKm;
+                      
+                      // Generar los 6 PMs a mostrar (3 ejecutados + 3 futuros aproximadamente)
+                      const startPM = Math.max(1, completedPMs - 2);
+                      const pms = [];
+                      for (let i = 0; i < 6; i++) {
+                        const pmNum = startPM + i;
+                        const targetKm = pmNum * cycle;
+                        const isExecuted = pmNum <= completedPMs;
+                        const isNext = pmNum === nextPMNumber;
+                        const isOverdue = isNext && isNextOverdue;
+                        
+                        pms.push({
+                          num: pmNum,
+                          targetKm,
+                          isExecuted,
+                          isNext,
+                          isOverdue,
+                          executedKm: isExecuted ? (pmNum === completedPMs ? lastMaintenance : targetKm) : null
+                        });
+                      }
+                      
+                      return (
+                        <tr key={vehicle.id} className={`border-b border-slate-100 hover:bg-blue-50/30 ${idx % 2 === 0 ? 'bg-white' : 'bg-slate-50/30'}`}>
+                          {/* Columna Vehículo */}
+                          <td className="py-1.5 px-3 border-r border-slate-200 sticky left-0 bg-inherit z-10">
+                            <div className="flex flex-col leading-tight">
+                              <span className="font-bold text-slate-800 text-[11px]">{vehicle.plate}</span>
+                              <span className="text-[9px] text-slate-400">{vehicle.code}</span>
+                            </div>
+                          </td>
+                          {/* Variable */}
+                          <td className="py-1.5 px-2 text-center border-r border-slate-200">
+                            <span className="font-bold text-blue-600">{currentMileage.toLocaleString()}</span>
+                          </td>
+                          {/* Ciclo */}
+                          <td className="py-1.5 px-2 text-center border-r border-slate-200 text-slate-500">
+                            {cycle.toLocaleString()}
+                          </td>
+                          {/* Último Mtto */}
+                          <td className="py-1.5 px-2 text-center border-r border-slate-200">
+                            <span className={`font-medium ${lastMaintenance > 0 ? 'text-emerald-600' : 'text-slate-300'}`}>
+                              {lastMaintenance > 0 ? lastMaintenance.toLocaleString() : '—'}
+                            </span>
+                          </td>
+                          {/* PMs dinámicos */}
+                          {pms.map((pm) => (
+                            <td key={pm.num} className={`py-1 px-1 text-center border-r border-slate-200 ${
+                              pm.isExecuted ? 'bg-emerald-50' : 
+                              pm.isOverdue ? 'bg-red-50' : 
+                              pm.isNext ? 'bg-amber-50' : 
+                              ''
+                            }`}>
+                              <div className="flex flex-col items-center leading-tight">
+                                {pm.isExecuted ? (
+                                  <CheckCircle2 size={14} className="text-emerald-500" />
+                                ) : pm.isOverdue ? (
+                                  <AlertCircle size={14} className="text-red-500" />
+                                ) : pm.isNext ? (
+                                  <Clock size={14} className="text-amber-500" />
+                                ) : (
+                                  <Circle size={12} className="text-slate-300" />
+                                )}
+                                <span className={`text-[9px] font-medium ${
+                                  pm.isExecuted ? 'text-emerald-700' : 
+                                  pm.isOverdue ? 'text-red-700' : 
+                                  pm.isNext ? 'text-amber-700' : 
+                                  'text-slate-400'
+                                }`}>
+                                  {pm.isExecuted && pm.executedKm ? pm.executedKm.toLocaleString() : pm.targetKm.toLocaleString()}
+                                </span>
+                              </div>
+                            </td>
+                          ))}
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+
+              {/* Footer con leyenda */}
+              <div className="bg-white border-t border-slate-200 px-6 py-2.5 flex items-center gap-6 text-xs">
+                <span className="font-semibold text-slate-700">Estados:</span>
+                <div className="flex items-center gap-1.5">
+                  <CheckCircle2 size={14} className="text-emerald-500" />
+                  <span className="text-slate-600">Ejecutado</span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <AlertCircle size={14} className="text-red-500" />
+                  <span className="text-slate-600">Vencido</span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <Clock size={14} className="text-amber-500" />
+                  <span className="text-slate-600">Próximo</span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <Circle size={14} className="text-slate-300" />
+                  <span className="text-slate-600">Futuro</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Modal for Vehicle History */}
       {viewingHistoryVehicle && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
@@ -1494,32 +2000,146 @@ const PlanningView = ({ fleet, setFleet, onCreateOT, workOrders = [], setWorkOrd
         </div>
       )}
 
+      {/* Modal de Edición de Variables y Mantenimiento */}
+      {editingVehicle && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded-lg shadow-xl w-[500px] max-h-[90vh] overflow-y-auto">
+            <div className="flex justify-between items-center mb-6 border-b pb-4">
+              <div>
+                <h3 className="text-xl font-bold text-slate-800">Actualizar Variable y Mantenimiento</h3>
+                <p className="text-sm text-slate-500">{editingVehicle.code} - {editingVehicle.plate} - {editingVehicle.model}</p>
+              </div>
+              <button 
+                onClick={() => { setEditingVehicle(null); setVehicleEditData({}); }} 
+                className="text-slate-400 hover:text-slate-600"
+              >
+                <X size={24} />
+              </button>
+            </div>
+            
+            <div className="space-y-4">
+              {/* SECCIÓN VARIABLES - Verde */}
+              <div className="bg-green-50 p-4 rounded-lg border border-green-200">
+                <h4 className="text-sm font-bold text-green-800 mb-3">📊 Variables Actuales</h4>
+                
+                {/* Kilometraje Actual (Variable) */}
+                <div className="mb-3">
+                  <label className="block text-xs font-bold text-slate-700 mb-1">Kilometraje Actual (KM)</label>
+                  <input
+                    type="number"
+                    value={vehicleEditData.mileage || ''}
+                    onChange={(e) => setVehicleEditData({...vehicleEditData, mileage: e.target.value})}
+                    className="w-full px-3 py-2 border border-green-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-green-500 bg-white"
+                    placeholder="Ej: 222557"
+                  />
+                </div>
+                
+                {/* Fecha de la Variable */}
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 mb-1">Fecha Variable (DD/MM/YYYY)</label>
+                  <input
+                    type="text"
+                    value={vehicleEditData.lastVariableDate || ''}
+                    onChange={(e) => setVehicleEditData({...vehicleEditData, lastVariableDate: e.target.value})}
+                    className="w-full px-3 py-2 border border-green-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-green-500 bg-white"
+                    placeholder="Ej: 16/12/2025"
+                  />
+                </div>
+              </div>
+
+              {/* SECCIÓN CICLO - Azul */}
+              <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
+                <h4 className="text-sm font-bold text-blue-800 mb-3">🔄 Ciclo de Mantenimiento</h4>
+                
+                {/* Ciclo */}
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 mb-1">Ciclo (KM)</label>
+                  <select
+                    value={vehicleEditData.maintenanceCycle || 5000}
+                    onChange={(e) => setVehicleEditData({...vehicleEditData, maintenanceCycle: parseInt(e.target.value)})}
+                    className="w-full px-3 py-2 border border-blue-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                  >
+                    <option value="5000">5,000 KM</option>
+                    <option value="7000">7,000 KM</option>
+                    <option value="10000">10,000 KM</option>
+                  </select>
+                </div>
+              </div>
+              
+              {/* SECCIÓN MANTENIMIENTO - Amarillo */}
+              <div className="bg-yellow-50 p-4 rounded-lg border border-yellow-200">
+                <h4 className="text-sm font-bold text-yellow-800 mb-3">🔧 Último Mantenimiento</h4>
+                
+                {/* Último Mtto KM */}
+                <div className="mb-3">
+                  <label className="block text-xs font-bold text-slate-700 mb-1">Último Mtto (KM)</label>
+                  <input
+                    type="number"
+                    value={vehicleEditData.lastMaintenance || ''}
+                    onChange={(e) => setVehicleEditData({...vehicleEditData, lastMaintenance: e.target.value})}
+                    className="w-full px-3 py-2 border border-yellow-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-yellow-500 bg-white"
+                    placeholder="Ej: 208536"
+                  />
+                </div>
+                
+                {/* Fecha Último Mtto */}
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 mb-1">Fecha Último Mtto (DD/MM/YYYY)</label>
+                  <input
+                    type="text"
+                    value={vehicleEditData.lastMaintenanceDate || ''}
+                    onChange={(e) => setVehicleEditData({...vehicleEditData, lastMaintenanceDate: e.target.value})}
+                    className="w-full px-3 py-2 border border-yellow-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-yellow-500 bg-white"
+                    placeholder="Ej: 24/10/2025"
+                  />
+                </div>
+              </div>
+            </div>
+            
+            <div className="flex justify-end gap-2 mt-6 pt-4 border-t">
+              <button 
+                onClick={() => { setEditingVehicle(null); setVehicleEditData({}); }}
+                className="px-4 py-2 text-slate-600 hover:bg-slate-100 rounded text-sm"
+              >
+                Cancelar
+              </button>
+              <button 
+                onClick={handleVehicleEditSave}
+                className="px-6 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 font-bold text-sm"
+              >
+                💾 Guardar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="flex flex-col gap-4">
-        <div className="flex justify-between items-center">
-          <h2 className="text-2xl font-bold text-slate-800 flex items-center gap-2">
-            <Calendar className="text-blue-600" />
-            Planeación de Mantenimientos (Camionetas)
-          </h2>
+        <div className="flex justify-end items-center">
           <div className="flex gap-2">
-            <button 
-              onClick={() => setShowManualUpdate(true)}
-              className="bg-white border border-slate-300 text-slate-700 px-4 py-2 rounded hover:bg-slate-50 text-sm flex items-center gap-2 shadow-sm"
-            >
-              <Upload size={16} /> Cargar Datos Mtto
-            </button>
-            <button 
-              onClick={() => setShowBulkLoad(true)}
-              className="bg-white border border-slate-300 text-slate-700 px-4 py-2 rounded hover:bg-slate-50 text-sm flex items-center gap-2 shadow-sm"
-            >
-              <Database size={16} /> Carga Masiva Plan
-            </button>
+            {/* Menú de carga de variables */}
+            <div className="relative">
+              <button 
+                onClick={() => setShowManualUpdate(true)}
+                className="bg-emerald-600 text-white px-4 py-2 rounded hover:bg-emerald-700 text-sm flex items-center gap-2 shadow-sm font-medium"
+              >
+                <Database size={16} /> Actualizar BD-Mtto
+              </button>
+            </div>
+            
             <button 
               onClick={() => setShowWeeklyPlan(true)}
               className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 text-sm flex items-center gap-2 shadow-sm"
             >
               <Calendar size={16} /> Planeación Semanal
             </button>
-            <button className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 text-sm flex items-center gap-2 shadow-sm">
+            <button 
+              onClick={() => setShowGanttChart(true)}
+              className="bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700 text-sm flex items-center gap-2 shadow-sm"
+            >
+              <BarChart3 size={16} /> Cronograma de Ejecución
+            </button>
+            <button className="bg-slate-600 text-white px-4 py-2 rounded hover:bg-slate-700 text-sm flex items-center gap-2 shadow-sm">
               <FileText size={16} /> Exportar Excel
             </button>
           </div>
@@ -1533,7 +2153,7 @@ const PlanningView = ({ fleet, setFleet, onCreateOT, workOrders = [], setWorkOrd
           fiveDaysAgo.setDate(today.getDate() - 5);
           
           const metrics = pickups.reduce((acc, v) => {
-            const nextRoutine = getNextRoutineLocal(v.mileage, v.model, v.lastMaintenance);
+            const nextRoutine = getNextRoutineLocal(v.mileage, v.model, v.lastMaintenance, v.maintenanceCycle);
             const kmRemaining = nextRoutine.km - v.mileage;
             
             // Check if variable is outdated (more than 5 days old or no data)
@@ -1737,6 +2357,7 @@ const PlanningView = ({ fleet, setFleet, onCreateOT, workOrders = [], setWorkOrd
                   </div>
                 </th>
                 <th className="px-2 py-2 text-center font-semibold border-r border-slate-100">F. Variable</th>
+                <th className="px-2 py-2 text-center font-semibold border-r border-slate-100">Ciclo</th>
                 <th className="px-2 py-2 text-center font-semibold border-r border-slate-100">
                   <div className="flex items-center justify-between gap-1">
                     <span>Últ. Mtto</span>
@@ -1822,6 +2443,7 @@ const PlanningView = ({ fleet, setFleet, onCreateOT, workOrders = [], setWorkOrd
                     )}
                   </th>
                   <th className="px-2 py-2 border-r border-slate-100"></th>
+                  <th className="px-2 py-2 border-r border-slate-100"></th>
                   <th className="px-2 py-2 border-r border-slate-100">
                     {activeFilters.lastMaintenance && (
                       <input
@@ -1854,7 +2476,7 @@ const PlanningView = ({ fleet, setFleet, onCreateOT, workOrders = [], setWorkOrd
             <tbody>
               {pickups
                 .map(vehicle => {
-                  const nextRoutine = getNextRoutineLocal(vehicle.mileage, vehicle.model, vehicle.lastMaintenance);
+                  const nextRoutine = getNextRoutineLocal(vehicle.mileage, vehicle.model, vehicle.lastMaintenance, vehicle.maintenanceCycle);
                   const kmRemaining = nextRoutine.km - vehicle.mileage;
                   
                   // Check if variable is outdated
@@ -1923,20 +2545,14 @@ const PlanningView = ({ fleet, setFleet, onCreateOT, workOrders = [], setWorkOrd
                     <tr 
                       key={vehicle.id} 
                       className="hover:bg-slate-50 cursor-pointer transition-colors border-b border-slate-100"
-                      onClick={() => setViewingHistoryVehicle(vehicle)}
+                      onClick={() => handleRowClick(vehicle)}
+                      title="Clic para editar vehículo"
                     >
                       {/* Estado */}
                       <td className="px-2 py-2 border-r border-slate-100">
-                        <div className="flex flex-col gap-0.5">
-                          <span className={`inline-flex items-center justify-center px-1.5 py-0.5 rounded text-[9px] font-semibold ${statusColor}`}>
-                            {statusText}
-                          </span>
-                          {isOutdated && (
-                            <span className="inline-flex items-center justify-center px-1 py-0.5 rounded text-[8px] font-medium text-purple-600 bg-purple-50">
-                              Sin Act.
-                            </span>
-                          )}
-                        </div>
+                        <span className={`inline-flex items-center justify-center px-1.5 py-0.5 rounded text-[9px] font-semibold ${statusColor}`}>
+                          {statusText}
+                        </span>
                       </td>
                       
                       {/* Falta KM */}
@@ -1975,14 +2591,56 @@ const PlanningView = ({ fleet, setFleet, onCreateOT, workOrders = [], setWorkOrd
                         {getLastVariableDate(vehicle) || '—'}
                       </td>
                       
-                      {/* Último Mtto KM */}
-                      <td className="px-2 py-2 text-center font-mono text-[11px] text-slate-500 border-r border-slate-100">
-                        {vehicle.lastMaintenance > 0 ? vehicle.lastMaintenance.toLocaleString() : '—'}
+                      {/* Ciclo */}
+                      <td className="px-2 py-2 text-center text-xs font-semibold text-slate-700 border-r border-slate-100">
+                        {vehicle.maintenanceCycle ? vehicle.maintenanceCycle.toLocaleString() : '—'}
                       </td>
                       
-                      {/* Fecha Último Mtto */}
-                      <td className="px-2 py-2 text-center text-slate-400 text-[10px] border-r border-slate-100">
-                        {getLastMaintenanceDate(vehicle)}
+                      {/* Último Mtto KM - EDITABLE con doble clic */}
+                      <td 
+                        className="px-2 py-2 text-center font-mono text-[11px] text-slate-500 border-r border-slate-100 cursor-pointer hover:bg-blue-50"
+                        onDoubleClick={() => handleCellDoubleClick(vehicle.id, 'lastMaintenance', vehicle.lastMaintenance?.toString() || '')}
+                        title="Doble clic para editar"
+                      >
+                        {editingCell?.vehicleId === vehicle.id && editingCell?.field === 'lastMaintenance' ? (
+                          <input
+                            type="text"
+                            value={editValue}
+                            onChange={(e) => setEditValue(e.target.value)}
+                            onKeyDown={(e) => handleCellKeyDown(e, vehicle.id, 'lastMaintenance')}
+                            onBlur={() => handleCellSave(vehicle.id, 'lastMaintenance')}
+                            className="w-20 px-1 py-0.5 text-center border border-blue-400 rounded text-xs focus:outline-none focus:ring-1 focus:ring-blue-500"
+                            autoFocus
+                            placeholder="KM"
+                          />
+                        ) : (
+                          <span className="hover:text-blue-600">
+                            {vehicle.lastMaintenance > 0 ? vehicle.lastMaintenance.toLocaleString() : '—'}
+                          </span>
+                        )}
+                      </td>
+                      
+                      {/* Fecha Último Mtto - EDITABLE con doble clic */}
+                      <td 
+                        className="px-2 py-2 text-center text-slate-400 text-[10px] border-r border-slate-100 cursor-pointer hover:bg-blue-50"
+                        onDoubleClick={() => handleCellDoubleClick(vehicle.id, 'lastMaintenanceDate', vehicle.lastMaintenanceDate || '')}
+                        title="Doble clic para editar (YYYY-MM-DD)"
+                      >
+                        {editingCell?.vehicleId === vehicle.id && editingCell?.field === 'lastMaintenanceDate' ? (
+                          <input
+                            type="date"
+                            value={editValue}
+                            onChange={(e) => setEditValue(e.target.value)}
+                            onKeyDown={(e) => handleCellKeyDown(e, vehicle.id, 'lastMaintenanceDate')}
+                            onBlur={() => handleCellSave(vehicle.id, 'lastMaintenanceDate')}
+                            className="w-28 px-1 py-0.5 text-center border border-blue-400 rounded text-xs focus:outline-none focus:ring-1 focus:ring-blue-500"
+                            autoFocus
+                          />
+                        ) : (
+                          <span className="hover:text-blue-600">
+                            {getLastMaintenanceDate(vehicle)}
+                          </span>
+                        )}
                       </td>
                       
                       {/* Próxima Rutina */}
@@ -1991,19 +2649,35 @@ const PlanningView = ({ fleet, setFleet, onCreateOT, workOrders = [], setWorkOrd
                       </td>
                       
                       {/* Acción */}
-                      <td className="px-2 py-2 text-center">
-                        <button 
-                          onClick={(e) => handleQuickGenerateClick(e, vehicle)}
-                          disabled={kmRemaining >= 3000}
-                          className={`px-2 py-1 rounded text-[10px] font-medium transition-colors whitespace-nowrap ${
-                            kmRemaining >= 3000 
-                              ? 'bg-slate-300 text-slate-500 cursor-not-allowed' 
-                              : 'bg-slate-800 text-white hover:bg-slate-700'
-                          }`}
-                          title={kmRemaining >= 3000 ? 'El mantenimiento aún no requiere atención' : 'Generar Orden de Trabajo'}
-                        >
-                          Generar OT
-                        </button>
+                      <td className="px-2 py-2">
+                        <div className="flex items-center justify-center gap-1">
+                          <button 
+                            onClick={(e) => { e.stopPropagation(); setViewingHistoryVehicle(vehicle); }}
+                            className="p-1 text-slate-500 hover:text-blue-600 hover:bg-blue-50 rounded transition-colors"
+                            title="Ver historial"
+                          >
+                            <History size={14} />
+                          </button>
+                          <button 
+                            onClick={(e) => { e.stopPropagation(); handleRowClick(vehicle); }}
+                            className="p-1 text-slate-500 hover:text-green-600 hover:bg-green-50 rounded transition-colors"
+                            title="Editar variables"
+                          >
+                            <Wrench size={14} />
+                          </button>
+                          <button 
+                            onClick={(e) => handleQuickGenerateClick(e, vehicle)}
+                            disabled={kmRemaining >= 3000}
+                            className={`p-1 rounded transition-colors ${
+                              kmRemaining >= 3000 
+                                ? 'text-slate-300 cursor-not-allowed' 
+                                : 'text-slate-500 hover:text-orange-600 hover:bg-orange-50'
+                            }`}
+                            title={kmRemaining >= 3000 ? 'No requiere atención' : 'Generar OT'}
+                          >
+                            <FileText size={14} />
+                          </button>
+                        </div>
                       </td>
                     </tr>
                   );
@@ -2367,6 +3041,7 @@ const AssetManager = ({ fleet, setFleet, routines = MAINTENANCE_ROUTINES }) => {
   const [filter, setFilter] = useState('');
   const [showAddModal, setShowAddModal] = useState(false);
   const [showImportModal, setShowImportModal] = useState(false);
+  const [showBulkImport, setShowBulkImport] = useState(false);
   const [importData, setImportData] = useState('');
   const [importPreview, setImportPreview] = useState([]);
   const [importMode, setImportMode] = useState('replace'); // 'replace' o 'merge'
@@ -2437,13 +3112,21 @@ const AssetManager = ({ fleet, setFleet, routines = MAINTENANCE_ROUTINES }) => {
 
   const parseImportData = (text) => {
     const lines = text.trim().split('\n');
-    if (lines.length < 2) return [];
+    if (lines.length < 1) return [];
 
-    const headers = lines[0].split('\t').map(h => h.trim().toLowerCase());
+    // Detectar si la primera línea es encabezado
+    const firstLine = lines[0].toLowerCase();
+    const headerKeywords = ['codigo', 'placa', 'modelo', 'año', 'kilometraje', 'estado', 'conductor'];
+    const matchCount = headerKeywords.filter(kw => firstLine.includes(kw)).length;
+    const hasHeader = matchCount >= 3;
+    
+    const startIndex = hasHeader ? 1 : 0;
+    const headers = hasHeader ? lines[0].split('\t').map(h => h.trim().toLowerCase()) : [];
     const vehicles = [];
 
     // Helper function to find column index by multiple possible names
     const findColumn = (possibleNames) => {
+      if (!hasHeader) return -1; // Si no hay header, usar posiciones fijas
       for (const name of possibleNames) {
         const idx = headers.indexOf(name.toLowerCase());
         if (idx >= 0) return idx;
@@ -2451,7 +3134,7 @@ const AssetManager = ({ fleet, setFleet, routines = MAINTENANCE_ROUTINES }) => {
       return -1;
     };
 
-    for (let i = 1; i < lines.length; i++) {
+    for (let i = startIndex; i < lines.length; i++) {
       const values = lines[i].split('\t');
       if (values.length < 3) continue; // Mínimo necesita código, placa, modelo
 
@@ -2466,6 +3149,9 @@ const AssetManager = ({ fleet, setFleet, routines = MAINTENANCE_ROUTINES }) => {
       const vinIdx = findColumn(['vin', 'serie', 'serie chasis', 'numero de serie']);
       const routineIdx = findColumn(['rutina', 'routine', 'rutina asignada']);
 
+      const lastMttoValue = values[lastMttoIdx >= 0 ? lastMttoIdx : 6] || '0';
+      const parsedLastMtto = parseInt(String(lastMttoValue).replace(/[^\d]/g, '')) || 0;
+      
       const vehicle = {
         code: (values[codeIdx >= 0 ? codeIdx : 0] || '').trim().toUpperCase(),
         plate: (values[plateIdx >= 0 ? plateIdx : 1] || '').trim().toUpperCase(),
@@ -2473,10 +3159,14 @@ const AssetManager = ({ fleet, setFleet, routines = MAINTENANCE_ROUTINES }) => {
         year: parseInt(values[yearIdx >= 0 ? yearIdx : 3]) || new Date().getFullYear(),
         mileage: parseInt(values[mileageIdx >= 0 ? mileageIdx : 4]?.replace(/[^\d]/g, '')) || 0,
         status: (values[statusIdx >= 0 ? statusIdx : 5] || 'OPERATIVO').trim().toUpperCase(),
-        lastMaintenance: parseInt(values[lastMttoIdx >= 0 ? lastMttoIdx : 6]?.replace(/[^\d]/g, '')) || 0,
+        lastMaintenance: parsedLastMtto,
         driver: (values[driverIdx >= 0 ? driverIdx : 7] || 'PENDIENTE').trim(),
         vin: (values[vinIdx >= 0 ? vinIdx : 8] || '').trim(),
-        assignedRoutine: (values[routineIdx >= 0 ? routineIdx : 9] || '').trim()
+        assignedRoutine: (values[routineIdx >= 0 ? routineIdx : 9] || '').trim(),
+        // Asegurar campos adicionales
+        brand: '',
+        owner: 'PROPIO',
+        lastMaintenanceDate: null
       };
 
       if (vehicle.code && vehicle.plate) {
@@ -2498,6 +3188,8 @@ const AssetManager = ({ fleet, setFleet, routines = MAINTENANCE_ROUTINES }) => {
       return;
     }
 
+    let finalFleet;
+    
     if (importMode === 'replace') {
       // Reemplazar toda la BD
       if (!window.confirm(`⚠️ Se reemplazará TODA la base de datos con ${importPreview.length} activos. ¿Continuar?`)) return;
@@ -2506,7 +3198,8 @@ const AssetManager = ({ fleet, setFleet, routines = MAINTENANCE_ROUTINES }) => {
         id: idx + 1,
         ...v
       }));
-      setFleet(vehiclesWithIds);
+      finalFleet = vehiclesWithIds;
+      setFleet(finalFleet);
     } else {
       // Merge: actualizar existentes y agregar nuevos
       const currentMaxId = fleet.length > 0 ? Math.max(...fleet.map(v => v.id)) : 0;
@@ -2535,9 +3228,13 @@ const AssetManager = ({ fleet, setFleet, routines = MAINTENANCE_ROUTINES }) => {
         }
       });
 
-      setFleet([...updatedFleet, ...newVehicles]);
+      finalFleet = [...updatedFleet, ...newVehicles];
+      setFleet(finalFleet);
     }
 
+    // Guardar inmediatamente en localStorage
+    localStorage.setItem('fleet_data', JSON.stringify(finalFleet));
+    
     // Reset
     setShowImportModal(false);
     setImportData('');
@@ -2841,6 +3538,13 @@ const AssetManager = ({ fleet, setFleet, routines = MAINTENANCE_ROUTINES }) => {
                   ✅ {importPreview.length} activos listos para importar
                 </div>
               )}
+              <button 
+                onClick={() => setShowBulkImport(true)}
+                className="ml-auto bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 text-sm font-medium flex items-center gap-2"
+              >
+                <FileText size={16} />
+                Importación Masiva
+              </button>
             </div>
 
             {/* Preview Table */}
@@ -2910,6 +3614,12 @@ const AssetManager = ({ fleet, setFleet, routines = MAINTENANCE_ROUTINES }) => {
           />
         </div>
         <div className="flex gap-2">
+          <button 
+            onClick={() => setShowBulkImport(true)}
+            className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 text-sm font-medium flex items-center gap-2 shadow-lg"
+          >
+            <FileText size={16} /> Importar Excel
+          </button>
           <button 
             onClick={() => setShowAddModal(true)}
             className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 text-sm flex items-center gap-2"
@@ -3037,13 +3747,51 @@ const AssetManager = ({ fleet, setFleet, routines = MAINTENANCE_ROUTINES }) => {
           <p className="text-sm">Agregue un nuevo activo para comenzar</p>
         </div>
       )}
+
+      {/* Bulk Import Modal - Importación Masiva desde Excel */}
+      {showBulkImport && (
+        <BulkImportGrid 
+          onClose={() => setShowBulkImport(false)}
+          onConfirmImport={async (vehicles) => {
+            try {
+              // Calcular IDs únicos para todos los vehículos
+              const currentMaxId = fleet.length > 0 ? Math.max(...fleet.map(v => v.id)) : 0;
+              const newVehicles = vehicles.map((v, idx) => ({
+                ...v,
+                id: currentMaxId + idx + 1
+              }));
+              
+              // Actualizar fleet de inmediato
+              const updatedFleet = [...fleet, ...newVehicles];
+              setFleet(updatedFleet);
+              
+              // Guardar en localStorage inmediatamente
+              localStorage.setItem('fleet_data', JSON.stringify(updatedFleet));
+              
+              // Intentar guardar en API en segundo plano
+              for (const vehicle of newVehicles) {
+                try {
+                  await api.createVehicle(vehicle);
+                } catch (apiError) {
+                  console.warn('API error (datos guardados localmente):', apiError);
+                }
+              }
+              
+              alert(`✅ ${vehicles.length} activos importados exitosamente`);
+            } catch (error) {
+              console.error('Error al importar:', error);
+              throw error;
+            }
+          }}
+        />
+      )}
     </div>
   );
 };
 
-const MaintenanceAdminView = ({ workOrders, setWorkOrders, fleet, setFleet, routines, setRoutines }) => {
+const MaintenanceAdminView = ({ workOrders, setWorkOrders, fleet, setFleet, routines, setRoutines, variableHistory, setVariableHistory }) => {
   const [filter, setFilter] = useState('');
-  const [activeTab, setActiveTab] = useState('ots'); // 'ots' or 'routines'
+  const [activeTab, setActiveTab] = useState('ots'); // 'ots', 'routines', or 'history'
   const [closingOT, setClosingOT] = useState(null);
   const [closingData, setClosingData] = useState({
     realDate: new Date().toISOString().split('T')[0],
@@ -3117,9 +3865,17 @@ const MaintenanceAdminView = ({ workOrders, setWorkOrders, fleet, setFleet, rout
         >
           Administración de Activos
         </button>
+        <button 
+          onClick={() => setActiveTab('history')}
+          className={`px-4 py-2 font-bold border-b-2 transition-colors ${activeTab === 'history' ? 'text-blue-600 border-blue-600' : 'text-slate-500 border-transparent hover:text-slate-700'}`}
+        >
+          Historial de Variables
+        </button>
       </div>
 
-      {activeTab === 'assets' ? (
+      {activeTab === 'history' ? (
+        <VariableHistory variableHistory={variableHistory} fleet={fleet} setVariableHistory={setVariableHistory} setFleet={setFleet} />
+      ) : activeTab === 'assets' ? (
         <AssetManager fleet={fleet} setFleet={setFleet} routines={routines} />
       ) : activeTab === 'routines' ? (
         <RoutinesManager routines={routines} setRoutines={setRoutines} />
@@ -3602,11 +4358,21 @@ const DriverAssignment = ({ fleet, setFleet }) => {
 };
 
 const DataLoad = ({ fleet, setFleet, setVariableHistory }) => {
+  const [loadMode, setLoadMode] = useState('masiva'); // 'individual' o 'masiva'
   const [pasteData, setPasteData] = useState('');
   const [preview, setPreview] = useState([]);
   const [hasErrors, setHasErrors] = useState(false);
   const [filterView, setFilterView] = useState('ALL'); // ALL, ERRORS, WARNINGS, VALID
   const [isProcessing, setIsProcessing] = useState(false);
+  
+  // Estados para carga individual
+  const [individualData, setIndividualData] = useState({
+    plate: '',
+    code: '',
+    mileage: '',
+    date: new Date().toISOString().split('T')[0],
+    time: new Date().toTimeString().split(' ')[0].substring(0, 5)
+  });
 
   // Helper: Get last known variable from history
   const getLastKnownVariable = (plate, code, beforeDate) => {
@@ -3639,6 +4405,76 @@ const DataLoad = ({ fleet, setFleet, setVariableHistory }) => {
     }
     
     return null;
+  };
+
+  // Función para guardar carga individual
+  const handleIndividualSave = () => {
+    const { plate, code, mileage, date, time } = individualData;
+    
+    if (!plate && !code) {
+      alert('❌ Debe ingresar al menos la placa o el código del vehículo');
+      return;
+    }
+    
+    if (!mileage || mileage <= 0) {
+      alert('❌ Debe ingresar un kilometraje válido');
+      return;
+    }
+
+    // Buscar el vehículo
+    const vehicleIndex = fleet.findIndex(v => 
+      (plate && v.plate.toUpperCase() === plate.toUpperCase()) ||
+      (code && v.code.toUpperCase() === code.toUpperCase())
+    );
+
+    if (vehicleIndex === -1) {
+      alert('❌ Vehículo no encontrado. Verifique la placa o código.');
+      return;
+    }
+
+    const vehicle = fleet[vehicleIndex];
+    const newMileage = parseInt(mileage);
+
+    // Actualizar flota
+    const updatedFleet = [...fleet];
+    updatedFleet[vehicleIndex] = {
+      ...vehicle,
+      mileage: newMileage,
+      lastVariableDate: `${date.split('-').reverse().join('/')} ${time}:00`
+    };
+
+    setFleet(updatedFleet);
+    localStorage.setItem('fleet_data', JSON.stringify(updatedFleet));
+
+    // Registrar en historial
+    const newHistory = {
+      id: Date.now(),
+      plate: vehicle.plate,
+      code: vehicle.code,
+      date: `${date.split('-').reverse().join('/')} ${time}:00`,
+      km: newMileage,
+      mileage: newMileage,
+      change: newMileage - (vehicle.mileage || 0),
+      updatedBy: 'Manual',
+      source: 'MANUAL_INDIVIDUAL'
+    };
+
+    setVariableHistory(prev => {
+      const updated = [...prev, newHistory];
+      localStorage.setItem('variable_history', JSON.stringify(updated));
+      return updated;
+    });
+
+    alert(`✅ Variable actualizada correctamente\n${vehicle.plate} - ${vehicle.code}\nNuevo kilometraje: ${newMileage.toLocaleString()} KM`);
+    
+    // Limpiar formulario
+    setIndividualData({
+      plate: '',
+      code: '',
+      mileage: '',
+      date: new Date().toISOString().split('T')[0],
+      time: new Date().toTimeString().split(' ')[0].substring(0, 5)
+    });
   };
 
   const parseData = () => {
@@ -4135,32 +4971,150 @@ Guardando localmente como respaldo...
       </div>
 
       <div className="bg-white rounded-lg shadow">
-        <div className="p-4 border-b">
-          <div className="flex items-center gap-4">
-            <div className="flex-1">
-              <label className="block text-sm font-semibold mb-2">
-                📋 Pegar desde Excel (Ctrl+V) - Auto-valida instantáneamente
-              </label>
-              <textarea 
-                className="w-full h-24 p-3 border-2 border-dashed border-blue-300 rounded-lg font-mono text-xs bg-blue-50 focus:border-blue-500 focus:bg-white transition-colors"
-                placeholder="Copiar columnas de Excel y pegar aquí (Fecha | KM | Placa)&#10;&#10;Ejemplo:&#10;12/12/2025 08:20:25    33.394,000    NTW668&#10;12/12/2025 08:13:40    28.577,000    NNL597"
-                value={pasteData}
-                onChange={e => setPasteData(e.target.value)}
-                onPaste={handlePaste}
-              />
+        {/* Pestañas Individual / Masiva */}
+        <div className="flex gap-2 p-4 border-b bg-slate-50">
+          <button
+            onClick={() => setLoadMode('individual')}
+            className={`px-4 py-2 rounded font-semibold transition-colors ${
+              loadMode === 'individual'
+                ? 'bg-blue-600 text-white shadow'
+                : 'bg-white text-slate-600 hover:bg-slate-100'
+            }`}
+          >
+            Individual
+          </button>
+          <button
+            onClick={() => setLoadMode('masiva')}
+            className={`px-4 py-2 rounded font-semibold transition-colors ${
+              loadMode === 'masiva'
+                ? 'bg-blue-600 text-white shadow'
+                : 'bg-white text-slate-600 hover:bg-slate-100'
+            }`}
+          >
+            Masiva
+          </button>
+        </div>
+
+        {/* Formulario Individual */}
+        {loadMode === 'individual' && (
+          <div className="p-6 space-y-6">
+            <div className="grid grid-cols-2 gap-6">
+              {/* Identificación del Vehículo - Verde */}
+              <div className="col-span-2 bg-green-50 p-4 rounded-lg border border-green-200">
+                <h3 className="text-sm font-bold text-green-800 mb-3">📋 Identificación</h3>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-semibold text-slate-700 mb-2">Placa</label>
+                    <input
+                      type="text"
+                      value={individualData.plate}
+                      onChange={e => setIndividualData({...individualData, plate: e.target.value.toUpperCase()})}
+                      className="w-full px-3 py-2 border border-green-300 rounded-lg focus:ring-2 focus:ring-green-500 uppercase"
+                      placeholder="Ej: NTW668"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-semibold text-slate-700 mb-2">Código</label>
+                    <input
+                      type="text"
+                      value={individualData.code}
+                      onChange={e => setIndividualData({...individualData, code: e.target.value.toUpperCase()})}
+                      className="w-full px-3 py-2 border border-green-300 rounded-lg focus:ring-2 focus:ring-green-500 uppercase"
+                      placeholder="Ej: E16"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Variable - Azul */}
+              <div className="col-span-2 bg-blue-50 p-4 rounded-lg border border-blue-200">
+                <h3 className="text-sm font-bold text-blue-800 mb-3">📊 Variable Actual</h3>
+                <div className="grid grid-cols-3 gap-4">
+                  <div className="col-span-1">
+                    <label className="block text-sm font-semibold text-slate-700 mb-2">Kilometraje</label>
+                    <input
+                      type="number"
+                      value={individualData.mileage}
+                      onChange={e => setIndividualData({...individualData, mileage: e.target.value})}
+                      className="w-full px-3 py-2 border border-blue-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                      placeholder="35000"
+                    />
+                  </div>
+                  <div className="col-span-1">
+                    <label className="block text-sm font-semibold text-slate-700 mb-2">Fecha</label>
+                    <input
+                      type="date"
+                      value={individualData.date}
+                      onChange={e => setIndividualData({...individualData, date: e.target.value})}
+                      className="w-full px-3 py-2 border border-blue-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                    />
+                  </div>
+                  <div className="col-span-1">
+                    <label className="block text-sm font-semibold text-slate-700 mb-2">Hora</label>
+                    <input
+                      type="time"
+                      value={individualData.time}
+                      onChange={e => setIndividualData({...individualData, time: e.target.value})}
+                      className="w-full px-3 py-2 border border-blue-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                    />
+                  </div>
+                </div>
+              </div>
             </div>
-            {pasteData && (
-              <button 
-                onClick={() => { setPasteData(''); setPreview([]); setHasErrors(false); }}
-                className="px-4 py-2 bg-slate-200 text-slate-700 rounded hover:bg-slate-300 text-sm font-semibold"
+
+            {/* Botones de acción */}
+            <div className="flex justify-end gap-3">
+              <button
+                onClick={() => setIndividualData({
+                  plate: '',
+                  code: '',
+                  mileage: '',
+                  date: new Date().toISOString().split('T')[0],
+                  time: new Date().toTimeString().split(' ')[0].substring(0, 5)
+                })}
+                className="px-6 py-2 bg-slate-200 text-slate-700 rounded-lg hover:bg-slate-300 font-semibold"
               >
                 Limpiar
               </button>
-            )}
+              <button
+                onClick={handleIndividualSave}
+                className="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 font-semibold shadow"
+              >
+                💾 Guardar Variable
+              </button>
+            </div>
           </div>
-        </div>
+        )}
 
-        {preview.length > 0 && (
+        {/* Carga Masiva */}
+        {loadMode === 'masiva' && (
+          <>
+            <div className="p-4 border-b">
+              <div className="flex items-center gap-4">
+                <div className="flex-1">
+                  <label className="block text-sm font-semibold mb-2">
+                    📋 Pegar desde Excel (Ctrl+V) - Auto-valida instantáneamente
+                  </label>
+                  <textarea 
+                    className="w-full h-24 p-3 border-2 border-dashed border-blue-300 rounded-lg font-mono text-xs bg-blue-50 focus:border-blue-500 focus:bg-white transition-colors"
+                    placeholder="Copiar columnas de Excel y pegar aquí (Fecha | KM | Placa)&#10;&#10;Ejemplo:&#10;12/12/2025 08:20:25    33.394,000    NTW668&#10;12/12/2025 08:13:40    28.577,000    NNL597"
+                    value={pasteData}
+                    onChange={e => setPasteData(e.target.value)}
+                    onPaste={handlePaste}
+                  />
+                </div>
+                {pasteData && (
+                  <button 
+                    onClick={() => { setPasteData(''); setPreview([]); setHasErrors(false); }}
+                    className="px-4 py-2 bg-slate-200 text-slate-700 rounded hover:bg-slate-300 text-sm font-semibold"
+                  >
+                    Limpiar
+                  </button>
+                )}
+              </div>
+            </div>
+
+            {preview.length > 0 && (
           <>
             <div className="p-4 bg-slate-50 border-b flex items-center justify-between">
               <div className="flex gap-2">
@@ -4339,6 +5293,8 @@ Guardando localmente como respaldo...
             <p className="text-lg font-semibold">Esperando datos...</p>
             <p className="text-sm mt-2">Copia las columnas de Excel y pégalas arriba</p>
           </div>
+        )}
+          </>
         )}
       </div>
     </div>
@@ -4606,12 +5562,11 @@ function App() {
   const renderView = () => {
     switch(currentView) {
       case 'dashboard': return <Dashboard fleet={fleet} workOrders={workOrders} variableHistory={variableHistory} />;
-      case 'planning': return <PlanningView fleet={fleet} setFleet={setFleet} onCreateOT={handleCreateOT} workOrders={workOrders} setWorkOrders={setWorkOrders} variableHistory={variableHistory} routines={routines} />;
-      case 'maintenance-admin': return <MaintenanceAdminView workOrders={workOrders} setWorkOrders={setWorkOrders} fleet={fleet} setFleet={setFleet} routines={routines} setRoutines={setRoutines} />;
+      case 'planning': return <PlanningView fleet={fleet} setFleet={setFleet} onCreateOT={handleCreateOT} workOrders={workOrders} setWorkOrders={setWorkOrders} variableHistory={variableHistory} setVariableHistory={setVariableHistory} routines={routines} />;
+      case 'maintenance-admin': return <MaintenanceAdminView workOrders={workOrders} setWorkOrders={setWorkOrders} fleet={fleet} setFleet={setFleet} routines={routines} setRoutines={setRoutines} variableHistory={variableHistory} setVariableHistory={setVariableHistory} />;
       case 'work-orders': return <WorkOrders fleet={fleet} />;
       case 'drivers': return <DriverAssignment fleet={fleet} setFleet={setFleet} />;
       case 'dataload': return <DataLoad fleet={fleet} setFleet={setFleet} setVariableHistory={setVariableHistory} />;
-      case 'variablehistory': return <VariableHistory variableHistory={variableHistory} fleet={fleet} />;
       default: return <Dashboard fleet={fleet} workOrders={workOrders} variableHistory={variableHistory} />;
     }
   };
@@ -4624,7 +5579,6 @@ function App() {
       case 'work-orders': return 'Generador de Órdenes de Trabajo';
       case 'drivers': return 'Asignación de Conductores';
       case 'dataload': return 'Carga Masiva de Variables';
-      case 'variablehistory': return 'Historial de Variables';
       default: return 'Dashboard - Métricas y Análisis';
     }
   };
@@ -4713,15 +5667,6 @@ function App() {
               >
                 <Upload size={20} className={currentView === 'dataload' ? 'text-blue-600' : 'text-gray-600'} />
                 {isSidebarOpen && <span className="font-medium">Cargar Variables</span>}
-              </button>
-            </li>
-            <li>
-              <button 
-                onClick={() => setCurrentView('variablehistory')}
-                className={`w-full flex items-center gap-4 px-4 py-3 hover:bg-blue-50 transition-colors ${currentView === 'variablehistory' ? 'bg-blue-100 text-blue-600 border-r-4 border-blue-600' : 'text-gray-700'}`}
-              >
-                <Calendar size={20} className={currentView === 'variablehistory' ? 'text-blue-600' : 'text-gray-600'} />
-                {isSidebarOpen && <span className="font-medium">Historial Variables</span>}
               </button>
             </li>
           </ul>

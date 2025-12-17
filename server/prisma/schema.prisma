@@ -18,11 +18,18 @@ model User {
 
 model Vehicle {
   id                   String            @id @default(cuid())
-  code                 String            @unique
-  plate                String            @unique
-  model                String
-  brand                String?
-  owner                String?
+  code                 String            @unique // CODIGO DEL EQUIPO
+  plate                String            @unique // PLACA
+  model                String            // MODELO / LINEA
+  brand                String?           // MARCA
+  owner                String?           // Propio/Tercero (filtrar solo "PROPIO")
+  familiaTipologia     String?           // FAMILIA/TIPOLOGÍA (filtrar solo "CAMIONETA")
+  descripcion          String?           // DESCRIPCIÓN
+  serieChasis          String?           // SERIE CHASIS / VIN
+  serieMotor           String?           // SERIE MOTOR
+  anioModelo           String?           // AÑO MODELO
+  estadoActual         String?           // ESTADO ACTUAL
+  ubicacionFrente      String?           // UBICACIÓN O FRENTE DE OBRA
   mileage              Int               @default(0)
   lastMaintenance      Int?
   lastMaintenanceDate  String?
@@ -35,6 +42,8 @@ model Vehicle {
   
   @@index([plate])
   @@index([code])
+  @@index([familiaTipologia])
+  @@index([owner])
 }
 
 model WorkOrder {
