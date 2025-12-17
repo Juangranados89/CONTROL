@@ -26,7 +26,10 @@ import {
   Check,
   CheckCircle2,
   Circle,
-  AlertCircle
+  AlertCircle,
+  MapPin,
+  CircleDot,
+  Fuel
 } from 'lucide-react';
 import { 
   LineChart, 
@@ -5567,6 +5570,27 @@ function App() {
       case 'work-orders': return <WorkOrders fleet={fleet} />;
       case 'drivers': return <DriverAssignment fleet={fleet} setFleet={setFleet} />;
       case 'dataload': return <DataLoad fleet={fleet} setFleet={setFleet} setVariableHistory={setVariableHistory} />;
+      case 'gps': return (
+        <div className="p-8 flex flex-col items-center justify-center h-full">
+          <MapPin size={64} className="text-blue-500 mb-4" />
+          <h2 className="text-2xl font-bold text-slate-700 mb-2">Ubicación GPS</h2>
+          <p className="text-slate-500 text-center">Módulo en desarrollo - Próximamente</p>
+        </div>
+      );
+      case 'tires': return (
+        <div className="p-8 flex flex-col items-center justify-center h-full">
+          <CircleDot size={64} className="text-blue-500 mb-4" />
+          <h2 className="text-2xl font-bold text-slate-700 mb-2">Control de Llantas</h2>
+          <p className="text-slate-500 text-center">Módulo en desarrollo - Próximamente</p>
+        </div>
+      );
+      case 'fuel': return (
+        <div className="p-8 flex flex-col items-center justify-center h-full">
+          <Fuel size={64} className="text-blue-500 mb-4" />
+          <h2 className="text-2xl font-bold text-slate-700 mb-2">Rendimiento de Combustible</h2>
+          <p className="text-slate-500 text-center">Módulo en desarrollo - Próximamente</p>
+        </div>
+      );
       default: return <Dashboard fleet={fleet} workOrders={workOrders} variableHistory={variableHistory} />;
     }
   };
@@ -5579,6 +5603,9 @@ function App() {
       case 'work-orders': return 'Generador de Órdenes de Trabajo';
       case 'drivers': return 'Asignación de Conductores';
       case 'dataload': return 'Carga Masiva de Variables';
+      case 'gps': return 'Ubicación GPS';
+      case 'tires': return 'Control de Llantas';
+      case 'fuel': return 'Rendimiento de Combustible';
       default: return 'Dashboard - Métricas y Análisis';
     }
   };
@@ -5667,6 +5694,37 @@ function App() {
               >
                 <Upload size={20} className={currentView === 'dataload' ? 'text-blue-600' : 'text-gray-600'} />
                 {isSidebarOpen && <span className="font-medium">Cargar Variables</span>}
+              </button>
+            </li>
+            
+            {/* Separador */}
+            {isSidebarOpen && <div className="mx-4 my-2 border-t border-gray-200"></div>}
+            
+            <li>
+              <button 
+                onClick={() => setCurrentView('gps')}
+                className={`w-full flex items-center gap-4 px-4 py-3 hover:bg-blue-50 transition-colors ${currentView === 'gps' ? 'bg-blue-100 text-blue-600 border-r-4 border-blue-600' : 'text-gray-700'}`}
+              >
+                <MapPin size={20} className={currentView === 'gps' ? 'text-blue-600' : 'text-gray-600'} />
+                {isSidebarOpen && <span className="font-medium">Ubicación GPS</span>}
+              </button>
+            </li>
+            <li>
+              <button 
+                onClick={() => setCurrentView('tires')}
+                className={`w-full flex items-center gap-4 px-4 py-3 hover:bg-blue-50 transition-colors ${currentView === 'tires' ? 'bg-blue-100 text-blue-600 border-r-4 border-blue-600' : 'text-gray-700'}`}
+              >
+                <CircleDot size={20} className={currentView === 'tires' ? 'text-blue-600' : 'text-gray-600'} />
+                {isSidebarOpen && <span className="font-medium">Control Llantas</span>}
+              </button>
+            </li>
+            <li>
+              <button 
+                onClick={() => setCurrentView('fuel')}
+                className={`w-full flex items-center gap-4 px-4 py-3 hover:bg-blue-50 transition-colors ${currentView === 'fuel' ? 'bg-blue-100 text-blue-600 border-r-4 border-blue-600' : 'text-gray-700'}`}
+              >
+                <Fuel size={20} className={currentView === 'fuel' ? 'text-blue-600' : 'text-gray-600'} />
+                {isSidebarOpen && <span className="font-medium">Rendimiento Combustible</span>}
               </button>
             </li>
           </ul>
