@@ -5134,23 +5134,48 @@ function App() {
         setIsLoading(true);
         setApiError(null);
         
-        // Load vehicles (allow empty DB)
-        const vehicles = await api.getVehicles();
-        setFleet(vehicles); // Don't auto-seed, allow empty DB
+        // Try API first
+        let vehicles = [];
+        let orders = [];
+        let history = [];
         
-        // Load work orders
-        const orders = await api.getWorkOrders();
+        try {
+          vehicles = await api.getVehicles();
+          orders = await api.getWorkOrders();
+          history = await api.getVariables();
+        } catch (apiError) {
+          console.warn('API not available, using localStorage:', apiError.message);
+        }
+        
+        // If API returned empty or failed, check localStorage
+        const savedFleet = localStorage.getItem('fleet_data');
+        const savedOrders = localStorage.getItem('work_orders');
+        const savedHistory = localStorage.getItem('variable_history');
+        
+        // Use localStorage data if API returned empty
+        if (vehicles.length === 0 && savedFleet) {
+          console.log('📦 Loading fleet from localStorage');
+          vehicles = JSON.parse(savedFleet);
+        }
+        if (orders.length === 0 && savedOrders) {
+          console.log('📦 Loading orders from localStorage');
+          orders = JSON.parse(savedOrders);
+        }
+        if (history.length === 0 && savedHistory) {
+          console.log('📦 Loading history from localStorage');
+          history = JSON.parse(savedHistory);
+        }
+        
+        // Set state
+        setFleet(vehicles);
         setWorkOrders(orders);
-        
-        // Load variable history
-        const history = await api.getVariables();
         setVariableHistory(history);
         
       } catch (error) {
         console.error('Error loading data:', error);
         setApiError(error.message);
         
-        // Fallback to localStorage if API fails, or use INITIAL_FLEET
+        // Fallback to localStorage if everything fails
         const savedFleet = localStorage.getItem('fleet_data');
         const savedOrders = localStorage.getItem('work_orders');
         const savedHistory = localStorage.getItem('variable_history');

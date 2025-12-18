@@ -484,7 +484,10 @@ export default function MaintenanceDataLoader({ fleet, setFleet, setVariableHist
       alert(message.join('\n'));
 
       setIsProcessing(false);
-      onClose();
+      
+      // Forzar recarga para asegurar que la tabla se actualice correctamente
+      // Esto es necesario porque localStorage se actualizó y la app debe releer
+      window.location.reload();
 
     } catch (error) {
       console.error('❌ Error al aplicar cambios:', error);
