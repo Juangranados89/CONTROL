@@ -82,26 +82,26 @@ export default function MaintenanceDataLoader({ fleet, setFleet, setVariableHist
     const mapping = {};
     
     headers.forEach((header, index) => {
-      const h = header.toUpperCase();
+      const h = cleanValue(header).toUpperCase().replace(/\s+/g, ' ');
       
       // Código interno
-      if (h.includes('INTERNO') || h.includes('CODIGO') || h === 'CÓDIGO') {
+      if (h.includes('CODIGO') || h.includes('CÓDIGO') || h.includes('INTERNO') || h === 'CODE') {
         mapping.code = index;
       }
       // Placa
-      else if (h.includes('PLACA')) {
+      else if (h.includes('PLACA') || h === 'PLATE') {
         mapping.plate = index;
       }
       // Descripción/Modelo
-      else if (h.includes('DESCRIPCION') || h.includes('MODELO') || h.includes('MODEL')) {
+      else if (h.includes('DESCRIPCION') || h.includes('DESCRIPCIÓN') || h.includes('MODELO') || h.includes('MODEL')) {
         mapping.description = index;
       }
       // Frecuencia/Ciclo
-      else if (h.includes('FRECUENCIA') || h.includes('CICLO')) {
+      else if (h.includes('FRECUENCIA') || h.includes('CICLO') || h === 'CYCLE') {
         mapping.frequency = index;
       }
       // Clase
-      else if (h.includes('CLASE') || h.includes('CLASS')) {
+      else if (h.includes('CLASE') || h.includes('CLASS') || h === 'TYPE') {
         mapping.class = index;
       }
       // Marca
@@ -109,31 +109,61 @@ export default function MaintenanceDataLoader({ fleet, setFleet, setVariableHist
         mapping.brand = index;
       }
       // Ubicación
-      else if (h.includes('UBICACION') || h.includes('LOCATION')) {
+      else if (h.includes('UBICACION') || h.includes('UBICACIÓN') || h.includes('LOCATION')) {
         mapping.location = index;
       }
       // Diler/Taller
-      else if (h.includes('DILER') || h.includes('TALLER')) {
+      else if (h.includes('DILER') || h.includes('TALLER') || h.includes('DEALER')) {
         mapping.dealer = index;
       }
-      // Fecha variable actual
-      else if (h.includes('F.') && h.includes('VARIABLE') || h.includes('FECHA') && h.includes('VAR')) {
+      // Fecha variable actual (más específico primero)
+      else if (
+        (h.includes('FECHA') && h.includes('VARIABLE')) ||
+        (h.includes('F.') && h.includes('VARIABLE')) ||
+        h.includes('FECHA VAR')
+      ) {
         mapping.variableDate = index;
       }
       // Variable actual (kilometraje actual)
-      else if (h === 'VARIABLE' || h.includes('VAR_ACTUAL') || h.includes('HR/KM') || h.includes('KM ACTUAL')) {
+      else if (
+        h === 'VARIABLE ACTUAL' ||
+        h === 'VARIABLE' ||
+        h.includes('VAR. ACTUAL') ||
+        h.includes('VAR ACTUAL') ||
+        h.includes('HR/KM') ||
+        h.includes('KM ACTUAL') ||
+        h.includes('KILOMETRAJE')
+      ) {
         mapping.currentMileage = index;
       }
-      // Último mantenimiento
-      else if (h.includes('ULT') && h.includes('MTTO') || h.includes('ULTIMO') && h.includes('MTTO') || h.includes('HR ULTIMA') || h.includes('ULTIMA EJEC')) {
+      // Último mantenimiento (más variantes)
+      else if (
+        (h.includes('ULT') && h.includes('MTTO')) ||
+        (h.includes('ÚLT') && h.includes('MTTO')) ||
+        (h.includes('ULTIMO') && h.includes('MTTO')) ||
+        (h.includes('ÚLTIMO') && h.includes('MTTO')) ||
+        h.includes('ULT. MTTO') ||
+        h.includes('ÚLT. MTTO') ||
+        h.includes('HR ULTIMA EJEC') ||
+        h.includes('ULTIMA EJEC')
+      ) {
         mapping.lastMaintenanceMileage = index;
       }
-      // Fecha último mantenimiento
-      else if (h.includes('F.') && h.includes('ULT') || h.includes('FECHA') && h.includes('ULTIMO')) {
+      // Fecha último mantenimiento (más variantes)
+      else if (
+        (h.includes('FECHA') && h.includes('ULT') && h.includes('MTTO')) ||
+        (h.includes('FECHA') && h.includes('ÚLT') && h.includes('MTTO')) ||
+        (h.includes('FECHA') && h.includes('ULTIMO')) ||
+        (h.includes('FECHA') && h.includes('ÚLTIMO')) ||
+        (h.includes('F.') && h.includes('ULT') && h.includes('MTTO')) ||
+        h.includes('FECHA ULT. MTTO') ||
+        h.includes('FECHA ÚLT. MTTO')
+      ) {
         mapping.lastMaintenanceDate = index;
       }
     });
     
+    console.log('📋 Mapeo de columnas detectado:', mapping);
     return mapping;
   };
 
@@ -253,17 +283,31 @@ export default function MaintenanceDataLoader({ fleet, setFleet, setVariableHist
           continue;
         }
 
-        // Buscar vehículo en flota (más tolerante)
+        // Buscar vehículo en flota (más tolerante y específico)
         const vehicleMatch = fleet.find(v => {
-          const codeMatch = record.code && v.code && 
-            v.code.toUpperCase().includes(record.code.toUpperCase());
-          const plateMatch = record.plate && v.plate && 
-            v.plate.toUpperCase().replace(/[-\s]/g, '') === record.plate.toUpperCase().replace(/[-\s]/g, '');
+          // Normalizar para comparación
+          const normalizeString = (str) => str ? str.toUpperCase().replace(/[-\s]/g, '').trim() : '';
+          
+          const recordCodeNorm = normalizeString(record.code);
+          const recordPlateNorm = normalizeString(record.plate);
+          const vCodeNorm = normalizeString(v.code);
+          const vPlateNorm = normalizeString(v.plate);
+          
+          // Coincidencia exacta de código
+          const codeMatch = recordCodeNorm && vCodeNorm && recordCodeNorm === vCodeNorm;
+          
+          // Coincidencia exacta de placa
+          const plateMatch = recordPlateNorm && vPlateNorm && recordPlateNorm === vPlateNorm;
+          
           return codeMatch || plateMatch;
         });
 
         record.matched = !!vehicleMatch;
         record.matchedVehicle = vehicleMatch;
+        
+        if (!vehicleMatch && (record.code || record.plate)) {
+          console.log(`⚠️ No encontrado: ${record.code} / ${record.plate}`);
+        }
 
         parsed.push(record);
       }
@@ -439,12 +483,13 @@ export default function MaintenanceDataLoader({ fleet, setFleet, setVariableHist
                 <h4 className="font-bold text-slate-700 mb-2 text-sm">📊 Columnas reconocidas automáticamente:</h4>
                 <div className="bg-white p-3 rounded border border-slate-200 overflow-x-auto">
                   <div className="text-xs text-slate-700 space-y-1">
-                    <p><strong>✅ Código:</strong> INTERNO, CODIGO, CÓDIGO</p>
-                    <p><strong>✅ Placa:</strong> PLACA</p>
-                    <p><strong>✅ Variable Actual:</strong> VARIABLE, VAR_ACTUAL, HR/KM, KM ACTUAL</p>
-                    <p><strong>✅ Ciclo:</strong> FRECUENCIA, CICLO</p>
-                    <p><strong>✅ Último Mtto:</strong> ULT. MTTO, ULTIMO MTTO, HR ULTIMA EJEC</p>
-                    <p><strong>✅ Fechas:</strong> F. VARIABLE, FECHA VAR, F. ULT. MTTO, FECHA ULTIMO</p>
+                    <p><strong>✅ Código:</strong> CODIGO, CÓDIGO, INTERNO, CODE</p>
+                    <p><strong>✅ Placa:</strong> PLACA, PLATE</p>
+                    <p><strong>✅ Variable Actual:</strong> VARIABLE ACTUAL, VARIABLE, VAR. ACTUAL, HR/KM, KILOMETRAJE</p>
+                    <p><strong>✅ Ciclo:</strong> FRECUENCIA, CICLO, CYCLE</p>
+                    <p><strong>✅ Último Mtto:</strong> ULT. MTTO, ÚLT. MTTO, ULTIMO MTTO, HR ULTIMA EJEC</p>
+                    <p><strong>✅ Fecha Variable:</strong> FECHA VARIABLE, FECHA VAR, F. VARIABLE</p>
+                    <p><strong>✅ Fecha Últ. Mtto:</strong> FECHA ULT. MTTO, FECHA ÚLT. MTTO, FECHA ULTIMO, F. ULT. MTTO</p>
                   </div>
                 </div>
                 <p className="text-xs text-slate-500 mt-2">
