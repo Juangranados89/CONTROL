@@ -57,6 +57,7 @@ import ExportMenu from './components/ExportMenu';
 import VariableHistory from './components/VariableHistory';
 import BulkImportGrid from './components/BulkImportGrid';
 import MaintenanceDataLoader from './components/MaintenanceDataLoader';
+import CloseOTModal from './components/CloseOTModal';
 
 // --- Helper Functions ---
 
@@ -213,7 +214,11 @@ const generatePDF = async (workOrder) => {
   doc.setFontSize(8);
   doc.text("CÓDIGO FORMATO", startX + 140 + 25, startY + 20, { align: 'center' });
   doc.setFontSize(10);
-  doc.text("F-MTO-001", startX + 140 + 25, startY + 26, { align: 'center' });
+  doc.text("FEYM936.00.CO", startX + 140 + 25, startY + 26, { align: 'center' });
+  
+  // Fecha de creación del formato (debajo del código)
+  doc.setFontSize(6);
+  doc.text("18-DICIEMBRE-2025", startX + 140 + 25, startY + 30, { align: 'center' });
 
 
   // --- GENERAL INFO (Grid Layout) ---
@@ -330,6 +335,26 @@ const generatePDF = async (workOrder) => {
   doc.text("RESPONSABLE", 12, sigY + 4);
   doc.text("APROBADOR", 72, sigY + 4);
   doc.text("RECIBE A SATISFACCION", 132, sigY + 4);
+
+  // Si la OT está cerrada, incluir firmas electrónicas
+  if (workOrder.signatures) {
+    // Firma RESPONSABLE
+    if (workOrder.signatures.responsible) {
+      doc.addImage(workOrder.signatures.responsible, 'PNG', 12, sigY + 6, 56, 12);
+    }
+    
+    // APROBADOR (nombre en texto)
+    if (workOrder.signatures.approver) {
+      doc.setFontSize(9);
+      doc.setFont("helvetica", "bold");
+      doc.text(workOrder.signatures.approver, 100, sigY + 12, { align: 'center' });
+    }
+    
+    // Firma RECIBE A SATISFACCIÓN
+    if (workOrder.signatures.received) {
+      doc.addImage(workOrder.signatures.received, 'PNG', 132, sigY + 6, 66, 12);
+    }
+  }
 
   doc.save(`OT-${workOrder.id}-${workOrder.plate}.pdf`);
 };
@@ -889,7 +914,7 @@ const Dashboard = ({ fleet, workOrders, variableHistory }) => {
   );
 };
 
-const PlanningView = ({ fleet, setFleet, onCreateOT, workOrders = [], setWorkOrders, variableHistory = [], setVariableHistory, routines = MAINTENANCE_ROUTINES }) => {
+const PlanningView = ({ fleet, setFleet, onCreateOT, workOrders = [], setWorkOrders, variableHistory = [], setVariableHistory, routines = MAINTENANCE_ROUTINES, currentUser }) => {
   const [selectedVehicle, setSelectedVehicle] = useState(null);
   const [workshop, setWorkshop] = useState('');
   const [viewingHistoryVehicle, setViewingHistoryVehicle] = useState(null);
@@ -898,6 +923,7 @@ const PlanningView = ({ fleet, setFleet, onCreateOT, workOrders = [], setWorkOrd
   const [showGanttChart, setShowGanttChart] = useState(false);
   const [showBulkLoad, setShowBulkLoad] = useState(false);
   const [statusFilter, setStatusFilter] = useState('ALL'); // ALL, VENCIDO, PROXIMO, OK
+  const [closingOT, setClosingOT] = useState(null);
   
   // Estado para edición inline
   const [editingCell, setEditingCell] = useState(null); // { vehicleId, field }
@@ -1056,6 +1082,23 @@ const PlanningView = ({ fleet, setFleet, onCreateOT, workOrders = [], setWorkOrd
     alert(`✅ Datos actualizados correctamente\n${newFleet[vehicleIndex].plate} - ${newFleet[vehicleIndex].code}`);
     setEditingVehicle(null);
     setVehicleEditData({});
+  };
+
+  // Handler para cerrar OT con firmas
+  const handleCloseOT = (closedOT) => {
+    setWorkOrders(prev => {
+      const updated = prev.map(ot => 
+        ot.id === closedOT.id ? closedOT : ot
+      );
+      localStorage.setItem('work_orders', JSON.stringify(updated));
+      return updated;
+    });
+    
+    setClosingOT(null);
+    alert(`✅ OT #${closedOT.id} cerrada exitosamente\n${closedOT.plate} - ${closedOT.code}`);
+    
+    // Generar PDF con firmas
+    generatePDF(closedOT);
   };
 
   // Helper to get next routine using the passed routines prop
@@ -1287,6 +1330,16 @@ const PlanningView = ({ fleet, setFleet, onCreateOT, workOrders = [], setWorkOrd
           setFleet={setFleet}
           setVariableHistory={setVariableHistory}
           onClose={() => setShowBulkLoad(false)}
+        />
+      )}
+
+      {/* Modal for Close OT with Signatures */}
+      {closingOT && (
+        <CloseOTModal
+          workOrder={closingOT}
+          currentUser={currentUser}
+          onClose={() => setClosingOT(null)}
+          onSave={handleCloseOT}
         />
       )}
 
@@ -1589,13 +1642,24 @@ const PlanningView = ({ fleet, setFleet, onCreateOT, workOrders = [], setWorkOrd
                           </span>
                         </td>
                         <td className="p-2">
-                          <button 
-                            onClick={() => generatePDF(ot)}
-                            className="text-slate-600 hover:text-blue-600"
-                            title="Descargar PDF"
-                          >
-                            <FileText size={16} />
-                          </button>
+                          <div className="flex items-center gap-2">
+                            <button 
+                              onClick={() => generatePDF(ot)}
+                              className="text-slate-600 hover:text-blue-600"
+                              title="Descargar PDF"
+                            >
+                              <FileText size={16} />
+                            </button>
+                            {ot.status === 'ABIERTA' && (
+                              <button
+                                onClick={() => setClosingOT(ot)}
+                                className="px-2 py-1 bg-green-600 text-white text-xs rounded hover:bg-green-700 transition-colors font-medium"
+                                title="Cerrar OT"
+                              >
+                                Cerrar
+                              </button>
+                            )}
+                          </div>
                         </td>
                       </tr>
                     ))}
@@ -5259,7 +5323,7 @@ function App() {
   const renderView = () => {
     switch(currentView) {
       case 'dashboard': return <Dashboard fleet={fleet} workOrders={workOrders} variableHistory={variableHistory} />;
-      case 'planning': return <PlanningView fleet={fleet} setFleet={setFleet} onCreateOT={handleCreateOT} workOrders={workOrders} setWorkOrders={setWorkOrders} variableHistory={variableHistory} setVariableHistory={setVariableHistory} routines={routines} />;
+      case 'planning': return <PlanningView fleet={fleet} setFleet={setFleet} onCreateOT={handleCreateOT} workOrders={workOrders} setWorkOrders={setWorkOrders} variableHistory={variableHistory} setVariableHistory={setVariableHistory} routines={routines} currentUser={currentUser} />;
       case 'maintenance-admin': return <MaintenanceAdminView workOrders={workOrders} setWorkOrders={setWorkOrders} fleet={fleet} setFleet={setFleet} routines={routines} setRoutines={setRoutines} variableHistory={variableHistory} setVariableHistory={setVariableHistory} />;
       case 'work-orders': return <WorkOrders fleet={fleet} />;
       case 'drivers': return <DriverAssignment fleet={fleet} setFleet={setFleet} />;
