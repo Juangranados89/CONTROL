@@ -18,9 +18,12 @@ app.use(express.json({ limit: '10mb' }));
 app.get('/health', (req, res) => res.json({ ok: true, timestamp: new Date().toISOString() }));
 
 app.post('/api/login', async (req, res) => {
-  const email = String(req.body?.email || '').trim();
+  const identifierRaw = String(req.body?.username ?? req.body?.email ?? '').trim();
   const password = String(req.body?.password || '');
-  if (!email || !password) return res.status(400).json({ error: 'Email and password required' });
+  if (!identifierRaw || !password) return res.status(400).json({ error: 'Username/email and password required' });
+
+  // Allow login with just a username (no domain) to match the UX requirement.
+  const email = identifierRaw.includes('@') ? identifierRaw : `${identifierRaw}@control.local`;
 
   // Case-insensitive lookup to avoid surprises with capitalization in UI/seed.
   const user = await prisma.user.findFirst({
@@ -65,8 +68,8 @@ const ensureOptionalAdminUsers = async () => {
   // This avoids hardcoded credentials in production and fixes “login incorrect” when seed isn't run.
   const optionalUsers = [
     { email: 'julio.barrantes1@control.local', env: 'SEED_PASSWORD_JULIO_BARRANTES1', role: 'admin' },
-    { email: 'hector.zapata1@control.local', env: 'SEED_PASSWORD_HECTOR_ZAPATA1', role: 'admin' },
-    { email: 'juan.granados1@control.local', env: 'SEED_PASSWORD_JUAN_GRANADOS1', role: 'admin' }
+    { email: 'Hector.Zapata1@control.local', env: 'SEED_PASSWORD_HECTOR_ZAPATA1', role: 'admin' },
+    { email: 'Juan.granados1@control.local', env: 'SEED_PASSWORD_JUAN_GRANADOS1', role: 'admin' }
   ];
 
   for (const u of optionalUsers) {
