@@ -56,6 +56,7 @@ import NotificationBadge from './components/NotificationBadge';
 import ExportMenu from './components/ExportMenu';
 import VariableHistory from './components/VariableHistory';
 import BulkImportGrid from './components/BulkImportGrid';
+import MaintenanceDataLoader from './components/MaintenanceDataLoader';
 
 // --- Helper Functions ---
 
@@ -895,10 +896,7 @@ const PlanningView = ({ fleet, setFleet, onCreateOT, workOrders = [], setWorkOrd
   const [showWeeklyPlan, setShowWeeklyPlan] = useState(false);
   const [showManualUpdate, setShowManualUpdate] = useState(false);
   const [showGanttChart, setShowGanttChart] = useState(false);
-  const [bulkLoadMode, setBulkLoadMode] = useState('individual'); // 'individual' o 'masiva'
   const [showBulkLoad, setShowBulkLoad] = useState(false);
-  const [bulkData, setBulkData] = useState('');
-  const [manualData, setManualData] = useState({ code: '', plate: '', lastDate: '', lastKm: '' });
   const [statusFilter, setStatusFilter] = useState('ALL'); // ALL, VENCIDO, PROXIMO, OK
   
   // Estado para edición inline
@@ -1058,178 +1056,6 @@ const PlanningView = ({ fleet, setFleet, onCreateOT, workOrders = [], setWorkOrd
     alert(`✅ Datos actualizados correctamente\n${newFleet[vehicleIndex].plate} - ${newFleet[vehicleIndex].code}`);
     setEditingVehicle(null);
     setVehicleEditData({});
-  };
-  const handleBulkLoad = () => {
-    const rows = bulkData.trim().split('\n');
-    const newFleet = [...fleet];
-    let updatesCount = 0;
-    let skippedCount = 0;
-    let notFoundList = [];
-
-    // Debug: mostrar primera fila para verificar formato
-    console.log('=== DEBUG CARGA MASIVA ===');
-    console.log('Total filas:', rows.length);
-    console.log('Primera fila (primeras 10 cols):', rows[0]?.split(/\t/).slice(0, 10));
-
-    rows.forEach((row, idx) => {
-      const cols = row.split(/\t/);
-      
-      // Detectar y omitir encabezados
-      if (idx === 0) {
-        const firstCol = cols[0]?.trim().toUpperCase();
-        if (firstCol.includes('INTERNO') || firstCol.includes('CODIGO') || firstCol.includes('#INTERNO')) {
-          console.log('Encabezado detectado, omitiendo fila 0');
-          return;
-        }
-      }
-
-      console.log(`Fila ${idx}: ${cols.length} columnas`);
-
-      if (cols.length < 10) {
-        console.log(`Fila ${idx}: Solo ${cols.length} columnas, omitiendo`);
-        skippedCount++;
-        return;
-      }
-
-      // Formato EXACTO del Excel del cliente:
-      // 0: #INTERNO | 1: PLACA | 2: DESCRIPCION | 3: FRECUENCIA | 4: CLA | 5: MARCA | 6: UBICACIÓN | 7: DILER | 8: FECHA ACT | 9: HR/KM | 10: HR ULTIMA EJEC | 11: FECHA ULTIMA EJEC
-      const code = cols[0]?.trim();
-      const plate = cols[1]?.trim();
-      const frequencyRaw = cols[3]?.trim(); // FRECUENCIA (índice 3) - Ciclo de mantenimiento (5000, 7000, 10000)
-      const variableDateRaw = cols[8]?.trim(); // FECHA ACTUALIZACIÓN (índice 8) - Fecha de la variable
-      const mileageRaw = cols[9]?.trim(); // HR/KM (índice 9) - Variable actual
-      const lastExecValRaw = cols.length > 10 ? cols[10]?.trim() : null; // HR ULTIMA EJECUCION (índice 10)
-      const lastExecDateRaw = cols.length > 11 ? cols[11]?.trim() : null; // FECHA ULTIMA EJECUCION (índice 11)
-
-      // Parsear frecuencia/ciclo
-      let frequency = 5000; // Default
-      if (frequencyRaw) {
-        const freq = parseInt(frequencyRaw.replace(/[,\.\s]/g, '')) || 5000;
-        frequency = freq;
-      }
-
-      console.log(`Fila ${idx}: Code=${code}, Plate=${plate}, Freq=${frequency}, Mileage=${mileageRaw}, VarDate=${variableDateRaw}`);
-
-      if (!code && !plate) {
-        console.log(`Fila ${idx}: Sin código ni placa, omitiendo`);
-        skippedCount++;
-        return;
-      }
-
-      // Parsear kilometraje actual (variable actual) - SIEMPRE actualizar, incluso si es 0
-      let mileage = 0;
-      if (mileageRaw && mileageRaw !== '#N/D') {
-        mileage = parseInt(mileageRaw.replace(/[,\.\s]/g, '')) || 0;
-      }
-
-      // Parsear fecha de variable (DD/MM/YYYY)
-      let variableDate = null;
-      if (variableDateRaw && variableDateRaw !== '#N/D') {
-        const dateParts = variableDateRaw.split('/');
-        if (dateParts.length === 3) {
-          const day = dateParts[0].padStart(2, '0');
-          const month = dateParts[1].padStart(2, '0');
-          const year = dateParts[2];
-          variableDate = `${day}/${month}/${year}`;
-        }
-      }
-
-      // Parsear último mantenimiento ejecutado - SIEMPRE actualizar, incluso si es 0
-      let lastExecVal = 0;
-      if (lastExecValRaw && lastExecValRaw !== '#N/D') {
-        lastExecVal = parseInt(lastExecValRaw.replace(/[,\.\s]/g, '')) || 0;
-      }
-
-      // Parsear fecha de último mtto (DD/MM/YYYY)
-      let lastExecDate = null;
-      if (lastExecDateRaw && lastExecDateRaw !== '#N/D') {
-        const dateParts = lastExecDateRaw.split('/');
-        if (dateParts.length === 3) {
-          const day = dateParts[0].padStart(2, '0');
-          const month = dateParts[1].padStart(2, '0');
-          const year = dateParts[2];
-          lastExecDate = `${day}/${month}/${year}`;
-        }
-      }
-
-      // Search by code OR plate
-      const vehicleIndex = newFleet.findIndex(v => 
-        (code && v.code.toUpperCase() === code.toUpperCase()) || 
-        (plate && v.plate.toUpperCase() === plate.toUpperCase())
-      );
-      
-      if (vehicleIndex !== -1) {
-        console.log(`✓ ${code} / ${plate} -> Freq: ${frequency}, Variable: ${mileage} (${variableDate}), Último Mtto: ${lastExecVal} (${lastExecDate})`);
-        
-        // SIEMPRE actualizar, incluso si el valor es 0 (para limpiar datos incorrectos)
-        newFleet[vehicleIndex] = {
-          ...newFleet[vehicleIndex],
-          maintenanceCycle: frequency, // Ciclo de mantenimiento específico (5000, 7000, 10000)
-          mileage: mileage, // Kilometraje actual / Variable actual
-          lastVariableDate: variableDate, // Fecha de la variable
-          lastMaintenance: lastExecVal, // Último mtto ejecutado
-          lastMaintenanceDate: lastExecDate // Fecha último mtto
-        };
-        updatesCount++;
-      } else {
-        console.log(`✗ No encontrado: ${code} / ${plate}`);
-        notFoundList.push(code || plate);
-        skippedCount++;
-      }
-    });
-
-    console.log(`=== FIN: ${updatesCount} actualizados, ${skippedCount} omitidos ===`);
-    if (notFoundList.length > 0) {
-      console.log('No encontrados:', notFoundList.join(', '));
-    }
-
-    // Registrar variables en historial
-    const updatedHistory = [...variableHistory];
-    const now = new Date();
-    const dateStr = `${now.getDate().toString().padStart(2, '0')}/${(now.getMonth() + 1).toString().padStart(2, '0')}/${now.getFullYear()}`;
-    const timeStr = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
-
-    newFleet.forEach((vehicle, idx) => {
-      if (fleet[idx].mileage !== vehicle.mileage && vehicle.mileage > 0) {
-        updatedHistory.push({
-          id: updatedHistory.length + 1,
-          code: vehicle.code,
-          plate: vehicle.plate,
-          date: dateStr,
-          time: timeStr,
-          mileage: vehicle.mileage,
-          source: 'BULK_IMPORT'
-        });
-      }
-    });
-
-    // Actualizar estado inmediatamente
-    setFleet(newFleet);
-    setVariableHistory(updatedHistory);
-    
-    // Guardar en localStorage de inmediato
-    localStorage.setItem('fleet_data', JSON.stringify(newFleet));
-    localStorage.setItem('variable_history', JSON.stringify(updatedHistory));
-    
-    // Intentar guardar en API en segundo plano
-    newFleet.forEach(async (vehicle) => {
-      try {
-        // Actualizar SIEMPRE, incluso si los valores son 0 (puede haber fecha sin kilometraje)
-        await api.updateVehicle(vehicle.id, {
-          maintenanceCycle: vehicle.maintenanceCycle,
-          mileage: vehicle.mileage,
-          lastVariableDate: vehicle.lastVariableDate,
-          lastMaintenance: vehicle.lastMaintenance,
-          lastMaintenanceDate: vehicle.lastMaintenanceDate
-        });
-      } catch (error) {
-        console.warn('Error actualizando en API (guardado local OK):', error);
-      }
-    });
-    
-    alert(`✅ Se actualizaron ${updatesCount} vehículos con información de variable y último mantenimiento.`);
-    setShowBulkLoad(false);
-    setBulkData('');
   };
 
   // Helper to get next routine using the passed routines prop
@@ -1442,244 +1268,26 @@ const PlanningView = ({ fleet, setFleet, onCreateOT, workOrders = [], setWorkOrd
     return plan;
   }, [pickups, routines, fleet]);
 
-  const handleManualUpdateSubmit = () => {
-    const { code, plate, lastDate, lastKm } = manualData;
-    if (!code && !plate) return alert('Debe ingresar Placa o Código para identificar el vehículo');
-    
-    // Find vehicle
-    const vehicleIndex = fleet.findIndex(v => 
-      (code && v.code.toUpperCase() === code.toUpperCase()) || (plate && v.plate.toUpperCase() === plate.toUpperCase())
-    );
-
-    if (vehicleIndex === -1) return alert('Vehículo no encontrado en la flota');
-    const vehicle = fleet[vehicleIndex];
-
-    // 1. Update Fleet Mileage if provided
-    if (lastKm) {
-      const newFleet = [...fleet];
-      newFleet[vehicleIndex] = { ...vehicle, mileage: parseInt(lastKm) };
-      if (setFleet) setFleet(newFleet);
-    }
-
-    // 2. Create Historical OT if date provided
-    if (lastDate) {
-      const newOT = {
-        id: Math.floor(Math.random() * 10000) + 90000, // High ID for manual
-        vehicleCode: vehicle.code,
-        vehicleModel: vehicle.model,
-        plate: vehicle.plate,
-        routineName: `MANTENIMIENTO REGISTRADO MANUALMENTE (${lastKm || vehicle.mileage} KM)`,
-        mileage: lastKm || vehicle.mileage,
-        items: [],
-        supplies: [],
-        workshop: 'EXTERNO (HISTÓRICO)',
-        status: 'CERRADA',
-        creationDate: lastDate,
-        closingDate: lastDate
-      };
-      if (setWorkOrders) setWorkOrders(prev => [newOT, ...prev]);
-    }
-
-    setShowManualUpdate(false);
-    setManualData({ code: '', plate: '', lastDate: '', lastKm: '' });
-    alert('Datos actualizados correctamente');
-  };
-
   return (
     <div className="p-6 space-y-6 relative">
-      {/* Modal for Manual Update */}
+      {/* New Maintenance Data Loader Modal */}
       {showManualUpdate && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-white p-6 rounded-lg shadow-xl w-[800px] max-h-[90vh] overflow-y-auto">
-            <div className="flex justify-between items-center mb-4 border-b pb-4">
-              <h3 className="text-xl font-bold flex items-center gap-2">
-                <Upload size={24} className="text-emerald-600"/> Actualizar Variables y Mantenimiento
-              </h3>
-              <button 
-                onClick={() => setShowManualUpdate(false)}
-                className="text-slate-400 hover:text-slate-600"
-              >
-                <X size={24} />
-              </button>
-            </div>
-
-            {/* Tabs */}
-            <div className="flex gap-2 mb-6 bg-slate-100 p-1 rounded-lg">
-              <button
-                onClick={() => setBulkLoadMode('individual')}
-                className={`flex-1 py-2 px-4 rounded-md text-sm font-bold transition-colors ${
-                  bulkLoadMode === 'individual' 
-                    ? 'bg-white text-slate-800 shadow-sm' 
-                    : 'text-slate-600 hover:text-slate-800'
-                }`}
-              >
-                📝 Individual
-              </button>
-              <button
-                onClick={() => setBulkLoadMode('masiva')}
-                className={`flex-1 py-2 px-4 rounded-md text-sm font-bold transition-colors ${
-                  bulkLoadMode === 'masiva' 
-                    ? 'bg-white text-slate-800 shadow-sm' 
-                    : 'text-slate-600 hover:text-slate-800'
-                }`}
-              >
-                📊 Carga Masiva
-              </button>
-            </div>
-
-            {/* Contenido según pestaña */}
-            {bulkLoadMode === 'individual' ? (
-              <div>
-                <p className="text-sm text-slate-600 mb-4">
-                  Actualice un vehículo específico con sus datos de variable y mantenimiento.
-                </p>
-                
-                <div className="space-y-3">
-              <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">Código Interno</label>
-                <input 
-                  type="text" 
-                  className="w-full p-2 border rounded text-sm"
-                  placeholder="Ej: PVHC001"
-                  value={manualData.code}
-                  onChange={e => setManualData({...manualData, code: e.target.value})}
-                />
-              </div>
-              <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">Placa</label>
-                <input 
-                  type="text" 
-                  className="w-full p-2 border rounded text-sm"
-                  placeholder="Ej: ABC-123"
-                  value={manualData.plate}
-                  onChange={e => setManualData({...manualData, plate: e.target.value})}
-                />
-              </div>
-              <div className="grid grid-cols-2 gap-2">
-                <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1">Fecha Último Mtto</label>
-                  <input 
-                    type="date" 
-                    className="w-full p-2 border rounded text-sm"
-                    value={manualData.lastDate}
-                    onChange={e => setManualData({...manualData, lastDate: e.target.value})}
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1">KM Último Mtto</label>
-                  <input 
-                    type="number" 
-                    className="w-full p-2 border rounded text-sm"
-                    placeholder="KM"
-                    value={manualData.lastKm}
-                    onChange={e => setManualData({...manualData, lastKm: e.target.value})}
-                  />
-                </div>
-              </div>
-            </div>
-
-            <div className="flex justify-end gap-2 mt-6">
-              <button 
-                onClick={() => setShowManualUpdate(false)}
-                className="px-4 py-2 text-slate-600 hover:bg-slate-100 rounded text-sm"
-              >
-                Cancelar
-              </button>
-              <button 
-                onClick={handleManualUpdateSubmit}
-                className="px-4 py-2 bg-emerald-600 text-white rounded hover:bg-emerald-700 font-bold text-sm"
-              >
-                💾 Guardar
-              </button>
-            </div>
-          </div>
-            ) : (
-              <div>
-                <p className="text-sm text-slate-600 mb-4">
-                  Pegue la tabla de Excel con todas las columnas. El sistema detectará automáticamente los encabezados y cargará:
-                  <strong className="block mt-2 text-slate-800">📊 Variable Actual | 📅 Fecha Variable | 🔄 Ciclo | 🔧 Último Mtto | 📅 Fecha Último Mtto</strong>
-                </p>
-
-                <div className="bg-slate-50 p-3 rounded-lg mb-4">
-                  <h4 className="text-xs font-bold text-slate-700 mb-2">📋 Formato esperado (copiar desde Excel):</h4>
-                  <code className="text-[10px] text-slate-600 block">
-                    #INTERNO | PLACA | DESCRIPCION | FRECUENCIA | ... | FECHA ACT | HR/KM | ... | HR ULTIMA EJEC | FECHA ULTIMA EJEC
-                  </code>
-                </div>
-                
-                <textarea
-                  placeholder="Pegue aquí los datos copiados directamente desde Excel (Ctrl+C en Excel, Ctrl+V aquí)..."
-                  className="w-full p-3 border-2 border-slate-300 rounded-lg text-sm font-mono h-64 focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200"
-                  value={bulkData}
-                  onChange={(e) => setBulkData(e.target.value)}
-                />
-                
-                <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mt-3">
-                  <p className="text-xs text-blue-800">
-                    <strong>💡 Tip:</strong> Seleccione todas las filas en Excel (incluidos encabezados), presione Ctrl+C, y luego Ctrl+V en el cuadro de arriba.
-                  </p>
-                </div>
-
-                <div className="flex justify-end gap-2 mt-6">
-                  <button 
-                    onClick={() => setShowManualUpdate(false)}
-                    className="px-4 py-2 text-slate-600 hover:bg-slate-100 rounded text-sm"
-                  >
-                    Cancelar
-                  </button>
-                  <button 
-                    onClick={handleBulkLoad}
-                    disabled={!bulkData.trim()}
-                    className={`px-6 py-2 rounded font-bold text-sm ${
-                      bulkData.trim() 
-                        ? 'bg-emerald-600 text-white hover:bg-emerald-700' 
-                        : 'bg-slate-300 text-slate-500 cursor-not-allowed'
-                    }`}
-                  >
-                    ⚡ Cargar Datos
-                  </button>
-                </div>
-              </div>
-            )}
-          </div>
-        </div>
+        <MaintenanceDataLoader 
+          fleet={fleet}
+          setFleet={setFleet}
+          setVariableHistory={setVariableHistory}
+          onClose={() => setShowManualUpdate(false)}
+        />
       )}
 
-      {/* Modal for Bulk Load (Plan) */}
+      {/* Modal for Bulk Load (Plan) - Using New Component */}
       {showBulkLoad && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-white p-6 rounded-lg shadow-xl w-[750px]">
-            <h3 className="text-lg font-bold mb-4 flex items-center gap-2">
-              <Database size={20} className="text-blue-600"/> Carga Masiva de Plan (Último Mantenimiento)
-            </h3>
-            <p className="text-xs text-slate-600 mb-4">
-              Pegue la tabla de Excel con las columnas (11 columnas):<br/>
-              <strong>#INTERNO | PLACA | DESCRIPCION | FRECUENCIA | CLASE | MARCA | UBICACIÓN | DILER | FECHA ACT. | HR ULTIMA EJEC. | FECHA ULTIMA EJEC.</strong>
-            </p>
-            
-            <textarea 
-              className="w-full h-64 p-4 border rounded-lg font-mono text-xs bg-slate-50 whitespace-pre mb-4"
-              placeholder={`PVHC001\tKFZ321\tCAMIONETA DOBLE CABINA\t5000\tKM\tTOYOTA HILUX\tMAQUINARIA\tCAMIONETAS\t10/12/2025\t231200\t18/11/2025`}
-              value={bulkData}
-              onChange={e => setBulkData(e.target.value)}
-            />
-
-            <div className="flex justify-end gap-2">
-              <button 
-                onClick={() => setShowBulkLoad(false)}
-                className="px-4 py-2 text-slate-600 hover:bg-slate-100 rounded text-sm"
-              >
-                Cancelar
-              </button>
-              <button 
-                onClick={handleBulkLoad}
-                className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 font-bold text-sm"
-              >
-                Procesar y Actualizar
-              </button>
-            </div>
-          </div>
-        </div>
+        <MaintenanceDataLoader 
+          fleet={fleet}
+          setFleet={setFleet}
+          setVariableHistory={setVariableHistory}
+          onClose={() => setShowBulkLoad(false)}
+        />
       )}
 
       {/* Modal for Workshop Selection */}
