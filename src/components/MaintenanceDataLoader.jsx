@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react';
-import { Upload, Database, CheckCircle2, AlertCircle, FileSpreadsheet, X, Loader2, Eye } from 'lucide-react';
+import { Upload, Database, CheckCircle2, AlertCircle, FileSpreadsheet, X, Loader2, Eye, PlusCircle, RefreshCw } from 'lucide-react';
 
 export default function MaintenanceDataLoader({ fleet, setFleet, setVariableHistory, onClose }) {
   const [rawData, setRawData] = useState('');
@@ -7,6 +7,7 @@ export default function MaintenanceDataLoader({ fleet, setFleet, setVariableHist
   const [showPreview, setShowPreview] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const [validationResults, setValidationResults] = useState(null);
+  const [createNew, setCreateNew] = useState(true); // Por defecto crear nuevos
 
   // Función inteligente para detectar separador
   const detectSeparator = (text) => {
@@ -357,7 +358,7 @@ export default function MaintenanceDataLoader({ fleet, setFleet, setVariableHist
     }
   };
 
-  // Función para aplicar los cambios
+  // Función para aplicar los cambios (UPSERT: Update or Insert)
   const applyChanges = () => {
     if (parsedData.length === 0) {
       alert('❌ No hay datos para aplicar');
@@ -370,51 +371,98 @@ export default function MaintenanceDataLoader({ fleet, setFleet, setVariableHist
       const newFleet = [...fleet];
       const historyEntries = [];
       let updatedCount = 0;
+      let createdCount = 0;
 
       parsedData.forEach(record => {
-        if (!record.matched || !record.matchedVehicle) return;
+        // Si hay coincidencia, actualizar
+        if (record.matched && record.matchedVehicle) {
+          const vehicleIndex = newFleet.findIndex(v => 
+            v.code === record.matchedVehicle.code || 
+            v.plate === record.matchedVehicle.plate
+          );
 
-        const vehicleIndex = newFleet.findIndex(v => 
-          v.code === record.matchedVehicle.code || 
-          v.plate === record.matchedVehicle.plate
-        );
+          if (vehicleIndex !== -1) {
+            const vehicle = newFleet[vehicleIndex];
+            const oldMileage = vehicle.currentKm || 0;
 
-        if (vehicleIndex === -1) return;
+            // Actualizar datos del vehículo existente
+            newFleet[vehicleIndex] = {
+              ...vehicle,
+              currentKm: record.currentMileage,
+              lastMaintenanceKm: record.lastMaintenanceMileage,
+              lastMaintenanceDate: record.lastMaintenanceDate,
+              frequency: record.frequency,
+              description: record.description || vehicle.description,
+              lastUpdate: new Date().toISOString().split('T')[0],
+              nextMaintenanceKm: record.lastMaintenanceMileage + record.frequency
+            };
 
-        const vehicle = newFleet[vehicleIndex];
-        const oldMileage = vehicle.currentKm || 0;
+            // Solo registrar en historial si el kilometraje cambió
+            if (record.currentMileage !== oldMileage) {
+              historyEntries.push({
+                id: Date.now() + Math.random(),
+                date: new Date().toISOString().split('T')[0],
+                vehiclePlate: vehicle.plate,
+                vehicleCode: vehicle.code,
+                mileage: record.currentMileage,
+                change: record.currentMileage - oldMileage,
+                updatedBy: 'Carga Masiva',
+                uploadDate: new Date().toISOString()
+              });
+            }
 
-        // Actualizar datos del vehículo
-        newFleet[vehicleIndex] = {
-          ...vehicle,
-          currentKm: record.currentMileage,
-          lastMaintenanceKm: record.lastMaintenanceMileage,
-          lastMaintenanceDate: record.lastMaintenanceDate,
-          frequency: record.frequency,
-          lastUpdate: new Date().toISOString().split('T')[0],
-          nextMaintenanceKm: record.lastMaintenanceMileage + record.frequency
-        };
-
-        // Solo registrar en historial si el kilometraje cambió
-        if (record.currentMileage !== oldMileage) {
-          historyEntries.push({
-            id: Date.now() + Math.random(),
-            date: new Date().toISOString().split('T')[0],
-            vehiclePlate: vehicle.plate,
-            vehicleCode: vehicle.code,
-            mileage: record.currentMileage,
-            change: record.currentMileage - oldMileage,
-            updatedBy: 'Carga Masiva',
-            uploadDate: new Date().toISOString()
-          });
+            updatedCount++;
+          }
         }
+        // Si NO hay coincidencia y createNew está activado, crear nuevo
+        else if (!record.matched && createNew && (record.code || record.plate)) {
+          // Generar ID único
+          const maxId = newFleet.reduce((max, v) => Math.max(max, v.id || 0), 0);
+          
+          // Crear nuevo vehículo con todos los datos disponibles
+          const newVehicle = {
+            id: maxId + 1,
+            code: record.code || `AUTO-${Date.now()}`,
+            plate: record.plate || '',
+            description: record.description || record.plate || record.code,
+            model: record.description || '',
+            brand: record.brand || '',
+            class: record.class || 'KM',
+            frequency: record.frequency || 5000,
+            currentKm: record.currentMileage || 0,
+            lastMaintenanceKm: record.lastMaintenanceMileage || 0,
+            lastMaintenanceDate: record.lastMaintenanceDate || null,
+            nextMaintenanceKm: (record.lastMaintenanceMileage || 0) + (record.frequency || 5000),
+            location: record.location || '',
+            dealer: record.dealer || '',
+            status: 'active',
+            lastUpdate: new Date().toISOString().split('T')[0],
+            createdAt: new Date().toISOString()
+          };
 
-        updatedCount++;
+          newFleet.push(newVehicle);
+
+          // Registrar en historial como creación
+          if (record.currentMileage > 0) {
+            historyEntries.push({
+              id: Date.now() + Math.random(),
+              date: new Date().toISOString().split('T')[0],
+              vehiclePlate: newVehicle.plate,
+              vehicleCode: newVehicle.code,
+              mileage: record.currentMileage,
+              change: record.currentMileage,
+              updatedBy: 'Carga Masiva (Nuevo)',
+              uploadDate: new Date().toISOString()
+            });
+          }
+
+          createdCount++;
+        }
       });
 
-      // Guardar en estado y localStorage
+      // Guardar en estado y localStorage (usar 'fleet_data' como la app principal)
       setFleet(newFleet);
-      localStorage.setItem('fleet', JSON.stringify(newFleet));
+      localStorage.setItem('fleet_data', JSON.stringify(newFleet));
 
       if (historyEntries.length > 0) {
         setVariableHistory(prev => {
@@ -424,11 +472,16 @@ export default function MaintenanceDataLoader({ fleet, setFleet, setVariableHist
         });
       }
 
-      alert(`✅ Actualización completada exitosamente\n\n` +
-        `📊 Vehículos actualizados: ${updatedCount}\n` +
-        `📈 Registros en historial: ${historyEntries.length}\n` +
-        `⚠️ No encontrados: ${parsedData.filter(r => !r.matched).length}`
-      );
+      const message = [];
+      message.push(`✅ Carga completada exitosamente\n`);
+      if (createdCount > 0) message.push(`🆕 Vehículos CREADOS: ${createdCount}`);
+      if (updatedCount > 0) message.push(`📊 Vehículos ACTUALIZADOS: ${updatedCount}`);
+      message.push(`📈 Registros en historial: ${historyEntries.length}`);
+      if (!createNew && parsedData.filter(r => !r.matched).length > 0) {
+        message.push(`⚠️ No procesados (sin coincidencia): ${parsedData.filter(r => !r.matched).length}`);
+      }
+
+      alert(message.join('\n'));
 
       setIsProcessing(false);
       onClose();
@@ -578,23 +631,56 @@ export default function MaintenanceDataLoader({ fleet, setFleet, setVariableHist
             <div className="space-y-4">
               {/* Resumen de validación */}
               {validationResults && (
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
-                  <div className="bg-blue-50 border-2 border-blue-200 rounded-lg p-4">
-                    <div className="text-3xl font-bold text-blue-700">{validationResults.total}</div>
-                    <div className="text-sm text-blue-900 font-medium">Registros Totales</div>
+                <div className="space-y-3">
+                  <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
+                    <div className="bg-blue-50 border-2 border-blue-200 rounded-lg p-4">
+                      <div className="text-3xl font-bold text-blue-700">{validationResults.total}</div>
+                      <div className="text-sm text-blue-900 font-medium">Registros Totales</div>
+                    </div>
+                    <div className="bg-green-50 border-2 border-green-200 rounded-lg p-4">
+                      <div className="text-3xl font-bold text-green-700">{validationResults.matched}</div>
+                      <div className="text-sm text-green-900 font-medium flex items-center gap-1">
+                        <RefreshCw size={14} /> Actualizar
+                      </div>
+                    </div>
+                    <div className={`border-2 rounded-lg p-4 ${createNew ? 'bg-emerald-50 border-emerald-200' : 'bg-yellow-50 border-yellow-200'}`}>
+                      <div className={`text-3xl font-bold ${createNew ? 'text-emerald-700' : 'text-yellow-700'}`}>
+                        {validationResults.unmatched}
+                      </div>
+                      <div className={`text-sm font-medium flex items-center gap-1 ${createNew ? 'text-emerald-900' : 'text-yellow-900'}`}>
+                        <PlusCircle size={14} /> {createNew ? 'Crear Nuevos' : 'No Encontrados'}
+                      </div>
+                    </div>
+                    <div className="bg-red-50 border-2 border-red-200 rounded-lg p-4">
+                      <div className="text-3xl font-bold text-red-700">{validationResults.errors}</div>
+                      <div className="text-sm text-red-900 font-medium">❌ Errores</div>
+                    </div>
                   </div>
-                  <div className="bg-green-50 border-2 border-green-200 rounded-lg p-4">
-                    <div className="text-3xl font-bold text-green-700">{validationResults.matched}</div>
-                    <div className="text-sm text-green-900 font-medium">✅ Coinciden</div>
-                  </div>
-                  <div className="bg-yellow-50 border-2 border-yellow-200 rounded-lg p-4">
-                    <div className="text-3xl font-bold text-yellow-700">{validationResults.unmatched}</div>
-                    <div className="text-sm text-yellow-900 font-medium">⚠️ No Encontrados</div>
-                  </div>
-                  <div className="bg-red-50 border-2 border-red-200 rounded-lg p-4">
-                    <div className="text-3xl font-bold text-red-700">{validationResults.errors}</div>
-                    <div className="text-sm text-red-900 font-medium">❌ Errores</div>
-                  </div>
+
+                  {/* Opción para crear nuevos vehículos */}
+                  {validationResults.unmatched > 0 && (
+                    <div className={`p-4 rounded-lg border-2 ${createNew ? 'bg-emerald-50 border-emerald-300' : 'bg-slate-50 border-slate-200'}`}>
+                      <label className="flex items-center gap-3 cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={createNew}
+                          onChange={(e) => setCreateNew(e.target.checked)}
+                          className="w-5 h-5 rounded border-2 border-emerald-500 text-emerald-600 focus:ring-emerald-500"
+                        />
+                        <div>
+                          <span className="font-bold text-slate-800">
+                            🆕 Crear {validationResults.unmatched} vehículos nuevos
+                          </span>
+                          <p className="text-xs text-slate-600 mt-1">
+                            {fleet.length === 0 
+                              ? '📋 Tu flota está vacía. Activa esta opción para importar los vehículos como nuevos.'
+                              : 'Los vehículos no encontrados se agregarán a la flota como nuevos registros.'
+                            }
+                          </p>
+                        </div>
+                      </label>
+                    </div>
+                  )}
                 </div>
               )}
 
@@ -629,13 +715,14 @@ export default function MaintenanceDataLoader({ fleet, setFleet, setVariableHist
                   <table className="w-full text-xs">
                     <thead className="bg-slate-50 sticky top-0">
                       <tr>
-                        <th className="px-3 py-2 text-left font-semibold text-slate-700">Estado</th>
+                        <th className="px-3 py-2 text-left font-semibold text-slate-700">Acción</th>
                         <th className="px-3 py-2 text-left font-semibold text-slate-700">Código</th>
                         <th className="px-3 py-2 text-left font-semibold text-slate-700">Placa</th>
-                        <th className="px-3 py-2 text-left font-semibold text-slate-700">Frecuencia</th>
+                        <th className="px-3 py-2 text-left font-semibold text-slate-700">Modelo</th>
+                        <th className="px-3 py-2 text-left font-semibold text-slate-700">Ciclo</th>
                         <th className="px-3 py-2 text-left font-semibold text-slate-700">Variable Actual</th>
                         <th className="px-3 py-2 text-left font-semibold text-slate-700">Último Mtto</th>
-                        <th className="px-3 py-2 text-left font-semibold text-slate-700">Fecha Último</th>
+                        <th className="px-3 py-2 text-left font-semibold text-slate-700">Fecha Últ. Mtto</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -645,20 +732,31 @@ export default function MaintenanceDataLoader({ fleet, setFleet, setVariableHist
                           className={`border-b border-slate-100 ${
                             record.matched 
                               ? 'bg-green-50 hover:bg-green-100' 
-                              : 'bg-yellow-50 hover:bg-yellow-100'
+                              : createNew 
+                                ? 'bg-emerald-50 hover:bg-emerald-100'
+                                : 'bg-yellow-50 hover:bg-yellow-100'
                           }`}
                         >
                           <td className="px-3 py-2">
                             {record.matched ? (
-                              <CheckCircle2 size={16} className="text-green-600" />
+                              <span className="flex items-center gap-1 text-green-700 font-medium">
+                                <RefreshCw size={14} /> Actualizar
+                              </span>
+                            ) : createNew ? (
+                              <span className="flex items-center gap-1 text-emerald-700 font-medium">
+                                <PlusCircle size={14} /> Crear
+                              </span>
                             ) : (
-                              <AlertCircle size={16} className="text-yellow-600" />
+                              <span className="flex items-center gap-1 text-yellow-700">
+                                <AlertCircle size={14} /> Ignorar
+                              </span>
                             )}
                           </td>
                           <td className="px-3 py-2 font-mono">{record.code}</td>
                           <td className="px-3 py-2 font-semibold">{record.plate}</td>
+                          <td className="px-3 py-2 text-slate-600">{record.description || '-'}</td>
                           <td className="px-3 py-2">{record.frequency.toLocaleString()}</td>
-                          <td className="px-3 py-2">{record.currentMileage.toLocaleString()}</td>
+                          <td className="px-3 py-2 font-medium">{record.currentMileage.toLocaleString()}</td>
                           <td className="px-3 py-2">{record.lastMaintenanceMileage.toLocaleString()}</td>
                           <td className="px-3 py-2">{record.lastMaintenanceDate || '-'}</td>
                         </tr>
@@ -683,9 +781,9 @@ export default function MaintenanceDataLoader({ fleet, setFleet, setVariableHist
                 </button>
                 <button
                   onClick={applyChanges}
-                  disabled={parsedData.filter(r => r.matched).length === 0 || isProcessing}
+                  disabled={(parsedData.filter(r => r.matched).length === 0 && (!createNew || parsedData.filter(r => !r.matched).length === 0)) || isProcessing}
                   className={`px-8 py-3 rounded-lg font-bold transition-all flex items-center gap-2 ${
-                    parsedData.filter(r => r.matched).length === 0 || isProcessing
+                    (parsedData.filter(r => r.matched).length === 0 && (!createNew || parsedData.filter(r => !r.matched).length === 0)) || isProcessing
                       ? 'bg-slate-300 text-slate-500 cursor-not-allowed'
                       : 'bg-gradient-to-r from-green-600 to-emerald-600 text-white hover:from-green-700 hover:to-emerald-700 shadow-lg hover:shadow-xl'
                   }`}
@@ -693,12 +791,15 @@ export default function MaintenanceDataLoader({ fleet, setFleet, setVariableHist
                   {isProcessing ? (
                     <>
                       <Loader2 className="animate-spin" size={20} />
-                      Guardando...
+                      Procesando...
                     </>
                   ) : (
                     <>
                       <CheckCircle2 size={20} />
-                      Aplicar Cambios ({parsedData.filter(r => r.matched).length})
+                      {createNew && parsedData.filter(r => !r.matched).length > 0 
+                        ? `Crear ${parsedData.filter(r => !r.matched).length} + Actualizar ${parsedData.filter(r => r.matched).length}`
+                        : `Aplicar Cambios (${parsedData.filter(r => r.matched).length})`
+                      }
                     </>
                   )}
                 </button>
