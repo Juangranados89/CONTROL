@@ -29,7 +29,8 @@ import {
   AlertCircle,
   MapPin,
   CircleDot,
-  Fuel
+  Fuel,
+  MoreVertical
 } from 'lucide-react';
 import { 
   LineChart, 
@@ -159,6 +160,34 @@ const generatePDF = async (workOrder) => {
     return;
   }
 
+  const formatMonthYear = (value) => {
+    const months = ['ENE', 'FEB', 'MAR', 'ABR', 'MAY', 'JUN', 'JUL', 'AGO', 'SEP', 'OCT', 'NOV', 'DIC'];
+
+    let dateObj = null;
+    if (value instanceof Date) {
+      dateObj = value;
+    } else if (typeof value === 'string' && value.trim()) {
+      const v = value.trim();
+      // DD/MM/YYYY
+      const m1 = v.match(/^([0-3]?\d)\/(\d{1,2})\/(\d{4})$/);
+      if (m1) {
+        const day = Number(m1[1]);
+        const month = Number(m1[2]) - 1;
+        const year = Number(m1[3]);
+        dateObj = new Date(year, month, day);
+      } else {
+        // ISO or anything Date can parse
+        const parsed = new Date(v);
+        if (!Number.isNaN(parsed.getTime())) dateObj = parsed;
+      }
+    }
+
+    if (!dateObj || Number.isNaN(dateObj.getTime())) return '';
+    const mon = months[dateObj.getMonth()] || '';
+    const yy = String(dateObj.getFullYear()).slice(-2);
+    return mon && yy ? `${mon}-${yy}` : '';
+  };
+
   const { jsPDF } = window.jspdf;
   const doc = new jsPDF();
 
@@ -210,15 +239,13 @@ const generatePDF = async (workOrder) => {
   doc.setTextColor(0, 0, 0); // Black color for number (was red)
   doc.text(String(workOrder.id), startX + 140 + 25, startY + 12, { align: 'center' });
   
-  // Bottom part: Codigo Formato
-  doc.setFontSize(8);
-  doc.text("CÓDIGO FORMATO", startX + 140 + 25, startY + 20, { align: 'center' });
+  // Bottom part: solo código + fecha (MES-YY)
+  const headerCode = 'FEYM936.00.CO';
+  const headerDate = formatMonthYear(workOrder.creationDate) || formatMonthYear(workOrder.createdAt) || formatMonthYear(new Date());
   doc.setFontSize(10);
-  doc.text("FEYM936.00.CO", startX + 140 + 25, startY + 26, { align: 'center' });
-  
-  // Fecha de creación del formato (debajo del código)
-  doc.setFontSize(6);
-  doc.text("18-DICIEMBRE-2025", startX + 140 + 25, startY + 30, { align: 'center' });
+  doc.text(headerCode, startX + 140 + 25, startY + 24, { align: 'center' });
+  doc.setFontSize(8);
+  doc.text(headerDate, startX + 140 + 25, startY + 29, { align: 'center' });
 
 
   // --- GENERAL INFO (Grid Layout) ---
@@ -924,6 +951,7 @@ const PlanningView = ({ fleet, setFleet, onCreateOT, workOrders = [], setWorkOrd
   const [showBulkLoad, setShowBulkLoad] = useState(false);
   const [statusFilter, setStatusFilter] = useState('ALL'); // ALL, VENCIDO, PROXIMO, OK
   const [closingOT, setClosingOT] = useState(null);
+  const [openActionMenuVehicleId, setOpenActionMenuVehicleId] = useState(null);
   
   // Estado para edición inline
   const [editingCell, setEditingCell] = useState(null); // { vehicleId, field }
@@ -1307,11 +1335,18 @@ const PlanningView = ({ fleet, setFleet, onCreateOT, workOrders = [], setWorkOrd
     // Fallback: Check closed OTs
     const closedOTs = workOrders
       .filter(ot => (ot.vehicleCode === vehicle.code || ot.plate === vehicle.plate) && ot.status === 'CERRADA')
-      .sort((a, b) => new Date(b.closingDate) - new Date(a.closingDate));
+      .sort((a, b) => new Date(b.closedDate || b.closingDate || 0) - new Date(a.closedDate || a.closingDate || 0));
     
-    if (closedOTs.length > 0) return closedOTs[0].closingDate;
+    if (closedOTs.length > 0) return closedOTs[0].closedDate || closedOTs[0].closingDate;
     return "---";
   };
+
+  useEffect(() => {
+    if (!openActionMenuVehicleId) return;
+    const onDocClick = () => setOpenActionMenuVehicleId(null);
+    document.addEventListener('click', onDocClick);
+    return () => document.removeEventListener('click', onDocClick);
+  }, [openActionMenuVehicleId]);
 
   const weeklyPlan = useMemo(() => {
     // 1. Identify candidates (Remaining < 3000km or Vencido)
@@ -2346,7 +2381,7 @@ const PlanningView = ({ fleet, setFleet, onCreateOT, workOrders = [], setWorkOrd
                       
                       {/* Acción */}
                       <td className="px-2 py-2">
-                        <div className="flex items-center justify-center gap-1">
+                        <div className="flex items-center justify-center gap-1 relative" onClick={(e) => e.stopPropagation()}>
                           <button 
                             onClick={(e) => { e.stopPropagation(); setViewingHistoryVehicle(vehicle); }}
                             className="p-1 text-slate-500 hover:text-blue-600 hover:bg-blue-50 rounded transition-colors"
@@ -2373,6 +2408,56 @@ const PlanningView = ({ fleet, setFleet, onCreateOT, workOrders = [], setWorkOrd
                           >
                             <FileText size={14} />
                           </button>
+
+                          {/* Menú 3 puntos: seleccionar OT abierta para cerrar */}
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setOpenActionMenuVehicleId(prev => (prev === vehicle.id ? null : vehicle.id));
+                            }}
+                            className="p-1 text-slate-500 hover:text-slate-800 hover:bg-slate-100 rounded transition-colors"
+                            title="Más acciones"
+                            aria-haspopup="menu"
+                            aria-expanded={openActionMenuVehicleId === vehicle.id}
+                          >
+                            <MoreVertical size={14} />
+                          </button>
+
+                          {openActionMenuVehicleId === vehicle.id && (
+                            <div
+                              className="absolute right-0 top-7 w-44 bg-white border border-slate-200 rounded-lg shadow-lg z-20 overflow-hidden"
+                              role="menu"
+                            >
+                              {workOrders
+                                .filter(ot =>
+                                  ot.status === 'ABIERTA' &&
+                                  (ot.vehicleId === vehicle.id || ot.vehicleCode === vehicle.code || ot.plate === vehicle.plate)
+                                )
+                                .slice(0, 10)
+                                .map((ot) => (
+                                  <button
+                                    key={ot.id}
+                                    className="w-full text-left px-3 py-2 text-xs text-slate-700 hover:bg-slate-50"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      setOpenActionMenuVehicleId(null);
+                                      setClosingOT(ot);
+                                    }}
+                                    role="menuitem"
+                                  >
+                                    Cerrar OT #{ot.id}
+                                  </button>
+                                ))}
+                              {workOrders.filter(ot =>
+                                ot.status === 'ABIERTA' &&
+                                (ot.vehicleId === vehicle.id || ot.vehicleCode === vehicle.code || ot.plate === vehicle.plate)
+                              ).length === 0 && (
+                                <div className="px-3 py-2 text-xs text-slate-400">
+                                  Sin OT abierta
+                                </div>
+                              )}
+                            </div>
+                          )}
                         </div>
                       </td>
                     </tr>
