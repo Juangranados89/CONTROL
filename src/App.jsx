@@ -1085,14 +1085,35 @@ const PlanningView = ({ fleet, setFleet, onCreateOT, workOrders = [], setWorkOrd
   };
 
   // Handler para cerrar OT con firmas
-  const handleCloseOT = (closedOT) => {
-    setWorkOrders(prev => {
-      const updated = prev.map(ot => 
-        ot.id === closedOT.id ? closedOT : ot
-      );
-      localStorage.setItem('work_orders', JSON.stringify(updated));
-      return updated;
-    });
+  const handleCloseOT = async (closedOT) => {
+    try {
+      // Actualizar en API primero
+      await api.updateWorkOrder(closedOT.id, {
+        status: closedOT.status,
+        closedDate: closedOT.closedDate,
+        closedTime: closedOT.closedTime,
+        signatures: closedOT.signatures
+      });
+      
+      setWorkOrders(prev => {
+        const updated = prev.map(ot => 
+          ot.id === closedOT.id ? closedOT : ot
+        );
+        return updated;
+      });
+      
+      console.log('✅ OT cerrada en BD:', closedOT.id);
+    } catch (error) {
+      console.error('Error cerrando OT en BD:', error);
+      // Fallback: actualizar solo en estado local
+      setWorkOrders(prev => {
+        const updated = prev.map(ot => 
+          ot.id === closedOT.id ? closedOT : ot
+        );
+        localStorage.setItem('work_orders', JSON.stringify(updated));
+        return updated;
+      });
+    }
     
     setClosingOT(null);
     alert(`✅ OT #${closedOT.id} cerrada exitosamente\n${closedOT.plate} - ${closedOT.code}`);
@@ -1202,7 +1223,7 @@ const PlanningView = ({ fleet, setFleet, onCreateOT, workOrders = [], setWorkOrd
     }
   };
 
-  const confirmGeneration = () => {
+  const confirmGeneration = async () => {
     if (!selectedVehicle) return;
     
     const routine = getNextRoutineLocal(selectedVehicle.mileage, selectedVehicle.model, selectedVehicle.lastMaintenance, selectedVehicle.maintenanceCycle);
@@ -1228,8 +1249,8 @@ const PlanningView = ({ fleet, setFleet, onCreateOT, workOrders = [], setWorkOrd
       creationDate: new Date().toISOString().split('T')[0]
     };
 
-    // 1. Create OT in system
-    onCreateOT(workOrder);
+    // 1. Create OT in system (API will handle persistence)
+    await onCreateOT(workOrder);
     
     // 2. Generate PDF
     generatePDF(workOrder);
@@ -5316,8 +5337,18 @@ function App() {
     loadData();
   }, []);
 
-  const handleCreateOT = (newOT) => {
-    setWorkOrders(prev => [newOT, ...prev]);
+  const handleCreateOT = async (newOT) => {
+    try {
+      // Guardar en API primero
+      const savedOT = await api.createWorkOrder(newOT);
+      setWorkOrders(prev => [savedOT, ...prev]);
+      console.log('✅ OT guardada en BD:', savedOT.id);
+    } catch (error) {
+      console.error('Error guardando OT en BD:', error);
+      // Fallback: guardar solo en estado local
+      setWorkOrders(prev => [newOT, ...prev]);
+      localStorage.setItem('work_orders', JSON.stringify([newOT, ...workOrders]));
+    }
   };
 
   const renderView = () => {

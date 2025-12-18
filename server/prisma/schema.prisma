@@ -47,22 +47,30 @@ model Vehicle {
 }
 
 model WorkOrder {
-  id              String   @id @default(cuid())
-  vehicleId       String
-  vehicle         Vehicle  @relation(fields: [vehicleId], references: [id])
-  vehicleCode     String
-  plate           String
-  vehicleModel    String
-  mileage         Int
-  routine         String
-  status          String   @default("PENDIENTE") // PENDIENTE, CERRADA
-  createdBy       String?
-  user            User?    @relation(fields: [createdBy], references: [id])
-  createdAt       DateTime @default(now())
-  closingDate     String?
-  workshop        String?
-  area            String?
-  vin             String?
+  id                    String   @id @default(cuid())
+  vehicleId             String
+  vehicle               Vehicle  @relation(fields: [vehicleId], references: [id])
+  vehicleCode           String
+  plate                 String
+  vehicleModel          String
+  mileage               Int
+  routine               String
+  routineName           String?
+  items                 String?  // JSON array de tareas
+  supplies              String?  // JSON array de repuestos
+  status                String   @default("ABIERTA") // ABIERTA, CERRADA
+  createdBy             String?
+  user                  User?    @relation(fields: [createdBy], references: [id])
+  createdAt             DateTime @default(now())
+  creationDate          String?  // Formato DD/MM/YYYY
+  closedDate            String?  // Fecha de cierre
+  closedTime            String?  // Hora de cierre
+  workshop              String?
+  area                  String?
+  vin                   String?
+  signatureResponsible  String?  // Base64 PNG firma responsable
+  signatureApprover     String?  // Nombre del aprobador
+  signatureReceived     String?  // Base64 PNG firma recibe
   
   @@index([vehicleId])
   @@index([plate])

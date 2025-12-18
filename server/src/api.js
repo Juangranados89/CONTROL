@@ -347,10 +347,13 @@ router.get('/workorders', async (req, res) => {
 // Create work order
 router.post('/workorders', async (req, res) => {
   try {
-    const { vehicleCode, plate, vehicleModel, mileage, routine, workshop, area, vin } = req.body;
+    const { 
+      id, vehicleCode, plate, vehicleModel, mileage, routine, routineName,
+      items, supplies, workshop, area, vin, status, creationDate 
+    } = req.body;
     
-    // Find vehicle
-    const vehicle = await prisma.vehicle.findFirst({
+    // Find vehicle (crear si no existe para evitar errores)
+    let vehicle = await prisma.vehicle.findFirst({
       where: {
         OR: [
           { plate },
@@ -359,7 +362,18 @@ router.post('/workorders', async (req, res) => {
       }
     });
     
-    if (!vehicle) return res.status(404).json({ error: 'Vehicle not found' });
+    // Si no existe el vehículo, crearlo temporalmente
+    if (!vehicle) {
+      vehicle = await prisma.vehicle.create({
+        data: {
+          code: vehicleCode,
+          plate: plate,
+          model: vehicleModel || 'N/A',
+          mileage: mileage || 0,
+          vin: vin || null
+        }
+      });
+    }
     
     const workOrder = await prisma.workOrder.create({
       data: {
@@ -368,15 +382,23 @@ router.post('/workorders', async (req, res) => {
         plate,
         vehicleModel,
         mileage,
-        routine,
+        routine: routine || routineName || 'MANTENIMIENTO',
+        routineName: routineName || routine,
+        items: items ? JSON.stringify(items) : null,
+        supplies: supplies ? JSON.stringify(supplies) : null,
         workshop,
         area,
-        vin
+        vin,
+        status: status || 'ABIERTA',
+        creationDate: creationDate || new Date().toISOString().split('T')[0]
       }
     });
     
-    res.json(workOrder);
+    // Devolver con el ID original si se proporcionó
+    const response = { ...workOrder, id: id || workOrder.id };
+    res.json(response);
   } catch (error) {
+    console.error('Error creating work order:', error);
     res.status(500).json({ error: error.message });
   }
 });
@@ -384,11 +406,20 @@ router.post('/workorders', async (req, res) => {
 // Update work order status
 router.patch('/workorders/:id', async (req, res) => {
   try {
-    const { status, closingDate } = req.body;
+    const { status, closedDate, closedTime, signatures } = req.body;
+    
+    const updateData = { status };
+    if (closedDate) updateData.closedDate = closedDate;
+    if (closedTime) updateData.closedTime = closedTime;
+    if (signatures) {
+      updateData.signatureResponsible = signatures.responsible || null;
+      updateData.signatureApprover = signatures.approver || null;
+      updateData.signatureReceived = signatures.received || null;
+    }
     
     const workOrder = await prisma.workOrder.update({
       where: { id: req.params.id },
-      data: { status, closingDate }
+      data: updateData
     });
     
     // If closing, update vehicle lastMaintenance
@@ -397,7 +428,7 @@ router.patch('/workorders/:id', async (req, res) => {
         where: { id: workOrder.vehicleId },
         data: {
           lastMaintenance: workOrder.mileage,
-          lastMaintenanceDate: closingDate
+          lastMaintenanceDate: closedDate || updateData.closingDate
         }
       });
     }
