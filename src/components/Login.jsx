@@ -1,11 +1,12 @@
 import { useState } from 'react';
 import { Lock, User, AlertCircle } from 'lucide-react';
+import api from '../api';
 
-const USERS = [
-  { username: 'julio.barrantes1', password: 'abcd123#', name: 'Julio Barrantes' },
-  { username: 'Hector.Zapata1', password: 'bky091#', name: 'Héctor Zapata' },
-  { username: 'Juan.granados1', password: 'Aa1065615519#', name: 'Juan Granados' }
-];
+const DISPLAY_NAMES = {
+  'julio.barrantes1': 'Julio Barrantes',
+  'Hector.Zapata1': 'Héctor Zapata',
+  'Juan.granados1': 'Juan Granados'
+};
 
 export default function Login({ onLogin }) {
   const [username, setUsername] = useState('');
@@ -13,30 +14,31 @@ export default function Login({ onLogin }) {
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
     setIsLoading(true);
 
-    // Simulate brief loading for UX
-    setTimeout(() => {
-      const user = USERS.find(
-        u => u.username === username && u.password === password
-      );
+    try {
+      // Acepta email directo o construye uno interno desde el usuario
+      const trimmed = username.trim();
+      const email = trimmed.includes('@') ? trimmed : `${trimmed}@control.local`;
 
-      if (user) {
-        // Store session
-        localStorage.setItem('authenticated_user', JSON.stringify({
-          username: user.username,
-          name: user.name,
-          loginTime: new Date().toISOString()
-        }));
-        onLogin(user);
-      } else {
-        setError('Usuario o contraseña incorrectos');
-        setIsLoading(false);
-      }
-    }, 800);
+      const result = await api.login(email, password);
+
+      const effectiveUsername = trimmed;
+      const displayName = DISPLAY_NAMES[effectiveUsername] || effectiveUsername;
+
+      onLogin({
+        username: effectiveUsername,
+        name: displayName,
+        role: result?.user?.role,
+        token: result?.token
+      });
+    } catch (err) {
+      setError('Usuario o contraseña incorrectos');
+      setIsLoading(false);
+    }
   };
 
   return (

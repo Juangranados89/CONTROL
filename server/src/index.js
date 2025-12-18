@@ -17,9 +17,6 @@ app.use(express.json({ limit: '10mb' }));
 
 app.get('/health', (req, res) => res.json({ ok: true, timestamp: new Date().toISOString() }));
 
-// Mount API routes
-app.use('/api', apiRouter);
-
 app.post('/api/login', async (req, res) => {
   const { email, password } = req.body;
   if (!email || !password) return res.status(400).json({ error: 'Email and password required' });
@@ -33,6 +30,26 @@ app.post('/api/login', async (req, res) => {
   const token = jwt.sign({ sub: user.id, role: user.role }, process.env.JWT_SECRET || 'dev', { expiresIn: '8h' });
   res.json({ token, user: { id: user.id, email: user.email, role: user.role } });
 });
+
+// Auth middleware for protected API routes
+const requireAuth = (req, res, next) => {
+  const header = req.headers.authorization || '';
+  const [type, token] = header.split(' ');
+  if (type !== 'Bearer' || !token) {
+    return res.status(401).json({ error: 'Unauthorized' });
+  }
+
+  try {
+    const payload = jwt.verify(token, process.env.JWT_SECRET || 'dev');
+    req.user = { id: payload.sub, role: payload.role };
+    return next();
+  } catch {
+    return res.status(401).json({ error: 'Invalid token' });
+  }
+};
+
+// Mount API routes (protected)
+app.use('/api', requireAuth, apiRouter);
 
 app.listen(PORT, () => {
   console.log(`Server listening on http://localhost:${PORT}`);

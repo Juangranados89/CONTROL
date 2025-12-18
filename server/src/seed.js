@@ -6,10 +6,39 @@ dotenv.config();
 const prisma = new PrismaClient();
 
 async function main() {
-  const users = [
-    { email: 'admin@example.com', password: 'AdminPass123!', role: 'admin' },
-    { email: 'user@example.com', password: 'UserPass123!', role: 'user' }
+  const users = [];
+
+  // Base accounts (override passwords via env in production)
+  users.push({
+    email: 'admin@example.com',
+    password: process.env.SEED_ADMIN_PASSWORD || 'AdminPass123!'
+    ,
+    role: 'admin'
+  });
+  users.push({
+    email: 'user@example.com',
+    password: process.env.SEED_USER_PASSWORD || 'UserPass123!'
+    ,
+    role: 'user'
+  });
+
+  // Optional: create “username@control.local” accounts without hardcoding passwords.
+  // Set these env vars in Render if you want these accounts enabled.
+  const optionalUsers = [
+    // Admin users (todos los privilegios)
+    { email: 'julio.barrantes1@control.local', env: 'SEED_PASSWORD_JULIO_BARRANTES1', role: 'admin' },
+    { email: 'Hector.Zapata1@control.local', env: 'SEED_PASSWORD_HECTOR_ZAPATA1', role: 'admin' },
+    { email: 'Juan.granados1@control.local', env: 'SEED_PASSWORD_JUAN_GRANADOS1', role: 'admin' }
   ];
+
+  for (const u of optionalUsers) {
+    const pwd = process.env[u.env];
+    if (!pwd) {
+      console.log('Skipping optional user (missing env):', u.email);
+      continue;
+    }
+    users.push({ email: u.email, password: pwd, role: u.role });
+  }
 
   for (const u of users) {
     const exists = await prisma.user.findUnique({ where: { email: u.email } });

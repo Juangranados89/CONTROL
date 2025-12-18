@@ -1,5 +1,6 @@
 import { useState, useMemo } from 'react';
 import { Upload, Database, CheckCircle2, AlertCircle, FileSpreadsheet, X, Loader2, Eye, PlusCircle, RefreshCw } from 'lucide-react';
+import api from '../api';
 
 export default function MaintenanceDataLoader({ fleet, setFleet, setVariableHistory, onClose }) {
   const [rawData, setRawData] = useState('');
@@ -367,140 +368,107 @@ export default function MaintenanceDataLoader({ fleet, setFleet, setVariableHist
 
     setIsProcessing(true);
 
-    try {
-      const newFleet = [...fleet];
-      const historyEntries = [];
-      let updatedCount = 0;
-      let createdCount = 0;
+    const run = async () => {
+      try {
+        const today = new Date().toISOString().split('T')[0].split('-').reverse().join('/');
 
-      parsedData.forEach(record => {
-        // Si hay coincidencia, actualizar
-        if (record.matched && record.matchedVehicle) {
-          const vehicleIndex = newFleet.findIndex(v => 
-            v.code === record.matchedVehicle.code || 
-            v.plate === record.matchedVehicle.plate
-          );
+        const actionable = parsedData.filter(r => (r.code || r.plate));
+        const toCreate = actionable.filter(r => !r.matched);
+        const toUpdate = actionable.filter(r => r.matched);
 
-          if (vehicleIndex !== -1) {
-            const vehicle = newFleet[vehicleIndex];
-            const oldMileage = vehicle.currentKm || 0;
+        // 1) Upsert vehículos en el backend
+        const vehicleOps = [];
+        const vehicleErrors = [];
 
-            // Actualizar datos del vehículo existente
-            newFleet[vehicleIndex] = {
-              ...vehicle,
-              mileage: record.currentMileage,
-              currentKm: record.currentMileage,
-              lastMaintenance: record.lastMaintenanceMileage,
-              lastMaintenanceKm: record.lastMaintenanceMileage,
-              lastMaintenanceDate: record.lastMaintenanceDate,
-              maintenanceCycle: record.frequency,
-              frequency: record.frequency,
-              description: record.description || vehicle.description,
-              model: record.description || vehicle.model,
-              lastUpdate: new Date().toISOString().split('T')[0],
-              nextMaintenanceKm: record.lastMaintenanceMileage + record.frequency
-            };
+        for (const record of actionable) {
+          const base = record.matchedVehicle || {};
 
-            // Solo registrar en historial si el kilometraje cambió
-            if (record.currentMileage !== oldMileage) {
-              historyEntries.push({
-                id: Date.now() + Math.random(),
-                date: new Date().toISOString().split('T')[0],
-                vehiclePlate: vehicle.plate,
-                vehicleCode: vehicle.code,
-                mileage: record.currentMileage,
-                change: record.currentMileage - oldMileage,
-                updatedBy: 'Carga Masiva',
-                uploadDate: new Date().toISOString()
-              });
-            }
+          const code = (record.code || base.code || '').trim();
+          const plate = (record.plate || base.plate || '').trim();
 
-            updatedCount++;
+          // En BD estos campos son requeridos
+          if (!code || !plate) {
+            vehicleErrors.push({ record, error: 'Código y Placa son requeridos para guardar en BD' });
+            continue;
           }
-        }
-        // Si NO hay coincidencia y createNew está activado, crear nuevo
-        else if (!record.matched && createNew && (record.code || record.plate)) {
-          // Generar ID único
-          const maxId = newFleet.reduce((max, v) => Math.max(max, v.id || 0), 0);
-          
-          // Crear nuevo vehículo con todos los datos disponibles
-          const newVehicle = {
-            id: maxId + 1,
-            code: record.code || `AUTO-${Date.now()}`,
-            plate: record.plate || '',
-            description: record.description || record.plate || record.code,
-            model: record.description || '',
-            brand: record.brand || '',
-            class: record.class || 'KM',
-            mileage: record.currentMileage || 0,
-            currentKm: record.currentMileage || 0,
-            lastMaintenance: record.lastMaintenanceMileage || 0,
-            lastMaintenanceKm: record.lastMaintenanceMileage || 0,
-            lastMaintenanceDate: record.lastMaintenanceDate || null,
-            maintenanceCycle: record.frequency || 5000,
-            frequency: record.frequency || 5000,
-            nextMaintenanceKm: (record.lastMaintenanceMileage || 0) + (record.frequency || 5000),
-            location: record.location || '',
-            dealer: record.dealer || '',
-            status: 'OPERATIVO',
-            lastUpdate: new Date().toISOString().split('T')[0],
-            createdAt: new Date().toISOString()
+
+          const model = (record.description || base.model || base.descripcion || plate || code || 'N/A').trim();
+
+          const payload = {
+            code,
+            plate,
+            model,
+            brand: record.brand || base.brand || null,
+            owner: base.owner || null,
+            familiaTipologia: base.familiaTipologia || null,
+            descripcion: record.description || base.descripcion || null,
+            area: record.location || base.area || null,
+            mileage: record.currentMileage || base.mileage || 0,
+            lastMaintenance: record.lastMaintenanceMileage || base.lastMaintenance || null,
+            lastMaintenanceDate: record.lastMaintenanceDate || base.lastMaintenanceDate || null,
+            vin: base.vin || base.serieChasis || null,
+            ubicacionFrente: base.ubicacionFrente || null,
+            estadoActual: base.estadoActual || null,
+            serieChasis: base.serieChasis || null,
+            serieMotor: base.serieMotor || null,
+            anioModelo: base.anioModelo || null
           };
 
-          newFleet.push(newVehicle);
-
-          // Registrar en historial como creación
-          if (record.currentMileage > 0) {
-            historyEntries.push({
-              id: Date.now() + Math.random(),
-              date: new Date().toISOString().split('T')[0],
-              vehiclePlate: newVehicle.plate,
-              vehicleCode: newVehicle.code,
-              mileage: record.currentMileage,
-              change: record.currentMileage,
-              updatedBy: 'Carga Masiva (Nuevo)',
-              uploadDate: new Date().toISOString()
-            });
+          try {
+            const saved = await api.saveVehicle(payload);
+            vehicleOps.push(saved);
+          } catch (err) {
+            vehicleErrors.push({ record, error: err.message });
           }
-
-          createdCount++;
         }
-      });
 
-      // Guardar en estado y localStorage (usar 'fleet_data' como la app principal)
-      setFleet(newFleet);
-      localStorage.setItem('fleet_data', JSON.stringify(newFleet));
+        // 2) Guardar historial de variable (km) si existe
+        const variableRecords = actionable
+          .filter(r => (r.currentMileage || 0) > 0)
+          .map(r => ({
+            plate: r.plate,
+            code: r.code,
+            km: r.currentMileage,
+            date: r.variableDate || today
+          }))
+          .filter(r => r.plate || r.code);
 
-      if (historyEntries.length > 0) {
-        setVariableHistory(prev => {
-          const updated = [...prev, ...historyEntries];
-          localStorage.setItem('variable_history', JSON.stringify(updated));
-          return updated;
-        });
+        let variablesResponse = { count: 0, failed: 0 };
+        if (variableRecords.length > 0) {
+          variablesResponse = await api.saveVariables(variableRecords);
+        }
+
+        // 3) Recargar estado desde la API para evitar inconsistencias
+        const updatedFleet = await api.getVehicles();
+        setFleet(updatedFleet);
+
+        const updatedHistory = await api.getVariables();
+        setVariableHistory(updatedHistory);
+
+        const message = [];
+        message.push(`✅ Carga completada exitosamente\n`);
+        if (createNew) {
+          if (toCreate.length > 0) message.push(`🆕 Vehículos CREADOS (intento): ${toCreate.length}`);
+        } else {
+          const skipped = toCreate.length;
+          if (skipped > 0) message.push(`⚠️ No procesados (sin coincidencia): ${skipped}`);
+        }
+        if (toUpdate.length > 0) message.push(`📊 Vehículos ACTUALIZADOS (intento): ${toUpdate.length}`);
+        message.push(`📈 Registros en historial (enviados): ${variableRecords.length}`);
+        if (variablesResponse?.failed > 0) message.push(`⚠️ Historial falló en ${variablesResponse.failed} registro(s)`);
+        if (vehicleErrors.length > 0) message.push(`⚠️ Vehículos con error: ${vehicleErrors.length}`);
+
+        alert(message.join('\n'));
+        setIsProcessing(false);
+        onClose?.();
+      } catch (error) {
+        console.error('❌ Error al aplicar cambios:', error);
+        alert(`Error al guardar los cambios en servidor: ${error.message}`);
+        setIsProcessing(false);
       }
+    };
 
-      const message = [];
-      message.push(`✅ Carga completada exitosamente\n`);
-      if (createdCount > 0) message.push(`🆕 Vehículos CREADOS: ${createdCount}`);
-      if (updatedCount > 0) message.push(`📊 Vehículos ACTUALIZADOS: ${updatedCount}`);
-      message.push(`📈 Registros en historial: ${historyEntries.length}`);
-      if (!createNew && parsedData.filter(r => !r.matched).length > 0) {
-        message.push(`⚠️ No procesados (sin coincidencia): ${parsedData.filter(r => !r.matched).length}`);
-      }
-
-      alert(message.join('\n'));
-
-      setIsProcessing(false);
-      
-      // Forzar recarga para asegurar que la tabla se actualice correctamente
-      // Esto es necesario porque localStorage se actualizó y la app debe releer
-      window.location.reload();
-
-    } catch (error) {
-      console.error('❌ Error al aplicar cambios:', error);
-      alert(`Error al guardar los cambios: ${error.message}`);
-      setIsProcessing(false);
-    }
+    run();
   };
 
   return (

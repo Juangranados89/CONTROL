@@ -8,12 +8,25 @@ class ApiClient {
 
   async request(endpoint, options = {}) {
     const url = `${this.baseURL}${endpoint}`;
+    const token = localStorage.getItem('auth_token');
+
+    const headers = {
+      'Content-Type': 'application/json',
+      ...(options.headers || {}),
+    };
+
+    // Allow callers to explicitly remove Authorization
+    if (headers.Authorization === undefined) {
+      delete headers.Authorization;
+    }
+
+    if (token && !headers.Authorization) {
+      headers.Authorization = `Bearer ${token}`;
+    }
+
     const config = {
       ...options,
-      headers: {
-        'Content-Type': 'application/json',
-        ...options.headers,
-      },
+      headers,
     };
 
     try {
@@ -26,6 +39,16 @@ class ApiClient {
       console.error(`API Error [${endpoint}]:`, error);
       throw error;
     }
+  }
+
+  // ========== AUTH ==========
+  async login(email, password) {
+    return this.request('/api/login', {
+      method: 'POST',
+      body: JSON.stringify({ email, password }),
+      // Explicitly avoid attaching an old token if present
+      headers: { Authorization: undefined }
+    });
   }
 
   // ========== VEHICLES ==========

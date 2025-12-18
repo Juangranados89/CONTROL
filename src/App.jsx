@@ -5194,26 +5194,45 @@ function App() {
   // Check for existing session on mount
   useEffect(() => {
     const savedUser = localStorage.getItem('authenticated_user');
+    const savedToken = localStorage.getItem('auth_token');
     if (savedUser) {
       const userData = JSON.parse(savedUser);
       setCurrentUser(userData);
-      setIsAuthenticated(true);
+      setIsAuthenticated(Boolean(savedToken));
     }
   }, []);
 
   const handleLogin = (user) => {
-    setCurrentUser({ username: user.username, name: user.name });
-    setIsAuthenticated(true);
+    // user: { username, name, role, token }
+    const sessionUser = {
+      username: user.username,
+      name: user.name,
+      role: user.role,
+      loginTime: new Date().toISOString()
+    };
+    localStorage.setItem('authenticated_user', JSON.stringify(sessionUser));
+    if (user.token) localStorage.setItem('auth_token', user.token);
+    setCurrentUser(sessionUser);
+    setIsAuthenticated(Boolean(user.token));
   };
 
   const handleLogout = () => {
     localStorage.removeItem('authenticated_user');
+    localStorage.removeItem('auth_token');
     setCurrentUser(null);
     setIsAuthenticated(false);
+    setFleet([]);
+    setWorkOrders([]);
+    setVariableHistory([]);
   };
 
-  // Load initial data from API
+  // Load initial data from API (only after authentication)
   useEffect(() => {
+    if (!isAuthenticated) {
+      setIsLoading(false);
+      return;
+    }
+
     const loadData = async () => {
       try {
         setIsLoading(true);
@@ -5269,41 +5288,61 @@ function App() {
           };
         };
         
-        // Try API first
+        // Try API first (source of truth)
         let vehicles = [];
         let orders = [];
         let history = [];
+        let apiFailed = false;
         
         try {
           vehicles = await api.getVehicles();
           orders = await api.getWorkOrders();
           history = await api.getVariables();
         } catch (apiError) {
-          console.warn('API not available, using localStorage:', apiError.message);
+          apiFailed = true;
+          console.warn('API not available, using localStorage (offline fallback):', apiError.message);
         }
 
         vehicles = asArray(vehicles);
         orders = asArray(orders);
         history = asArray(history);
         
-        // If API returned empty or failed, check localStorage
         const savedFleet = localStorage.getItem('fleet_data');
         const savedOrders = localStorage.getItem('work_orders');
         const savedHistory = localStorage.getItem('variable_history');
-        
-        // Use localStorage data if API returned empty
-        if (vehicles.length === 0 && savedFleet) {
-          console.log('📦 Loading fleet from localStorage');
-          vehicles = asArray(safeJsonParse(savedFleet, []));
+
+        // Only use localStorage when the API is unavailable (offline mode).
+        // If the API is reachable but returns empty, we should NOT fall back to cached/local data,
+        // because that would risk showing stale/incorrect information.
+        if (apiFailed) {
+          if (vehicles.length === 0 && savedFleet) {
+            console.log('📦 Loading fleet from localStorage (offline)');
+            vehicles = asArray(safeJsonParse(savedFleet, []));
+          }
+          if (orders.length === 0 && savedOrders) {
+            console.log('📦 Loading orders from localStorage (offline)');
+            orders = asArray(safeJsonParse(savedOrders, []));
+          }
+          if (history.length === 0 && savedHistory) {
+            console.log('📦 Loading history from localStorage (offline)');
+            history = asArray(safeJsonParse(savedHistory, []));
+          }
         }
-        if (orders.length === 0 && savedOrders) {
-          console.log('📦 Loading orders from localStorage');
-          orders = asArray(safeJsonParse(savedOrders, []));
+
+        // If no vehicles are available and API did not fail, it likely means the DB is empty.
+        // For production, this is a critical misconfiguration: do not silently inject local sample data.
+        const allowLocalFallback = import.meta.env.DEV || import.meta.env.VITE_ALLOW_LOCAL_FALLBACK === 'true';
+        if (!apiFailed && vehicles.length === 0) {
+          if (allowLocalFallback) {
+            console.warn('⚠️ API devolvió 0 vehículos. Usando INITIAL_FLEET (solo dev/flag).');
+            vehicles = INITIAL_FLEET;
+          } else {
+            setApiError('La base de datos no tiene vehículos cargados. Contacte al administrador para ejecutar el seed.');
+          }
         }
-        if (history.length === 0 && savedHistory) {
-          console.log('📦 Loading history from localStorage');
-          history = asArray(safeJsonParse(savedHistory, []));
-        }
+
+        // In offline fallback mode, persist only what the user already had locally.
+        // We never auto-seed production from the browser.
 
         // Normalize fleet shape to avoid runtime crashes in PlanningView
         vehicles = asArray(vehicles).map(normalizeVehicle);
@@ -5326,6 +5365,14 @@ function App() {
         const ordersFallback = savedOrders ? safeJsonParse(savedOrders, []) : [];
         const historyFallback = savedHistory ? safeJsonParse(savedHistory, []) : [];
 
+        console.log('� Cargando datos de respaldo - Flota:', fleetFallback?.length || 0, 'vehículos');
+        
+        // Auto-save INITIAL_FLEET to localStorage if not present
+        if (!savedFleet && fleetFallback === INITIAL_FLEET) {
+          localStorage.setItem('fleet_data', JSON.stringify(INITIAL_FLEET));
+          console.log('💾 Datos iniciales guardados para próxima sesión');
+        }
+
         setFleet(asArray(fleetFallback).map(normalizeVehicle));
         setWorkOrders(asArray(ordersFallback));
         setVariableHistory(asArray(historyFallback));
@@ -5335,7 +5382,7 @@ function App() {
     };
     
     loadData();
-  }, []);
+  }, [isAuthenticated]);
 
   const handleCreateOT = async (newOT) => {
     try {
@@ -5402,6 +5449,19 @@ function App() {
   // Show login if not authenticated
   if (!isAuthenticated) {
     return <Login onLogin={handleLogin} />;
+  }
+
+  // Show loading screen while data is being loaded
+  if (isLoading) {
+    return (
+      <div className="flex h-screen items-center justify-center bg-gradient-to-br from-blue-50 to-slate-100">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-blue-600 mx-auto mb-4"></div>
+          <h2 className="text-xl font-bold text-slate-700 mb-2">Cargando Sistema</h2>
+          <p className="text-slate-500 text-sm">Inicializando datos de flota...</p>
+        </div>
+      </div>
+    );
   }
 
   return (

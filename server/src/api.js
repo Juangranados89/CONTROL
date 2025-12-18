@@ -269,7 +269,7 @@ router.post('/variables', async (req, res) => {
             status: 'CERRADA'
           },
           orderBy: [
-            { closingDate: 'desc' },
+            { closedDate: 'desc' },
             { mileage: 'desc' }
           ]
         });
@@ -282,7 +282,7 @@ router.post('/variables', async (req, res) => {
         // Intelligent update: if we have a closed OT, update lastMaintenance fields
         if (lastClosedOT) {
           updateData.lastMaintenance = lastClosedOT.mileage;
-          updateData.lastMaintenanceDate = lastClosedOT.closingDate || null;
+          updateData.lastMaintenanceDate = lastClosedOT.closedDate || null;
         }
         
         // Update vehicle with mileage and intelligent maintenance data
@@ -428,7 +428,7 @@ router.patch('/workorders/:id', async (req, res) => {
         where: { id: workOrder.vehicleId },
         data: {
           lastMaintenance: workOrder.mileage,
-          lastMaintenanceDate: closedDate || updateData.closingDate
+          lastMaintenanceDate: closedDate || workOrder.closedDate || null
         }
       });
     }
@@ -453,7 +453,7 @@ router.post('/vehicles/sync-maintenance', async (req, res) => {
           status: 'CERRADA'
         },
         orderBy: [
-          { closingDate: 'desc' },
+          { closedDate: 'desc' },
           { mileage: 'desc' }
         ]
       });
@@ -463,7 +463,7 @@ router.post('/vehicles/sync-maintenance', async (req, res) => {
           where: { id: vehicle.id },
           data: {
             lastMaintenance: lastClosedOT.mileage,
-            lastMaintenanceDate: lastClosedOT.closingDate
+            lastMaintenanceDate: lastClosedOT.closedDate || null
           }
         });
         updates.push({ code: vehicle.code, lastMaintenance: lastClosedOT.mileage });
@@ -474,6 +474,85 @@ router.post('/vehicles/sync-maintenance', async (req, res) => {
       success: true, 
       updated: updates.length, 
       vehicles: updates 
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// ============ ADMIN: SEED FLEET ============
+// Endpoint para cargar datos iniciales (INITIAL_FLEET) a la BD
+router.post('/admin/seed-fleet', async (req, res) => {
+  try {
+    if (req.user?.role !== 'admin') {
+      return res.status(403).json({ error: 'Forbidden' });
+    }
+
+    const { vehicles } = req.body;
+    
+    if (!Array.isArray(vehicles) || vehicles.length === 0) {
+      return res.status(400).json({ error: 'Se requiere un array de vehículos' });
+    }
+    
+    let created = 0;
+    let updated = 0;
+    let errors = [];
+    
+    for (const vehicle of vehicles) {
+      try {
+        // Verificar si existe
+        const existing = await prisma.vehicle.findFirst({
+          where: {
+            OR: [
+              { code: vehicle.code },
+              { plate: vehicle.plate }
+            ]
+          }
+        });
+        
+        const vehicleData = {
+          code: vehicle.code,
+          plate: vehicle.plate,
+          model: vehicle.model || 'N/A',
+          brand: vehicle.brand || null,
+          owner: vehicle.owner || null,
+          mileage: vehicle.mileage || 0,
+          lastMaintenance: vehicle.lastMaintenance || null,
+          lastMaintenanceDate: vehicle.lastMaintenanceDate || null,
+          vin: vehicle.vin || vehicle.serieChasis || null,
+          area: vehicle.area || null,
+          familiaTipologia: vehicle.familiaTipologia || null,
+          descripcion: vehicle.descripcion || null,
+          serieChasis: vehicle.serieChasis || vehicle.vin || null,
+          serieMotor: vehicle.serieMotor || null,
+          anioModelo: vehicle.year ? String(vehicle.year) : vehicle.anioModelo || null,
+          estadoActual: vehicle.status || vehicle.estadoActual || 'OPERATIVO',
+          ubicacionFrente: vehicle.ubicacionFrente || null
+        };
+        
+        if (existing) {
+          await prisma.vehicle.update({
+            where: { id: existing.id },
+            data: vehicleData
+          });
+          updated++;
+        } else {
+          await prisma.vehicle.create({
+            data: vehicleData
+          });
+          created++;
+        }
+      } catch (error) {
+        errors.push({ code: vehicle.code, error: error.message });
+      }
+    }
+    
+    res.json({
+      success: true,
+      created,
+      updated,
+      errors: errors.length,
+      errorDetails: errors
     });
   } catch (error) {
     res.status(500).json({ error: error.message });
