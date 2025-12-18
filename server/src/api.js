@@ -46,25 +46,34 @@ router.post('/vehicles', async (req, res) => {
   try {
     const { 
       code, plate, model, brand, owner, mileage, lastMaintenance, lastMaintenanceDate, 
-      vin, area, familiaTipologia, descripcion, serieChasis, serieMotor, anioModelo, 
+      vin, area, familiaTipologia, descripcion, serieChasis, serieMotor, anioModelo,
       estadoActual, ubicacionFrente 
     } = req.body;
+
+    const maintenanceCycle = Number.isFinite(Number(req.body?.maintenanceCycle))
+      ? Number(req.body.maintenanceCycle)
+      : (Number.isFinite(Number(req.body?.frequency)) ? Number(req.body.frequency) : undefined);
     
     const vehicle = await prisma.vehicle.upsert({
       where: { code },
       update: { 
         plate, model, brand, owner, mileage, lastMaintenance, lastMaintenanceDate, 
-        vin, area, familiaTipologia, descripcion, serieChasis, serieMotor, anioModelo, 
+        vin, area, familiaTipologia, descripcion, serieChasis, serieMotor, anioModelo,
         estadoActual, ubicacionFrente 
       },
       create: { 
         code, plate, model, brand, owner, mileage, lastMaintenance, lastMaintenanceDate, 
-        vin, area, familiaTipologia, descripcion, serieChasis, serieMotor, anioModelo, 
+        vin, area, familiaTipologia, descripcion, serieChasis, serieMotor, anioModelo,
         estadoActual, ubicacionFrente 
       }
     });
+
+    // Apply maintenanceCycle if provided (keep existing if not)
+    const vehicleWithCycle = maintenanceCycle
+      ? await prisma.vehicle.update({ where: { id: vehicle.id }, data: { maintenanceCycle } })
+      : vehicle;
     
-    res.json(vehicle);
+    res.json(vehicleWithCycle);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -133,6 +142,7 @@ router.post('/vehicles/bulk', async (req, res) => {
             estadoActual: v.estadoActual,
             ubicacionFrente: v.ubicacionFrente,
             mileage: v.mileage || 0,
+            maintenanceCycle: v.maintenanceCycle || v.frequency || 5000,
             lastMaintenance: v.lastMaintenance,
             lastMaintenanceDate: v.lastMaintenanceDate,
             vin: v.vin || v.serieChasis,
@@ -152,6 +162,7 @@ router.post('/vehicles/bulk', async (req, res) => {
             estadoActual: v.estadoActual,
             ubicacionFrente: v.ubicacionFrente,
             mileage: v.mileage || 0,
+            maintenanceCycle: v.maintenanceCycle || v.frequency || 5000,
             lastMaintenance: v.lastMaintenance,
             lastMaintenanceDate: v.lastMaintenanceDate,
             vin: v.vin || v.serieChasis,

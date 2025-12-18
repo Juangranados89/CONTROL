@@ -31,6 +31,7 @@ model Vehicle {
   estadoActual         String?           // ESTADO ACTUAL
   ubicacionFrente      String?           // UBICACIÓN O FRENTE DE OBRA
   mileage              Int               @default(0)
+  maintenanceCycle     Int               @default(5000)
   lastMaintenance      Int?
   lastMaintenanceDate  String?
   vin                  String?

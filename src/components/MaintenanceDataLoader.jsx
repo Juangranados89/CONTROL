@@ -404,6 +404,7 @@ export default function MaintenanceDataLoader({ fleet, setFleet, setVariableHist
             descripcion: record.description || base.descripcion || null,
             area: record.location || base.area || null,
             mileage: record.currentMileage || base.mileage || 0,
+            maintenanceCycle: record.frequency || base.maintenanceCycle || 5000,
             lastMaintenance: record.lastMaintenanceMileage || base.lastMaintenance || null,
             lastMaintenanceDate: record.lastMaintenanceDate || base.lastMaintenanceDate || null,
             vin: base.vin || base.serieChasis || null,
@@ -447,6 +448,7 @@ export default function MaintenanceDataLoader({ fleet, setFleet, setVariableHist
 
         const message = [];
         message.push(`✅ Carga completada exitosamente\n`);
+        message.push(`💾 Vehículos guardados en BD: ${vehicleOps.length}`);
         if (createNew) {
           if (toCreate.length > 0) message.push(`🆕 Vehículos CREADOS (intento): ${toCreate.length}`);
         } else {
