@@ -291,10 +291,10 @@ export default function MaintenanceDataLoader({ fleet, setFleet, setVariableHist
           continue;
         }
 
-        // Buscar vehículo en flota (más tolerante y específico)
+        // Buscar vehículo en flota (búsqueda muy flexible)
         const vehicleMatch = fleet.find(v => {
-          // Normalizar para comparación
-          const normalizeString = (str) => str ? str.toUpperCase().replace(/[-\s]/g, '').trim() : '';
+          // Normalizar para comparación (sin espacios, guiones, mayúsculas)
+          const normalizeString = (str) => str ? String(str).toUpperCase().replace(/[-\s_]/g, '').trim() : '';
           
           const recordCodeNorm = normalizeString(record.code);
           const recordPlateNorm = normalizeString(record.plate);
@@ -307,14 +307,26 @@ export default function MaintenanceDataLoader({ fleet, setFleet, setVariableHist
           // Coincidencia exacta de placa
           const plateMatch = recordPlateNorm && vPlateNorm && recordPlateNorm === vPlateNorm;
           
-          return codeMatch || plateMatch;
+          // Coincidencia parcial (contiene) para código
+          const codeContains = recordCodeNorm && vCodeNorm && 
+            (vCodeNorm.includes(recordCodeNorm) || recordCodeNorm.includes(vCodeNorm));
+          
+          // Coincidencia parcial para placa
+          const plateContains = recordPlateNorm && vPlateNorm && 
+            (vPlateNorm.includes(recordPlateNorm) || recordPlateNorm.includes(vPlateNorm));
+          
+          return codeMatch || plateMatch || codeContains || plateContains;
         });
 
         record.matched = !!vehicleMatch;
         record.matchedVehicle = vehicleMatch;
         
         if (!vehicleMatch && (record.code || record.plate)) {
-          console.log(`⚠️ No encontrado: ${record.code} / ${record.plate}`);
+          console.log(`⚠️ No encontrado: Código="${record.code}" Placa="${record.plate}"`);
+          // Log primeros 3 vehículos de la flota para debugging
+          if (i === dataStartIndex) {
+            console.log('📋 Primeros vehículos en flota:', fleet.slice(0, 3).map(v => ({ code: v.code, plate: v.plate })));
+          }
         }
 
         parsed.push(record);
