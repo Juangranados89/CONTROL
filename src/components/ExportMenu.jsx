@@ -159,11 +159,11 @@ export default function ExportMenu({ fleet, workOrders, variableHistory, dashboa
     reader.readAsText(file);
   };
 
-  const exportOptions = [
+  const backupOptions = [
     {
       id: 'backup',
-      title: '💾 Backup Completo (JSON)',
-      description: 'Descargar todos los datos',
+      title: '💾 Backup Completo',
+      description: 'Descargar todos los datos (JSON)',
       icon: <Database className="w-4 h-4 text-green-600" />,
       action: exportBackupJSON,
       color: 'bg-green-50 hover:bg-green-100 border-green-200'
@@ -175,29 +175,32 @@ export default function ExportMenu({ fleet, workOrders, variableHistory, dashboa
       icon: <Upload className="w-4 h-4 text-blue-600" />,
       action: () => fileInputRef.current?.click(),
       color: 'bg-blue-50 hover:bg-blue-100 border-blue-200'
-    },
+    }
+  ];
+
+  const excelOptions = [
     {
       id: 'complete',
-      title: 'Exportación Completa',
-      description: 'Todas las hojas (Excel)',
-      icon: <FileSpreadsheet className="w-4 h-4 text-slate-600" />
+      title: '📊 Exportación Completa',
+      description: 'Todas las hojas',
+      icon: <FileSpreadsheet className="w-4 h-4 text-green-600" />
     },
     {
       id: 'fleet',
       title: 'Solo Flota',
-      description: 'Vehículos (Excel)',
+      description: 'Vehículos',
       icon: <FileSpreadsheet className="w-4 h-4 text-slate-600" />
     },
     {
       id: 'workorders',
       title: 'Solo OT',
-      description: 'Órdenes de trabajo (Excel)',
+      description: 'Órdenes de trabajo',
       icon: <FileText className="w-4 h-4 text-slate-600" />
     },
     {
       id: 'history',
       title: 'Solo Historial',
-      description: 'Cambios de KM (Excel)',
+      description: 'Cambios de KM',
       icon: <FileText className="w-4 h-4 text-slate-600" />
     }
   ];
@@ -241,12 +244,45 @@ export default function ExportMenu({ fleet, workOrders, variableHistory, dashboa
                 className="hidden"
               />
               
-              {exportOptions.map(option => (
+              {/* Backup/Restore Section */}
+              <div className="mb-2">
+                {backupOptions.map(option => (
+                  <button
+                    key={option.id}
+                    onClick={() => option.action()}
+                    disabled={exporting}
+                    className={`w-full p-2.5 mb-1 rounded-md transition-all disabled:opacity-50 disabled:cursor-not-allowed text-left border ${option.color}`}
+                  >
+                    <div className="flex items-center gap-2.5">
+                      <div className="flex-shrink-0">
+                        <div className="w-4 h-4 flex items-center justify-center">
+                          {option.icon}
+                        </div>
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="font-medium text-sm text-slate-700">
+                          {option.title}
+                        </p>
+                        <p className="text-xs text-slate-500 truncate">
+                          {option.description}
+                        </p>
+                      </div>
+                    </div>
+                  </button>
+                ))}
+              </div>
+
+              {/* Separator */}
+              <div className="border-t border-slate-200 my-2"></div>
+              <p className="text-xs text-slate-500 font-semibold px-2 py-1">EXPORTAR A EXCEL</p>
+
+              {/* Excel Export Section */}
+              {excelOptions.map(option => (
                 <button
                   key={option.id}
-                  onClick={() => option.action ? option.action() : exportToExcel(option.id)}
+                  onClick={() => exportToExcel(option.id)}
                   disabled={exporting}
-                  className={`w-full p-2.5 rounded-md transition-all disabled:opacity-50 disabled:cursor-not-allowed text-left border ${option.color || 'border-transparent hover:border-slate-200 hover:bg-slate-50'}`}
+                  className="w-full p-2.5 rounded-md transition-all disabled:opacity-50 disabled:cursor-not-allowed text-left border border-transparent hover:border-slate-200 hover:bg-slate-50"
                 >
                   <div className="flex items-center gap-2.5">
                     <div className="flex-shrink-0">
