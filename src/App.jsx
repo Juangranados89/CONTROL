@@ -5133,6 +5133,56 @@ function App() {
       try {
         setIsLoading(true);
         setApiError(null);
+
+        const safeJsonParse = (text, fallback) => {
+          try {
+            return JSON.parse(text);
+          } catch {
+            return fallback;
+          }
+        };
+
+        const asArray = (value) => {
+          if (Array.isArray(value)) return value;
+          if (Array.isArray(value?.vehicles)) return value.vehicles;
+          if (Array.isArray(value?.data)) return value.data;
+          return [];
+        };
+
+        const toNumberOr = (value, fallback = 0) => {
+          const n = typeof value === 'string' ? Number(value.replace(/,/g, '')) : Number(value);
+          return Number.isFinite(n) ? n : fallback;
+        };
+
+        const normalizeVehicle = (vehicle, index) => {
+          const mileage = toNumberOr(vehicle?.mileage, null);
+          const currentKm = toNumberOr(vehicle?.currentKm ?? vehicle?.currentMileage ?? vehicle?.km, null);
+          const lastMaintenance = toNumberOr(vehicle?.lastMaintenance, null);
+          const lastMaintenanceKm = toNumberOr(vehicle?.lastMaintenanceKm ?? vehicle?.lastMaintenanceMileage, null);
+          const maintenanceCycle = toNumberOr(vehicle?.maintenanceCycle, null);
+          const frequency = toNumberOr(vehicle?.frequency, null);
+
+          const normalizedMileage = mileage ?? currentKm ?? 0;
+          const normalizedLastMaintenance = lastMaintenance ?? lastMaintenanceKm ?? 0;
+          const normalizedCycle = maintenanceCycle ?? frequency ?? 5000;
+
+          const idNum = toNumberOr(vehicle?.id, null);
+
+          return {
+            ...vehicle,
+            id: idNum ?? (index + 1),
+            code: vehicle?.code ?? vehicle?.codigo ?? '',
+            plate: vehicle?.plate ?? vehicle?.placa ?? '',
+            model: vehicle?.model ?? vehicle?.modeloLinea ?? vehicle?.description ?? vehicle?.descripcion ?? '',
+            brand: vehicle?.brand ?? vehicle?.marca ?? '',
+            status: vehicle?.status ?? vehicle?.estadoActual ?? 'OPERATIVO',
+            mileage: Math.round(toNumberOr(normalizedMileage, 0)),
+            lastMaintenance: Math.round(toNumberOr(normalizedLastMaintenance, 0)),
+            maintenanceCycle: Math.round(toNumberOr(normalizedCycle, 5000)),
+            lastMaintenanceDate: vehicle?.lastMaintenanceDate ?? vehicle?.lastMaintenanceDate ?? null,
+            lastVariableDate: vehicle?.lastVariableDate ?? vehicle?.variableDate ?? vehicle?.lastUpdate ?? ''
+          };
+        };
         
         // Try API first
         let vehicles = [];
@@ -5146,6 +5196,10 @@ function App() {
         } catch (apiError) {
           console.warn('API not available, using localStorage:', apiError.message);
         }
+
+        vehicles = asArray(vehicles);
+        orders = asArray(orders);
+        history = asArray(history);
         
         // If API returned empty or failed, check localStorage
         const savedFleet = localStorage.getItem('fleet_data');
@@ -5155,16 +5209,19 @@ function App() {
         // Use localStorage data if API returned empty
         if (vehicles.length === 0 && savedFleet) {
           console.log('📦 Loading fleet from localStorage');
-          vehicles = JSON.parse(savedFleet);
+          vehicles = asArray(safeJsonParse(savedFleet, []));
         }
         if (orders.length === 0 && savedOrders) {
           console.log('📦 Loading orders from localStorage');
-          orders = JSON.parse(savedOrders);
+          orders = asArray(safeJsonParse(savedOrders, []));
         }
         if (history.length === 0 && savedHistory) {
           console.log('📦 Loading history from localStorage');
-          history = JSON.parse(savedHistory);
+          history = asArray(safeJsonParse(savedHistory, []));
         }
+
+        // Normalize fleet shape to avoid runtime crashes in PlanningView
+        vehicles = asArray(vehicles).map(normalizeVehicle);
         
         // Set state
         setFleet(vehicles);
@@ -5180,9 +5237,13 @@ function App() {
         const savedOrders = localStorage.getItem('work_orders');
         const savedHistory = localStorage.getItem('variable_history');
         
-        setFleet(savedFleet ? JSON.parse(savedFleet) : INITIAL_FLEET);
-        setWorkOrders(savedOrders ? JSON.parse(savedOrders) : []);
-        setVariableHistory(savedHistory ? JSON.parse(savedHistory) : []);
+        const fleetFallback = savedFleet ? safeJsonParse(savedFleet, INITIAL_FLEET) : INITIAL_FLEET;
+        const ordersFallback = savedOrders ? safeJsonParse(savedOrders, []) : [];
+        const historyFallback = savedHistory ? safeJsonParse(savedHistory, []) : [];
+
+        setFleet(asArray(fleetFallback).map(normalizeVehicle));
+        setWorkOrders(asArray(ordersFallback));
+        setVariableHistory(asArray(historyFallback));
       } finally {
         setIsLoading(false);
       }

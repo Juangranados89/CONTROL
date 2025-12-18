@@ -388,11 +388,15 @@ export default function MaintenanceDataLoader({ fleet, setFleet, setVariableHist
             // Actualizar datos del vehículo existente
             newFleet[vehicleIndex] = {
               ...vehicle,
+              mileage: record.currentMileage,
               currentKm: record.currentMileage,
+              lastMaintenance: record.lastMaintenanceMileage,
               lastMaintenanceKm: record.lastMaintenanceMileage,
               lastMaintenanceDate: record.lastMaintenanceDate,
+              maintenanceCycle: record.frequency,
               frequency: record.frequency,
               description: record.description || vehicle.description,
+              model: record.description || vehicle.model,
               lastUpdate: new Date().toISOString().split('T')[0],
               nextMaintenanceKm: record.lastMaintenanceMileage + record.frequency
             };
@@ -428,14 +432,17 @@ export default function MaintenanceDataLoader({ fleet, setFleet, setVariableHist
             model: record.description || '',
             brand: record.brand || '',
             class: record.class || 'KM',
-            frequency: record.frequency || 5000,
+            mileage: record.currentMileage || 0,
             currentKm: record.currentMileage || 0,
+            lastMaintenance: record.lastMaintenanceMileage || 0,
             lastMaintenanceKm: record.lastMaintenanceMileage || 0,
             lastMaintenanceDate: record.lastMaintenanceDate || null,
+            maintenanceCycle: record.frequency || 5000,
+            frequency: record.frequency || 5000,
             nextMaintenanceKm: (record.lastMaintenanceMileage || 0) + (record.frequency || 5000),
             location: record.location || '',
             dealer: record.dealer || '',
-            status: 'active',
+            status: 'OPERATIVO',
             lastUpdate: new Date().toISOString().split('T')[0],
             createdAt: new Date().toISOString()
           };
