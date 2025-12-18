@@ -18,10 +18,19 @@ app.use(express.json({ limit: '10mb' }));
 app.get('/health', (req, res) => res.json({ ok: true, timestamp: new Date().toISOString() }));
 
 app.post('/api/login', async (req, res) => {
-  const { email, password } = req.body;
+  const email = String(req.body?.email || '').trim();
+  const password = String(req.body?.password || '');
   if (!email || !password) return res.status(400).json({ error: 'Email and password required' });
 
-  const user = await prisma.user.findUnique({ where: { email } });
+  // Case-insensitive lookup to avoid surprises with capitalization in UI/seed.
+  const user = await prisma.user.findFirst({
+    where: {
+      email: {
+        equals: email,
+        mode: 'insensitive'
+      }
+    }
+  });
   if (!user) return res.status(401).json({ error: 'Invalid credentials' });
 
   const valid = await bcrypt.compare(password, user.passwordHash);
@@ -51,6 +60,38 @@ const requireAuth = (req, res, next) => {
 // Mount API routes (protected)
 app.use('/api', requireAuth, apiRouter);
 
-app.listen(PORT, () => {
-  console.log(`Server listening on http://localhost:${PORT}`);
-});
+const ensureOptionalAdminUsers = async () => {
+  // Create optional admin accounts only when their passwords are provided via env.
+  // This avoids hardcoded credentials in production and fixes “login incorrect” when seed isn't run.
+  const optionalUsers = [
+    { email: 'julio.barrantes1@control.local', env: 'SEED_PASSWORD_JULIO_BARRANTES1', role: 'admin' },
+    { email: 'hector.zapata1@control.local', env: 'SEED_PASSWORD_HECTOR_ZAPATA1', role: 'admin' },
+    { email: 'juan.granados1@control.local', env: 'SEED_PASSWORD_JUAN_GRANADOS1', role: 'admin' }
+  ];
+
+  for (const u of optionalUsers) {
+    const pwd = process.env[u.env];
+    if (!pwd) continue;
+
+    const existing = await prisma.user.findFirst({
+      where: { email: { equals: u.email, mode: 'insensitive' } }
+    });
+    if (existing) continue;
+
+    const hash = await bcrypt.hash(pwd, 10);
+    await prisma.user.create({ data: { email: u.email, passwordHash: hash, role: u.role } });
+    console.log('Created optional user', u.email);
+  }
+};
+
+(async () => {
+  try {
+    await ensureOptionalAdminUsers();
+  } catch (e) {
+    console.error('Optional user seed failed:', e?.message || e);
+  }
+
+  app.listen(PORT, () => {
+    console.log(`Server listening on http://localhost:${PORT}`);
+  });
+})();
