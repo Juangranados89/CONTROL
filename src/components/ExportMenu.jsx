@@ -1,11 +1,12 @@
-import { useState } from 'react';
-import { Download, FileText, FileSpreadsheet, X, Check, Loader2 } from 'lucide-react';
+import { useState, useRef } from 'react';
+import { Download, FileText, FileSpreadsheet, X, Check, Loader2, Database, Upload } from 'lucide-react';
 import * as XLSX from 'xlsx';
 
-export default function ExportMenu({ fleet, workOrders, variableHistory, dashboardStats }) {
+export default function ExportMenu({ fleet, workOrders, variableHistory, dashboardStats, setFleet, setWorkOrders, setVariableHistory }) {
   const [isOpen, setIsOpen] = useState(false);
   const [exporting, setExporting] = useState(false);
   const [exportType, setExportType] = useState('');
+  const fileInputRef = useRef(null);
 
   const exportToExcel = async (type) => {
     setExporting(true);
@@ -92,29 +93,111 @@ export default function ExportMenu({ fleet, workOrders, variableHistory, dashboa
     }
   };
 
+  const exportBackupJSON = () => {
+    const backup = {
+      version: '1.0',
+      timestamp: new Date().toISOString(),
+      data: {
+        fleet,
+        workOrders,
+        variableHistory
+      },
+      stats: dashboardStats
+    };
+
+    const dataStr = JSON.stringify(backup, null, 2);
+    const dataBlob = new Blob([dataStr], { type: 'application/json' });
+    const url = URL.createObjectURL(dataBlob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `CONTROL_Backup_${new Date().toISOString().split('T')[0]}.json`;
+    link.click();
+    URL.revokeObjectURL(url);
+    
+    setIsOpen(false);
+  };
+
+  const importBackupJSON = (event) => {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      try {
+        const backup = JSON.parse(e.target.result);
+        
+        if (!backup.data) {
+          alert('Archivo de backup inválido');
+          return;
+        }
+
+        if (backup.data.fleet) {
+          setFleet(backup.data.fleet);
+          localStorage.setItem('fleet_data', JSON.stringify(backup.data.fleet));
+        }
+        if (backup.data.workOrders) {
+          setWorkOrders(backup.data.workOrders);
+          localStorage.setItem('work_orders', JSON.stringify(backup.data.workOrders));
+        }
+        if (backup.data.variableHistory) {
+          setVariableHistory(backup.data.variableHistory);
+          localStorage.setItem('variable_history', JSON.stringify(backup.data.variableHistory));
+        }
+
+        alert(`✅ Backup restaurado correctamente\n\n` +
+              `Vehículos: ${backup.data.fleet?.length || 0}\n` +
+              `Órdenes: ${backup.data.workOrders?.length || 0}\n` +
+              `Historial: ${backup.data.variableHistory?.length || 0}`);
+        
+        setIsOpen(false);
+        window.location.reload(); // Recargar para aplicar cambios
+      } catch (error) {
+        console.error('Error al importar backup:', error);
+        alert('Error al leer el archivo de backup');
+      }
+    };
+    reader.readAsText(file);
+  };
+
   const exportOptions = [
+    {
+      id: 'backup',
+      title: '💾 Backup Completo (JSON)',
+      description: 'Descargar todos los datos',
+      icon: <Database className="w-4 h-4 text-green-600" />,
+      action: exportBackupJSON,
+      color: 'bg-green-50 hover:bg-green-100 border-green-200'
+    },
+    {
+      id: 'restore',
+      title: '📥 Restaurar Backup',
+      description: 'Importar datos desde JSON',
+      icon: <Upload className="w-4 h-4 text-blue-600" />,
+      action: () => fileInputRef.current?.click(),
+      color: 'bg-blue-50 hover:bg-blue-100 border-blue-200'
+    },
     {
       id: 'complete',
       title: 'Exportación Completa',
-      description: 'Todas las hojas',
+      description: 'Todas las hojas (Excel)',
       icon: <FileSpreadsheet className="w-4 h-4 text-slate-600" />
     },
     {
       id: 'fleet',
       title: 'Solo Flota',
-      description: 'Vehículos',
+      description: 'Vehículos (Excel)',
       icon: <FileSpreadsheet className="w-4 h-4 text-slate-600" />
     },
     {
       id: 'workorders',
       title: 'Solo OT',
-      description: 'Órdenes de trabajo',
+      description: 'Órdenes de trabajo (Excel)',
       icon: <FileText className="w-4 h-4 text-slate-600" />
     },
     {
       id: 'history',
       title: 'Solo Historial',
-      description: 'Cambios de KM',
+      description: 'Cambios de KM (Excel)',
       icon: <FileText className="w-4 h-4 text-slate-600" />
     }
   ];
@@ -150,12 +233,20 @@ export default function ExportMenu({ fleet, workOrders, variableHistory, dashboa
 
             {/* Options */}
             <div className="p-2">
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept=".json"
+                onChange={importBackupJSON}
+                className="hidden"
+              />
+              
               {exportOptions.map(option => (
                 <button
                   key={option.id}
-                  onClick={() => exportToExcel(option.id)}
+                  onClick={() => option.action ? option.action() : exportToExcel(option.id)}
                   disabled={exporting}
-                  className="w-full p-2.5 rounded-md hover:bg-slate-50 transition-all disabled:opacity-50 disabled:cursor-not-allowed text-left border border-transparent hover:border-slate-200"
+                  className={`w-full p-2.5 rounded-md transition-all disabled:opacity-50 disabled:cursor-not-allowed text-left border ${option.color || 'border-transparent hover:border-slate-200 hover:bg-slate-50'}`}
                 >
                   <div className="flex items-center gap-2.5">
                     <div className="flex-shrink-0">

@@ -5759,6 +5759,9 @@ function App() {
               fleet={fleet}
               workOrders={workOrders}
               variableHistory={variableHistory}
+              setFleet={setFleet}
+              setWorkOrders={setWorkOrders}
+              setVariableHistory={setVariableHistory}
               dashboardStats={{
                 totalVehicles: fleet.length,
                 activeVehicles: fleet.filter(v => v.status === 'Activo').length,
