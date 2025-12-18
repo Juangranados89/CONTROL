@@ -136,28 +136,36 @@ export default function MaintenanceDataLoader({ fleet, setFleet, setVariableHist
       ) {
         mapping.currentMileage = index;
       }
-      // Último mantenimiento (más variantes)
+      // Último mantenimiento (más variantes) - Evaluar ANTES que Fecha Último
       else if (
-        (h.includes('ULT') && h.includes('MTTO')) ||
-        (h.includes('ÚLT') && h.includes('MTTO')) ||
-        (h.includes('ULTIMO') && h.includes('MTTO')) ||
-        (h.includes('ÚLTIMO') && h.includes('MTTO')) ||
-        h.includes('ULT. MTTO') ||
-        h.includes('ÚLT. MTTO') ||
+        h === 'ULTIMO MTTO' ||
+        h === 'ÚLTIMO MTTO' ||
+        h === 'ULT. MTTO' ||
+        h === 'ÚLT. MTTO' ||
+        h === 'ULT MTTO' ||
+        h === 'ÚLT MTTO' ||
+        (h.includes('ULTIMO') && h.includes('MTTO') && !h.includes('FECHA')) ||
+        (h.includes('ÚLTIMO') && h.includes('MTTO') && !h.includes('FECHA')) ||
+        (h.includes('ULT.') && h.includes('MTTO') && !h.includes('FECHA')) ||
+        (h.includes('ÚLT.') && h.includes('MTTO') && !h.includes('FECHA')) ||
         h.includes('HR ULTIMA EJEC') ||
         h.includes('ULTIMA EJEC')
       ) {
         mapping.lastMaintenanceMileage = index;
       }
-      // Fecha último mantenimiento (más variantes)
+      // Fecha último mantenimiento (más variantes) - Evaluar DESPUÉS
       else if (
-        (h.includes('FECHA') && h.includes('ULT') && h.includes('MTTO')) ||
-        (h.includes('FECHA') && h.includes('ÚLT') && h.includes('MTTO')) ||
+        h === 'FECHA ULTIMO' ||
+        h === 'FECHA ÚLTIMO' ||
+        h === 'FECHA ULT. MTTO' ||
+        h === 'FECHA ÚLT. MTTO' ||
+        h === 'F. ULT. MTTO' ||
+        h === 'F. ÚLT. MTTO' ||
         (h.includes('FECHA') && h.includes('ULTIMO')) ||
         (h.includes('FECHA') && h.includes('ÚLTIMO')) ||
-        (h.includes('F.') && h.includes('ULT') && h.includes('MTTO')) ||
-        h.includes('FECHA ULT. MTTO') ||
-        h.includes('FECHA ÚLT. MTTO')
+        (h.includes('FECHA') && h.includes('ULT.') && h.includes('MTTO')) ||
+        (h.includes('FECHA') && h.includes('ÚLT.') && h.includes('MTTO')) ||
+        (h.includes('F.') && h.includes('ULT') && h.includes('MTTO'))
       ) {
         mapping.lastMaintenanceDate = index;
       }
