@@ -5542,12 +5542,12 @@ function App() {
         console.error('Error loading data:', error);
         setApiError(error.message);
         
-        // Fallback to localStorage if API fails (but don't auto-populate)
+        // Fallback to localStorage if API fails, or use INITIAL_FLEET
         const savedFleet = localStorage.getItem('fleet_data');
         const savedOrders = localStorage.getItem('work_orders');
         const savedHistory = localStorage.getItem('variable_history');
         
-        setFleet(savedFleet ? JSON.parse(savedFleet) : []);
+        setFleet(savedFleet ? JSON.parse(savedFleet) : INITIAL_FLEET);
         setWorkOrders(savedOrders ? JSON.parse(savedOrders) : []);
         setVariableHistory(savedHistory ? JSON.parse(savedHistory) : []);
       } finally {
@@ -5620,118 +5620,116 @@ function App() {
       {/* Sidebar */}
       <aside className={`${isSidebarOpen ? 'w-64' : 'w-20'} bg-white shadow-lg transition-all duration-300 flex flex-col border-r border-gray-200`}>
         {/* Logo Section */}
-        <div className="p-4 flex items-center justify-between border-b border-gray-200">
+        <div className={`flex items-center justify-center border-b border-gray-200 relative ${isSidebarOpen ? 'p-3 h-16' : 'p-2 h-20'}`}>
           {isSidebarOpen ? (
-            <div className="flex items-center gap-3 flex-1">
-              <img src="/logo-sidebar.png" alt="Fleet Pro Logo" className="h-12 w-auto" />
-            </div>
+            <>
+              <img src="/logo-sidebar.png" alt="Fleet Pro Logo" className="h-11 w-auto flex-shrink-0" />
+              <button onClick={() => setIsSidebarOpen(false)} className="absolute right-3 p-1.5 hover:bg-gray-100 rounded-lg text-gray-500">
+                <X size={18} />
+              </button>
+            </>
           ) : (
-            <img src="/logo-sidebar.png" alt="Fleet Pro Logo" className="h-10 w-auto mx-auto" />
-          )}
-          {isSidebarOpen && (
-            <button onClick={() => setIsSidebarOpen(!isSidebarOpen)} className="p-1 hover:bg-gray-100 rounded text-gray-600">
-              <X size={20} />
-            </button>
-          )}
-          {!isSidebarOpen && (
-            <button onClick={() => setIsSidebarOpen(!isSidebarOpen)} className="absolute top-4 left-16 p-1 hover:bg-gray-100 rounded text-gray-600 bg-white shadow-sm">
-              <Menu size={20} />
+            <button 
+              onClick={() => setIsSidebarOpen(true)} 
+              className="w-full h-full flex items-center justify-center"
+            >
+              <img src="/Minimal-logo.png" alt="Logo" className="w-24 h-24 object-contain" />
             </button>
           )}
         </div>
 
-        <nav className="flex-1 py-6">
+        <nav className="flex-1 py-5 overflow-y-auto">
           <ul className="space-y-2">
             <li>
               <button 
                 onClick={() => setCurrentView('dashboard')}
-                className={`w-full flex items-center gap-4 px-4 py-3 hover:bg-blue-50 transition-colors ${currentView === 'dashboard' ? 'bg-blue-100 text-blue-600 border-r-4 border-blue-600' : 'text-gray-700'}`}
+                className={`w-full flex items-center ${isSidebarOpen ? 'px-4 gap-3' : 'justify-center'} py-3 hover:bg-blue-50 transition-colors ${currentView === 'dashboard' ? 'bg-blue-100 text-blue-600 border-r-4 border-blue-600' : 'text-gray-700'}`}
               >
-                <LayoutDashboard size={20} className={currentView === 'dashboard' ? 'text-blue-600' : 'text-gray-600'} />
-                {isSidebarOpen && <span className="font-medium">Dashboard</span>}
+                <LayoutDashboard size={22} className={currentView === 'dashboard' ? 'text-blue-600' : 'text-gray-500'} />
+                {isSidebarOpen && <span className="font-medium text-sm">Dashboard</span>}
               </button>
             </li>
             <li>
               <button 
                 onClick={() => setCurrentView('planning')}
-                className={`w-full flex items-center gap-4 px-4 py-3 hover:bg-blue-50 transition-colors ${currentView === 'planning' ? 'bg-blue-100 text-blue-600 border-r-4 border-blue-600' : 'text-gray-700'}`}
+                className={`w-full flex items-center ${isSidebarOpen ? 'px-4 gap-3' : 'justify-center'} py-3 hover:bg-blue-50 transition-colors ${currentView === 'planning' ? 'bg-blue-100 text-blue-600 border-r-4 border-blue-600' : 'text-gray-700'}`}
               >
-                <Calendar size={20} className={currentView === 'planning' ? 'text-blue-600' : 'text-gray-600'} />
-                {isSidebarOpen && <span className="font-medium">Planeación</span>}
+                <Calendar size={22} className={currentView === 'planning' ? 'text-blue-600' : 'text-gray-500'} />
+                {isSidebarOpen && <span className="font-medium text-sm">Planeación</span>}
               </button>
             </li>
             <li>
               <button 
                 onClick={() => setCurrentView('maintenance-admin')}
-                className={`w-full flex items-center gap-4 px-4 py-3 hover:bg-blue-50 transition-colors ${currentView === 'maintenance-admin' ? 'bg-blue-100 text-blue-600 border-r-4 border-blue-600' : 'text-gray-700'}`}
+                className={`w-full flex items-center ${isSidebarOpen ? 'px-4 gap-3' : 'justify-center'} py-3 hover:bg-blue-50 transition-colors ${currentView === 'maintenance-admin' ? 'bg-blue-100 text-blue-600 border-r-4 border-blue-600' : 'text-gray-700'}`}
               >
-                <Wrench size={20} className={currentView === 'maintenance-admin' ? 'text-blue-600' : 'text-gray-600'} />
-                {isSidebarOpen && <span className="font-medium">Admin. Mantenimiento</span>}
+                <Wrench size={22} className={currentView === 'maintenance-admin' ? 'text-blue-600' : 'text-gray-500'} />
+                {isSidebarOpen && <span className="font-medium text-sm">Admin. Mantenimiento</span>}
               </button>
             </li>
             <li>
               <button 
                 onClick={() => setCurrentView('work-orders')}
-                className={`w-full flex items-center gap-4 px-4 py-3 hover:bg-blue-50 transition-colors ${currentView === 'work-orders' ? 'bg-blue-100 text-blue-600 border-r-4 border-blue-600' : 'text-gray-700'}`}
+                className={`w-full flex items-center ${isSidebarOpen ? 'px-4 gap-3' : 'justify-center'} py-3 hover:bg-blue-50 transition-colors ${currentView === 'work-orders' ? 'bg-blue-100 text-blue-600 border-r-4 border-blue-600' : 'text-gray-700'}`}
               >
-                <ClipboardList size={20} className={currentView === 'work-orders' ? 'text-blue-600' : 'text-gray-600'} />
-                {isSidebarOpen && <span className="font-medium">Generar OTs</span>}
+                <ClipboardList size={22} className={currentView === 'work-orders' ? 'text-blue-600' : 'text-gray-500'} />
+                {isSidebarOpen && <span className="font-medium text-sm">Generar OTs</span>}
               </button>
             </li>
             <li>
               <button 
                 onClick={() => setCurrentView('drivers')}
-                className={`w-full flex items-center gap-4 px-4 py-3 hover:bg-blue-50 transition-colors ${currentView === 'drivers' ? 'bg-blue-100 text-blue-600 border-r-4 border-blue-600' : 'text-gray-700'}`}
+                className={`w-full flex items-center ${isSidebarOpen ? 'px-4 gap-3' : 'justify-center'} py-3 hover:bg-blue-50 transition-colors ${currentView === 'drivers' ? 'bg-blue-100 text-blue-600 border-r-4 border-blue-600' : 'text-gray-700'}`}
               >
-                <Car size={20} className={currentView === 'drivers' ? 'text-blue-600' : 'text-gray-600'} />
-                {isSidebarOpen && <span className="font-medium">Conductores</span>}
+                <Car size={22} className={currentView === 'drivers' ? 'text-blue-600' : 'text-gray-500'} />
+                {isSidebarOpen && <span className="font-medium text-sm">Conductores</span>}
               </button>
             </li>
             <li>
               <button 
                 onClick={() => setCurrentView('dataload')}
-                className={`w-full flex items-center gap-4 px-4 py-3 hover:bg-blue-50 transition-colors ${currentView === 'dataload' ? 'bg-blue-100 text-blue-600 border-r-4 border-blue-600' : 'text-gray-700'}`}
+                className={`w-full flex items-center ${isSidebarOpen ? 'px-4 gap-3' : 'justify-center'} py-3 hover:bg-blue-50 transition-colors ${currentView === 'dataload' ? 'bg-blue-100 text-blue-600 border-r-4 border-blue-600' : 'text-gray-700'}`}
               >
-                <Upload size={20} className={currentView === 'dataload' ? 'text-blue-600' : 'text-gray-600'} />
-                {isSidebarOpen && <span className="font-medium">Cargar Variables</span>}
+                <Upload size={22} className={currentView === 'dataload' ? 'text-blue-600' : 'text-gray-500'} />
+                {isSidebarOpen && <span className="font-medium text-sm">Cargar Variables</span>}
               </button>
             </li>
             
             {/* Separador */}
-            {isSidebarOpen && <div className="mx-4 my-2 border-t border-gray-200"></div>}
+            <div className={`my-3 border-t border-gray-200 ${isSidebarOpen ? 'mx-4' : 'mx-3'}`}></div>
             
             <li>
               <button 
                 onClick={() => setCurrentView('gps')}
-                className={`w-full flex items-center gap-4 px-4 py-3 hover:bg-blue-50 transition-colors ${currentView === 'gps' ? 'bg-blue-100 text-blue-600 border-r-4 border-blue-600' : 'text-gray-700'}`}
+                className={`w-full flex items-center ${isSidebarOpen ? 'px-4 gap-3' : 'justify-center'} py-3 hover:bg-blue-50 transition-colors ${currentView === 'gps' ? 'bg-blue-100 text-blue-600 border-r-4 border-blue-600' : 'text-gray-700'}`}
               >
-                <MapPin size={20} className={currentView === 'gps' ? 'text-blue-600' : 'text-gray-600'} />
-                {isSidebarOpen && <span className="font-medium">Ubicación GPS</span>}
+                <MapPin size={22} className={currentView === 'gps' ? 'text-blue-600' : 'text-gray-500'} />
+                {isSidebarOpen && <span className="font-medium text-sm">Ubicación GPS</span>}
               </button>
             </li>
             <li>
               <button 
                 onClick={() => setCurrentView('tires')}
-                className={`w-full flex items-center gap-4 px-4 py-3 hover:bg-blue-50 transition-colors ${currentView === 'tires' ? 'bg-blue-100 text-blue-600 border-r-4 border-blue-600' : 'text-gray-700'}`}
+                className={`w-full flex items-center ${isSidebarOpen ? 'px-4 gap-3' : 'justify-center'} py-3 hover:bg-blue-50 transition-colors ${currentView === 'tires' ? 'bg-blue-100 text-blue-600 border-r-4 border-blue-600' : 'text-gray-700'}`}
               >
-                <CircleDot size={20} className={currentView === 'tires' ? 'text-blue-600' : 'text-gray-600'} />
-                {isSidebarOpen && <span className="font-medium">Control Llantas</span>}
+                <CircleDot size={22} className={currentView === 'tires' ? 'text-blue-600' : 'text-gray-500'} />
+                {isSidebarOpen && <span className="font-medium text-sm">Control Llantas</span>}
               </button>
             </li>
             <li>
               <button 
                 onClick={() => setCurrentView('fuel')}
-                className={`w-full flex items-center gap-4 px-4 py-3 hover:bg-blue-50 transition-colors ${currentView === 'fuel' ? 'bg-blue-100 text-blue-600 border-r-4 border-blue-600' : 'text-gray-700'}`}
+                className={`w-full flex items-center ${isSidebarOpen ? 'px-4 gap-3' : 'justify-center'} py-3 hover:bg-blue-50 transition-colors ${currentView === 'fuel' ? 'bg-blue-100 text-blue-600 border-r-4 border-blue-600' : 'text-gray-700'}`}
               >
-                <Fuel size={20} className={currentView === 'fuel' ? 'text-blue-600' : 'text-gray-600'} />
-                {isSidebarOpen && <span className="font-medium">Rendimiento Combustible</span>}
+                <Fuel size={22} className={currentView === 'fuel' ? 'text-blue-600' : 'text-gray-500'} />
+                {isSidebarOpen && <span className="font-medium text-sm">Rendimiento Comb.</span>}
               </button>
             </li>
           </ul>
         </nav>
 
         {/* Footer Credits */}
-        <div className="p-4 border-t border-gray-200">
+        <div className={`border-t border-gray-200 ${isSidebarOpen ? 'p-4' : 'p-2'}`}>
           {isSidebarOpen ? (
             <div className="text-center text-gray-500 text-[10px] leading-tight">
               <p className="font-medium">Desarrollador</p>

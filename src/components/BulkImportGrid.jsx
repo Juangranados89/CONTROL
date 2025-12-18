@@ -57,7 +57,7 @@ export default function BulkImportGrid({ onClose, onConfirmImport }) {
         familiaTipologia: row[1] || 'CAMIONETA',
         descripcion: row[2] || '',
         plate: row[3] || '5000',
-        brand: row[4] || '',
+        brand: row[4] || 'TOYOTA',
         model: row[5] || '',
         serieChasis: row[6] || '',
         vin: row[6] || '',
@@ -68,16 +68,12 @@ export default function BulkImportGrid({ onClose, onConfirmImport }) {
         status: row[9] || 'OPERATIVO',
         ubicacionFrente: row[10] || '',
         area: row[10] || '',
-        // Campos que se asignan manualmente después
         driver: 'PENDIENTE',
         assignedRoutine: '',
         owner: 'PROPIO',
         mileage: 0,
         lastMaintenance: 0,
-        lastMaintenanceDate: null,
-        // Asegurar compatibilidad con sistema de planeación
-        brand: row[4] || 'TOYOTA',
-        owner: 'PROPIO'
+        lastMaintenanceDate: null
       };
       
       // Validaciones
