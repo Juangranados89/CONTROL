@@ -44,9 +44,13 @@ export default function MaintenanceDataLoader({ fleet, setFleet, setVariableHist
 
   // Función para parsear números (km, frecuencia, etc)
   const parseNumber = (val) => {
-    if (!val || val === '#N/D' || val === 'N/A' || val === '-') return 0;
-    const cleaned = val.replace(/[,.\s]/g, '');
-    return parseInt(cleaned) || 0;
+    if (!val || val === '#N/D' || val === 'N/A' || val === '-' || val === '—') return 0;
+    // Convertir a string y limpiar
+    const str = String(val).trim();
+    // Remover puntos de miles y convertir coma decimal a punto
+    const cleaned = str.replace(/\./g, '').replace(',', '.');
+    const num = parseFloat(cleaned);
+    return isNaN(num) ? 0 : Math.round(num);
   };
 
   // Función para parsear fechas (DD/MM/YYYY o DD-MM-YYYY o YYYY-MM-DD)
@@ -71,6 +75,66 @@ export default function MaintenanceDataLoader({ fleet, setFleet, setVariableHist
     }
     
     return cleaned;
+  };
+
+  // Función para mapear columnas dinámicamente
+  const mapColumns = (headers) => {
+    const mapping = {};
+    
+    headers.forEach((header, index) => {
+      const h = header.toUpperCase();
+      
+      // Código interno
+      if (h.includes('INTERNO') || h.includes('CODIGO') || h === 'CÓDIGO') {
+        mapping.code = index;
+      }
+      // Placa
+      else if (h.includes('PLACA')) {
+        mapping.plate = index;
+      }
+      // Descripción/Modelo
+      else if (h.includes('DESCRIPCION') || h.includes('MODELO') || h.includes('MODEL')) {
+        mapping.description = index;
+      }
+      // Frecuencia/Ciclo
+      else if (h.includes('FRECUENCIA') || h.includes('CICLO')) {
+        mapping.frequency = index;
+      }
+      // Clase
+      else if (h.includes('CLASE') || h.includes('CLASS')) {
+        mapping.class = index;
+      }
+      // Marca
+      else if (h.includes('MARCA') || h.includes('BRAND')) {
+        mapping.brand = index;
+      }
+      // Ubicación
+      else if (h.includes('UBICACION') || h.includes('LOCATION')) {
+        mapping.location = index;
+      }
+      // Diler/Taller
+      else if (h.includes('DILER') || h.includes('TALLER')) {
+        mapping.dealer = index;
+      }
+      // Fecha variable actual
+      else if (h.includes('F.') && h.includes('VARIABLE') || h.includes('FECHA') && h.includes('VAR')) {
+        mapping.variableDate = index;
+      }
+      // Variable actual (kilometraje actual)
+      else if (h === 'VARIABLE' || h.includes('VAR_ACTUAL') || h.includes('HR/KM') || h.includes('KM ACTUAL')) {
+        mapping.currentMileage = index;
+      }
+      // Último mantenimiento
+      else if (h.includes('ULT') && h.includes('MTTO') || h.includes('ULTIMO') && h.includes('MTTO') || h.includes('HR ULTIMA') || h.includes('ULTIMA EJEC')) {
+        mapping.lastMaintenanceMileage = index;
+      }
+      // Fecha último mantenimiento
+      else if (h.includes('F.') && h.includes('ULT') || h.includes('FECHA') && h.includes('ULTIMO')) {
+        mapping.lastMaintenanceDate = index;
+      }
+    });
+    
+    return mapping;
   };
 
   // Función principal de parsing
@@ -105,16 +169,23 @@ export default function MaintenanceDataLoader({ fleet, setFleet, setVariableHist
 
       // Detectar encabezados (primera fila)
       let dataStartIndex = 0;
+      let columnMapping = null;
       const firstRow = rows[0].map(cell => cleanValue(cell).toUpperCase());
       
       if (firstRow.some(cell => 
         cell.includes('INTERNO') || 
         cell.includes('PLACA') || 
         cell.includes('CODIGO') ||
-        cell.includes('DESCRIPCION')
+        cell.includes('DESCRIPCION') ||
+        cell.includes('MODELO') ||
+        cell.includes('VARIABLE')
       )) {
         dataStartIndex = 1;
-        console.log('✅ Encabezados detectados en fila 0');
+        columnMapping = mapColumns(firstRow);
+        console.log('✅ Encabezados detectados:', columnMapping);
+      } else {
+        // Formato fijo sin encabezados
+        console.log('⚠️ No se detectaron encabezados, usando mapeo por defecto');
       }
 
       // Procesar datos
@@ -125,32 +196,52 @@ export default function MaintenanceDataLoader({ fleet, setFleet, setVariableHist
         const cols = rows[i];
         
         // Validar cantidad mínima de columnas
-        if (cols.length < 8) {
+        if (cols.length < 3) {
           errors.push({
             row: i + 1,
-            message: `Solo ${cols.length} columnas (se requieren al menos 8)`,
+            message: `Solo ${cols.length} columnas (se requieren al menos 3)`,
             data: cols.slice(0, 3).join(' | ')
           });
           continue;
         }
 
-        // Mapeo flexible de columnas
-        // Formato esperado: #INTERNO | PLACA | DESCRIPCION | FRECUENCIA | CLASE | MARCA | UBICACION | DILER | FECHA_VAR | VAR_ACTUAL | ULTIMO_MTTO | FECHA_ULTIMO
-        const record = {
-          code: cleanValue(cols[0]),
-          plate: cleanValue(cols[1]),
-          description: cleanValue(cols[2]) || '',
-          frequency: parseNumber(cols[3]) || 5000,
-          class: cleanValue(cols[4]) || 'KM',
-          brand: cleanValue(cols[5]) || '',
-          location: cleanValue(cols[6]) || '',
-          dealer: cols[7] ? cleanValue(cols[7]) : '',
-          variableDate: cols[8] ? parseDate(cols[8]) : null,
-          currentMileage: cols[9] ? parseNumber(cols[9]) : 0,
-          lastMaintenanceMileage: cols[10] ? parseNumber(cols[10]) : 0,
-          lastMaintenanceDate: cols[11] ? parseDate(cols[11]) : null,
-          rawRow: i + 1
-        };
+        let record;
+        
+        if (columnMapping) {
+          // Mapeo dinámico basado en encabezados
+          record = {
+            code: columnMapping.code !== undefined ? cleanValue(cols[columnMapping.code]) : '',
+            plate: columnMapping.plate !== undefined ? cleanValue(cols[columnMapping.plate]) : '',
+            description: columnMapping.description !== undefined ? cleanValue(cols[columnMapping.description]) : '',
+            frequency: columnMapping.frequency !== undefined ? (parseNumber(cols[columnMapping.frequency]) || 5000) : 5000,
+            class: columnMapping.class !== undefined ? cleanValue(cols[columnMapping.class]) : 'KM',
+            brand: columnMapping.brand !== undefined ? cleanValue(cols[columnMapping.brand]) : '',
+            location: columnMapping.location !== undefined ? cleanValue(cols[columnMapping.location]) : '',
+            dealer: columnMapping.dealer !== undefined ? cleanValue(cols[columnMapping.dealer]) : '',
+            variableDate: columnMapping.variableDate !== undefined ? parseDate(cols[columnMapping.variableDate]) : null,
+            currentMileage: columnMapping.currentMileage !== undefined ? parseNumber(cols[columnMapping.currentMileage]) : 0,
+            lastMaintenanceMileage: columnMapping.lastMaintenanceMileage !== undefined ? parseNumber(cols[columnMapping.lastMaintenanceMileage]) : 0,
+            lastMaintenanceDate: columnMapping.lastMaintenanceDate !== undefined ? parseDate(cols[columnMapping.lastMaintenanceDate]) : null,
+            rawRow: i + 1
+          };
+        } else {
+          // Mapeo por posición (formato antiguo)
+          record = {
+            code: cleanValue(cols[0]),
+            plate: cleanValue(cols[1]),
+            description: cleanValue(cols[2]) || '',
+            frequency: parseNumber(cols[3]) || 5000,
+            class: cleanValue(cols[4]) || 'KM',
+            brand: cleanValue(cols[5]) || '',
+            location: cleanValue(cols[6]) || '',
+            dealer: cols[7] ? cleanValue(cols[7]) : '',
+            variableDate: cols[8] ? parseDate(cols[8]) : null,
+            currentMileage: cols[9] ? parseNumber(cols[9]) : 0,
+            lastMaintenanceMileage: cols[10] ? parseNumber(cols[10]) : 0,
+            lastMaintenanceDate: cols[11] ? parseDate(cols[11]) : null,
+            rawRow: i + 1
+          };
+        }
 
         // Validaciones básicas
         if (!record.code && !record.plate) {
@@ -162,11 +253,14 @@ export default function MaintenanceDataLoader({ fleet, setFleet, setVariableHist
           continue;
         }
 
-        // Buscar vehículo en flota
-        const vehicleMatch = fleet.find(v => 
-          (record.code && v.code === record.code) || 
-          (record.plate && v.plate === record.plate)
-        );
+        // Buscar vehículo en flota (más tolerante)
+        const vehicleMatch = fleet.find(v => {
+          const codeMatch = record.code && v.code && 
+            v.code.toUpperCase().includes(record.code.toUpperCase());
+          const plateMatch = record.plate && v.plate && 
+            v.plate.toUpperCase().replace(/[-\s]/g, '') === record.plate.toUpperCase().replace(/[-\s]/g, '');
+          return codeMatch || plateMatch;
+        });
 
         record.matched = !!vehicleMatch;
         record.matchedVehicle = vehicleMatch;
@@ -342,14 +436,19 @@ export default function MaintenanceDataLoader({ fleet, setFleet, setVariableHist
 
               {/* Formato esperado */}
               <div className="bg-slate-50 border border-slate-200 rounded-lg p-4">
-                <h4 className="font-bold text-slate-700 mb-2 text-sm">📊 Columnas esperadas (mínimo 8):</h4>
+                <h4 className="font-bold text-slate-700 mb-2 text-sm">📊 Columnas reconocidas automáticamente:</h4>
                 <div className="bg-white p-3 rounded border border-slate-200 overflow-x-auto">
-                  <code className="text-xs text-slate-700 whitespace-nowrap block">
-                    #INTERNO | PLACA | DESCRIPCION | FRECUENCIA | CLASE | MARCA | UBICACION | DILER | FECHA_VAR | VAR_ACTUAL | ULTIMO_MTTO | FECHA_ULTIMO
-                  </code>
+                  <div className="text-xs text-slate-700 space-y-1">
+                    <p><strong>✅ Código:</strong> INTERNO, CODIGO, CÓDIGO</p>
+                    <p><strong>✅ Placa:</strong> PLACA</p>
+                    <p><strong>✅ Variable Actual:</strong> VARIABLE, VAR_ACTUAL, HR/KM, KM ACTUAL</p>
+                    <p><strong>✅ Ciclo:</strong> FRECUENCIA, CICLO</p>
+                    <p><strong>✅ Último Mtto:</strong> ULT. MTTO, ULTIMO MTTO, HR ULTIMA EJEC</p>
+                    <p><strong>✅ Fechas:</strong> F. VARIABLE, FECHA VAR, F. ULT. MTTO, FECHA ULTIMO</p>
+                  </div>
                 </div>
                 <p className="text-xs text-slate-500 mt-2">
-                  <strong>Nota:</strong> Las columnas DILER, FECHA_VAR, VAR_ACTUAL, ULTIMO_MTTO y FECHA_ULTIMO son opcionales.
+                  <strong>💡 El sistema detecta automáticamente las columnas por nombre.</strong> Solo requiere CÓDIGO o PLACA mínimo.
                 </p>
               </div>
 
