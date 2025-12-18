@@ -79,9 +79,20 @@ const ensureOptionalAdminUsers = async () => {
     const existing = await prisma.user.findFirst({
       where: { email: { equals: u.email, mode: 'insensitive' } }
     });
-    if (existing) continue;
 
+    // Always enforce the desired credentials/role when env vars are set.
+    // This fixes cases where the user already exists with a different password.
     const hash = await bcrypt.hash(pwd, 10);
+
+    if (existing) {
+      await prisma.user.update({
+        where: { id: existing.id },
+        data: { passwordHash: hash, role: u.role }
+      });
+      console.log('Updated optional user', u.email);
+      continue;
+    }
+
     await prisma.user.create({ data: { email: u.email, passwordHash: hash, role: u.role } });
     console.log('Created optional user', u.email);
   }
