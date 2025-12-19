@@ -29,8 +29,7 @@ import {
   AlertCircle,
   MapPin,
   CircleDot,
-  Fuel,
-  MoreVertical
+  Fuel
 } from 'lucide-react';
 import { 
   LineChart, 
@@ -951,7 +950,6 @@ const PlanningView = ({ fleet, setFleet, onCreateOT, workOrders = [], setWorkOrd
   const [showBulkLoad, setShowBulkLoad] = useState(false);
   const [statusFilter, setStatusFilter] = useState('ALL'); // ALL, VENCIDO, PROXIMO, OK
   const [closingOT, setClosingOT] = useState(null);
-  const [openActionMenuVehicleId, setOpenActionMenuVehicleId] = useState(null);
   
   // Estado para edición inline
   const [editingCell, setEditingCell] = useState(null); // { vehicleId, field }
@@ -1256,10 +1254,10 @@ const PlanningView = ({ fleet, setFleet, onCreateOT, workOrders = [], setWorkOrd
     
     const routine = getNextRoutineLocal(selectedVehicle.mileage, selectedVehicle.model, selectedVehicle.lastMaintenance, selectedVehicle.maintenanceCycle);
     
-    // Generate consecutive ID
+    // Generate consecutive ID (range 1000-9999)
     const maxId = workOrders.length > 0 
       ? Math.max(...workOrders.map(ot => ot.id)) 
-      : 1000;
+      : 999;
     const newId = maxId + 1;
 
     const workOrder = {
@@ -1340,13 +1338,6 @@ const PlanningView = ({ fleet, setFleet, onCreateOT, workOrders = [], setWorkOrd
     if (closedOTs.length > 0) return closedOTs[0].closedDate || closedOTs[0].closingDate;
     return "---";
   };
-
-  useEffect(() => {
-    if (!openActionMenuVehicleId) return;
-    const onDocClick = () => setOpenActionMenuVehicleId(null);
-    document.addEventListener('click', onDocClick);
-    return () => document.removeEventListener('click', onDocClick);
-  }, [openActionMenuVehicleId]);
 
   const weeklyPlan = useMemo(() => {
     // 1. Identify candidates (Remaining < 3000km or Vencido)
@@ -2381,7 +2372,7 @@ const PlanningView = ({ fleet, setFleet, onCreateOT, workOrders = [], setWorkOrd
                       
                       {/* Acción */}
                       <td className="px-2 py-2">
-                        <div className="flex items-center justify-center gap-1 relative" onClick={(e) => e.stopPropagation()}>
+                        <div className="flex items-center justify-center gap-1" onClick={(e) => e.stopPropagation()}>
                           <button 
                             onClick={(e) => { e.stopPropagation(); setViewingHistoryVehicle(vehicle); }}
                             className="p-1 text-slate-500 hover:text-blue-600 hover:bg-blue-50 rounded transition-colors"
@@ -2409,55 +2400,30 @@ const PlanningView = ({ fleet, setFleet, onCreateOT, workOrders = [], setWorkOrd
                             <FileText size={14} />
                           </button>
 
-                          {/* Menú 3 puntos: seleccionar OT abierta para cerrar */}
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              setOpenActionMenuVehicleId(prev => (prev === vehicle.id ? null : vehicle.id));
-                            }}
-                            className="p-1 text-slate-500 hover:text-slate-800 hover:bg-slate-100 rounded transition-colors"
-                            title="Más acciones"
-                            aria-haspopup="menu"
-                            aria-expanded={openActionMenuVehicleId === vehicle.id}
-                          >
-                            <MoreVertical size={14} />
-                          </button>
-
-                          {openActionMenuVehicleId === vehicle.id && (
-                            <div
-                              className="absolute right-0 top-7 w-44 bg-white border border-slate-200 rounded-lg shadow-lg z-20 overflow-hidden"
-                              role="menu"
-                            >
-                              {workOrders
-                                .filter(ot =>
-                                  ot.status === 'ABIERTA' &&
-                                  (ot.vehicleId === vehicle.id || ot.vehicleCode === vehicle.code || ot.plate === vehicle.plate)
-                                )
-                                .slice(0, 10)
-                                .map((ot) => (
-                                  <button
-                                    key={ot.id}
-                                    className="w-full text-left px-3 py-2 text-xs text-slate-700 hover:bg-slate-50"
-                                    onClick={(e) => {
-                                      e.stopPropagation();
-                                      setOpenActionMenuVehicleId(null);
-                                      setClosingOT(ot);
-                                    }}
-                                    role="menuitem"
-                                  >
-                                    Cerrar OT #{ot.id}
-                                  </button>
-                                ))}
-                              {workOrders.filter(ot =>
-                                ot.status === 'ABIERTA' &&
-                                (ot.vehicleId === vehicle.id || ot.vehicleCode === vehicle.code || ot.plate === vehicle.plate)
-                              ).length === 0 && (
-                                <div className="px-3 py-2 text-xs text-slate-400">
-                                  Sin OT abierta
-                                </div>
-                              )}
-                            </div>
-                          )}
+                          {/* Botón directo Cerrar OT - habilitado solo si hay OT abierta */}
+                          {(() => {
+                            const openOT = workOrders.find(ot =>
+                              ot.status === 'ABIERTA' &&
+                              (ot.vehicleId === vehicle.id || ot.vehicleCode === vehicle.code || ot.plate === vehicle.plate)
+                            );
+                            return (
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  if (openOT) setClosingOT(openOT);
+                                }}
+                                disabled={!openOT}
+                                className={`p-1 rounded transition-colors ${
+                                  !openOT
+                                    ? 'text-slate-300 cursor-not-allowed'
+                                    : 'text-slate-500 hover:text-red-600 hover:bg-red-50'
+                                }`}
+                                title={openOT ? `Cerrar OT #${openOT.id}` : 'Sin OT abierta'}
+                              >
+                                <X size={14} />
+                              </button>
+                            );
+                          })()}
                         </div>
                       </td>
                     </tr>
