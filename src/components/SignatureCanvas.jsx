@@ -96,141 +96,90 @@ export default function SignatureCanvas({ label, onSave, onCancel, initialSignat
 
   return (
     <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-[60] p-4">
-      <div className="bg-white rounded-xl shadow-2xl w-full max-w-2xl">
+      <div className="bg-white rounded-lg shadow-2xl w-full max-w-xl">
         {/* Header */}
-        <div className="flex justify-between items-center p-4 border-b border-slate-200 bg-gradient-to-r from-blue-50 to-indigo-50">
-          <h3 className="text-lg font-bold text-slate-800 flex items-center gap-2">
-            <Edit3 className="text-blue-600" size={20} />
-            {label}
-          </h3>
-          <button
-            onClick={onCancel}
-            className="p-1 hover:bg-white rounded-lg transition-colors"
-          >
-            <X size={20} className="text-slate-400 hover:text-slate-600" />
-          </button>
-        </div>
-
-        {/* Tabs */}
-        <div className="flex border-b border-slate-200">
-          <button
-            onClick={() => setSignatureMode('draw')}
-            className={`flex-1 py-3 px-4 font-medium transition-colors ${
-              signatureMode === 'draw'
-                ? 'bg-blue-50 text-blue-700 border-b-2 border-blue-600'
-                : 'text-slate-600 hover:bg-slate-50'
-            }`}
-          >
-            ✍️ Dibujar Firma
-          </button>
-          <button
-            onClick={() => setSignatureMode('type')}
-            className={`flex-1 py-3 px-4 font-medium transition-colors ${
-              signatureMode === 'type'
-                ? 'bg-blue-50 text-blue-700 border-b-2 border-blue-600'
-                : 'text-slate-600 hover:bg-slate-50'
-            }`}
-          >
-            ⌨️ Escribir Nombre
+        <div className="flex justify-between items-center px-4 py-3 border-b border-slate-300">
+          <h3 className="text-base font-semibold text-slate-900">{label}</h3>
+          <button onClick={onCancel} className="p-1 hover:bg-slate-100 rounded">
+            <X size={18} className="text-slate-400" />
           </button>
         </div>
 
         {/* Content */}
-        <div className="p-6">
-          {signatureMode === 'draw' ? (
-            <div className="space-y-4">
-              <p className="text-sm text-slate-600 text-center">
-                Dibuje su firma usando el mouse o toque la pantalla si está en dispositivo táctil
-              </p>
-              
-              <canvas
-                ref={canvasRef}
-                width={600}
-                height={200}
-                className="border-2 border-slate-300 rounded-lg cursor-crosshair w-full bg-white"
-                onMouseDown={startDrawing}
-                onMouseMove={draw}
-                onMouseUp={stopDrawing}
-                onMouseLeave={stopDrawing}
-                onTouchStart={(e) => {
-                  e.preventDefault();
-                  const touch = e.touches[0];
-                  const mouseEvent = new MouseEvent('mousedown', {
-                    clientX: touch.clientX,
-                    clientY: touch.clientY
-                  });
-                  canvasRef.current.dispatchEvent(mouseEvent);
-                }}
-                onTouchMove={(e) => {
-                  e.preventDefault();
-                  const touch = e.touches[0];
-                  const mouseEvent = new MouseEvent('mousemove', {
-                    clientX: touch.clientX,
-                    clientY: touch.clientY
-                  });
-                  canvasRef.current.dispatchEvent(mouseEvent);
-                }}
-                onTouchEnd={(e) => {
-                  e.preventDefault();
-                  const mouseEvent = new MouseEvent('mouseup', {});
-                  canvasRef.current.dispatchEvent(mouseEvent);
-                }}
-              />
-            </div>
-          ) : (
-            <div className="space-y-4">
-              <p className="text-sm text-slate-600 text-center">
-                Escriba su nombre completo y se generará una firma en estilo manuscrito
-              </p>
-              
-              <input
-                type="text"
-                value={typedText}
-                onChange={(e) => setTypedText(e.target.value)}
-                onBlur={handleTypedSignature}
-                placeholder="Ej: Juan Granados"
-                className="w-full px-4 py-3 border-2 border-slate-300 rounded-lg focus:border-blue-500 focus:outline-none text-lg"
-              />
-              
-              <div className="border-2 border-slate-300 rounded-lg p-4 bg-white min-h-[200px] flex items-center justify-center">
-                <canvas
-                  ref={canvasRef}
-                  width={600}
-                  height={200}
-                  className="w-full"
-                />
-              </div>
-              
-              <button
-                onClick={handleTypedSignature}
-                className="w-full py-2 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition-colors font-medium"
-              >
-                Generar Firma
-              </button>
-            </div>
-          )}
+        <div className="p-4 space-y-3">
+          {/* Input nombre */}
+          <div>
+            <label className="block text-xs text-slate-600 mb-1">Escribir nombre:</label>
+            <input
+              type="text"
+              value={typedText}
+              onChange={(e) => {
+                setTypedText(e.target.value);
+                if (e.target.value.trim()) {
+                  setTimeout(() => handleTypedSignature(), 100);
+                }
+              }}
+              placeholder="Ej: Juan Granados"
+              className="w-full px-3 py-1.5 text-sm border border-slate-300 rounded focus:border-blue-900 focus:outline-none focus:ring-1 focus:ring-blue-900"
+            />
+          </div>
+
+          {/* Canvas */}
+          <div className="border border-slate-300 rounded bg-white">
+            <canvas
+              ref={canvasRef}
+              width={600}
+              height={150}
+              className="w-full cursor-crosshair"
+              onMouseDown={startDrawing}
+              onMouseMove={draw}
+              onMouseUp={stopDrawing}
+              onMouseLeave={stopDrawing}
+              onTouchStart={(e) => {
+                e.preventDefault();
+                const touch = e.touches[0];
+                const mouseEvent = new MouseEvent('mousedown', {
+                  clientX: touch.clientX,
+                  clientY: touch.clientY
+                });
+                canvasRef.current.dispatchEvent(mouseEvent);
+              }}
+              onTouchMove={(e) => {
+                e.preventDefault();
+                const touch = e.touches[0];
+                const mouseEvent = new MouseEvent('mousemove', {
+                  clientX: touch.clientX,
+                  clientY: touch.clientY
+                });
+                canvasRef.current.dispatchEvent(mouseEvent);
+              }}
+              onTouchEnd={(e) => {
+                e.preventDefault();
+                const mouseEvent = new MouseEvent('mouseup', {});
+                canvasRef.current.dispatchEvent(mouseEvent);
+              }}
+            />
+          </div>
 
           {/* Buttons */}
-          <div className="flex gap-3 mt-6">
+          <div className="flex gap-2">
             <button
               onClick={clearCanvas}
-              className="flex-1 py-3 px-4 bg-slate-100 text-slate-700 rounded-lg hover:bg-slate-200 transition-colors font-medium flex items-center justify-center gap-2"
+              className="px-3 py-1.5 text-sm bg-white border border-slate-300 text-slate-700 rounded hover:bg-slate-100"
             >
-              <Eraser size={18} />
               Limpiar
             </button>
             <button
               onClick={onCancel}
-              className="flex-1 py-3 px-4 bg-slate-200 text-slate-700 rounded-lg hover:bg-slate-300 transition-colors font-medium"
+              className="px-3 py-1.5 text-sm bg-white border border-slate-300 text-slate-700 rounded hover:bg-slate-100"
             >
               Cancelar
             </button>
             <button
               onClick={handleSave}
-              className="flex-1 py-3 px-4 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-lg hover:from-green-700 hover:to-emerald-700 transition-colors font-bold flex items-center justify-center gap-2"
+              className="flex-1 px-3 py-1.5 text-sm bg-blue-900 text-white rounded hover:bg-blue-800 font-medium"
             >
-              <Check size={18} />
-              Guardar Firma
+              Guardar
             </button>
           </div>
         </div>
