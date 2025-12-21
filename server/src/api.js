@@ -416,15 +416,35 @@ router.post('/workorders', async (req, res) => {
 // Update work order status
 router.patch('/workorders/:id', async (req, res) => {
   try {
-    const { status, closedDate, closedTime, signatures } = req.body;
-    
-    const updateData = { status };
+    const { status, closedDate, closedTime, signatures, executionKm, mileage } = req.body;
+
+    const toSignatureString = (value) => {
+      if (value == null) return null;
+      if (typeof value === 'string') return value;
+      try {
+        return JSON.stringify(value);
+      } catch {
+        return null;
+      }
+    };
+
+    const updateData = {};
+    if (status) updateData.status = status;
     if (closedDate) updateData.closedDate = closedDate;
     if (closedTime) updateData.closedTime = closedTime;
+
+    const effectiveKm = Number.isFinite(Number(executionKm))
+      ? Number(executionKm)
+      : (Number.isFinite(Number(mileage)) ? Number(mileage) : null);
+
+    if (effectiveKm != null && (status === 'CERRADA' || status === 'ABIERTA')) {
+      updateData.mileage = effectiveKm;
+    }
+
     if (signatures) {
-      updateData.signatureResponsible = signatures.responsible || null;
+      updateData.signatureResponsible = toSignatureString(signatures.responsible);
       updateData.signatureApprover = signatures.approver || null;
-      updateData.signatureReceived = signatures.received || null;
+      updateData.signatureReceived = toSignatureString(signatures.received);
     }
     
     const workOrder = await prisma.workOrder.update({
@@ -432,13 +452,40 @@ router.patch('/workorders/:id', async (req, res) => {
       data: updateData
     });
     
-    // If closing, update vehicle lastMaintenance
+    // If closing, update vehicle lastMaintenance/mileage and add variable history
     if (status === 'CERRADA' && workOrder) {
+      const kmToApply = effectiveKm != null ? effectiveKm : workOrder.mileage;
+      const dateToApply = closedDate || workOrder.closedDate || null;
+
       await prisma.vehicle.update({
         where: { id: workOrder.vehicleId },
         data: {
-          lastMaintenance: workOrder.mileage,
-          lastMaintenanceDate: closedDate || workOrder.closedDate || null
+          mileage: kmToApply,
+          lastMaintenance: kmToApply,
+          lastMaintenanceDate: dateToApply
+        }
+      });
+
+      // Create a variable history record so the dashboard reflects the last update immediately
+      const ddmmyyyy = (iso) => {
+        const m = String(iso || '').match(/^(\d{4})-(\d{2})-(\d{2})$/);
+        if (!m) return String(iso || '').trim();
+        return `${m[3]}/${m[2]}/${m[1]}`;
+      };
+
+      const now = new Date();
+      const hhmmss = now.toTimeString().split(' ')[0];
+      const historyDate = dateToApply
+        ? `${ddmmyyyy(dateToApply)} ${hhmmss}`
+        : `${ddmmyyyy(now.toISOString().slice(0, 10))} ${hhmmss}`;
+
+      await prisma.variableHistory.create({
+        data: {
+          vehicleId: workOrder.vehicleId,
+          plate: workOrder.plate,
+          code: workOrder.vehicleCode,
+          km: kmToApply,
+          date: historyDate
         }
       });
     }

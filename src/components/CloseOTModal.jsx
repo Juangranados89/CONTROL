@@ -1,9 +1,9 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { X, CheckCircle, FileCheck, Calendar, Gauge } from 'lucide-react';
 import SignatureCanvas from './SignatureCanvas';
 import { useDialog } from './DialogProvider.jsx';
 
-export default function CloseOTModal({ workOrder, currentUser, onClose, onSave }) {
+export default function CloseOTModal({ workOrder, currentUser, onClose, onSave, currentMileage, maintenanceCycle }) {
   const dialog = useDialog();
   const [responsibleSignature, setResponsibleSignature] = useState(null);
   const [receivedSignature, setReceivedSignature] = useState(null);
@@ -14,6 +14,51 @@ export default function CloseOTModal({ workOrder, currentUser, onClose, onSave }
   const [executionDate, setExecutionDate] = useState(new Date().toISOString().split('T')[0]);
   const [executionKm, setExecutionKm] = useState('');
 
+  const kmAnalysis = useMemo(() => {
+    const km = Number.parseInt(executionKm, 10);
+    const kmValue = Number.isFinite(km) ? km : 0;
+
+    const baseCandidate = Number(currentMileage);
+    const baseFromProp = Number.isFinite(baseCandidate) ? baseCandidate : null;
+    const baseFromOT = Number.isFinite(Number(workOrder?.mileage)) ? Number(workOrder.mileage) : null;
+    const base = baseFromProp ?? baseFromOT ?? 0;
+
+    const cycleCandidate = Number(maintenanceCycle ?? workOrder?.maintenanceCycle);
+    const cycle = Number.isFinite(cycleCandidate) && cycleCandidate > 0 ? cycleCandidate : 5000;
+
+    const nextKm = kmValue > 0 ? kmValue + cycle : null;
+    const delta = kmValue > 0 ? kmValue - base : null;
+    const isLower = delta != null && delta < 0;
+
+    const parseIso = (s) => {
+      if (!s) return null;
+      const d = new Date(String(s));
+      return Number.isNaN(d.getTime()) ? null : d;
+    };
+
+    const createdAt = parseIso(workOrder?.creationDate);
+    const executedAt = parseIso(executionDate);
+    let kmPerDay = null;
+    if (delta != null && delta >= 0 && createdAt && executedAt) {
+      const ms = executedAt.getTime() - createdAt.getTime();
+      const days = Math.floor(ms / (1000 * 60 * 60 * 24));
+      if (days > 0) kmPerDay = Math.round(delta / days);
+    }
+
+    const isIncongruent = delta != null && delta > 0 && kmPerDay != null && kmPerDay > 500;
+
+    return {
+      kmValue,
+      base,
+      cycle,
+      nextKm,
+      delta,
+      kmPerDay,
+      isLower,
+      isIncongruent
+    };
+  }, [executionKm, executionDate, currentMileage, maintenanceCycle, workOrder?.mileage, workOrder?.maintenanceCycle, workOrder?.creationDate]);
+
   const handleSaveClose = async () => {
     // Validar campos obligatorios
     if (!executionDate) {
@@ -23,6 +68,26 @@ export default function CloseOTModal({ workOrder, currentUser, onClose, onSave }
     if (!executionKm || executionKm.trim() === '' || parseInt(executionKm) <= 0) {
       await dialog.alert({ title: 'Campo requerido', message: 'Debe ingresar el KILOMETRAJE DE EJECUCIÓN válido', variant: 'warning' });
       return;
+    }
+
+    if (kmAnalysis.isLower) {
+      await dialog.alert({
+        title: 'Kilometraje inválido',
+        message: `El KM ingresado (${kmAnalysis.kmValue.toLocaleString()}) es inferior al KM actual (${kmAnalysis.base.toLocaleString()}).`,
+        variant: 'danger'
+      });
+      return;
+    }
+
+    if (kmAnalysis.isIncongruent) {
+      const ok = await dialog.confirm({
+        title: 'Kilometraje no congruente',
+        message: `El KM ingresado parece muy alto para el periodo.\n\nKM actual: ${kmAnalysis.base.toLocaleString()}\nKM ejecución: ${kmAnalysis.kmValue.toLocaleString()}\nEstimado: ${kmAnalysis.kmPerDay} km/día\n\n¿Desea continuar?`,
+        variant: 'warning',
+        confirmText: 'Continuar',
+        cancelText: 'Cancelar'
+      });
+      if (!ok) return;
     }
     if (!responsibleSignature) {
       await dialog.alert({ title: 'Firma requerida', message: 'Falta la firma del RESPONSABLE', variant: 'warning' });
@@ -39,6 +104,8 @@ export default function CloseOTModal({ workOrder, currentUser, onClose, onSave }
       closedDate: executionDate,
       closedTime: new Date().toLocaleTimeString('es-ES'),
       executionKm: parseInt(executionKm),
+      mileage: parseInt(executionKm),
+      nextMaintenanceKm: kmAnalysis.nextKm,
       signatures: {
         responsible: responsibleSignature,
         approver: currentUser?.name || currentUser?.username || 'Sistema',
@@ -134,6 +201,23 @@ export default function CloseOTModal({ workOrder, currentUser, onClose, onSave }
                         className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-900 focus:border-blue-900"
                         required
                       />
+                      {executionKm?.trim() && (
+                        <div className="mt-2 text-xs">
+                          {kmAnalysis.isLower ? (
+                            <div className="p-2 rounded border border-red-200 bg-red-50 text-red-700">
+                              KM inferior al actual ({kmAnalysis.base.toLocaleString()}).
+                            </div>
+                          ) : kmAnalysis.isIncongruent ? (
+                            <div className="p-2 rounded border border-amber-200 bg-amber-50 text-amber-800">
+                              KM no congruente: salto alto. Estimado {kmAnalysis.kmPerDay} km/día.
+                            </div>
+                          ) : (
+                            <div className="p-2 rounded border border-green-200 bg-green-50 text-green-800">
+                              KM OK. Próximo mantenimiento para {kmAnalysis.nextKm?.toLocaleString()} KM.
+                            </div>
+                          )}
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -235,8 +319,8 @@ export default function CloseOTModal({ workOrder, currentUser, onClose, onSave }
                     </div>
                     <div className="flex items-center justify-between">
                       <span className="text-slate-600">Kilometraje</span>
-                      <span className={executionKm ? 'text-green-700 font-semibold' : 'text-red-600 font-semibold'}>
-                        {executionKm ? 'OK' : 'Falta'}
+                      <span className={executionKm && !kmAnalysis.isLower ? 'text-green-700 font-semibold' : 'text-red-600 font-semibold'}>
+                        {executionKm ? (kmAnalysis.isLower ? 'Revisar' : 'OK') : 'Falta'}
                       </span>
                     </div>
                     <div className="flex items-center justify-between">
@@ -266,9 +350,9 @@ export default function CloseOTModal({ workOrder, currentUser, onClose, onSave }
                   <div className="mt-5 flex flex-col gap-2">
                     <button
                       onClick={handleSaveClose}
-                      disabled={!executionDate || !executionKm || !responsibleSignature || !receivedSignature}
+                      disabled={!executionDate || !executionKm || kmAnalysis.isLower || !responsibleSignature || !receivedSignature}
                       className={`w-full py-2.5 px-4 rounded-lg font-bold transition-colors ${
-                        !executionDate || !executionKm || !responsibleSignature || !receivedSignature
+                        !executionDate || !executionKm || kmAnalysis.isLower || !responsibleSignature || !receivedSignature
                           ? 'bg-slate-300 text-slate-500 cursor-not-allowed'
                           : 'bg-blue-900 text-white hover:bg-blue-800'
                       }`}
@@ -307,9 +391,9 @@ export default function CloseOTModal({ workOrder, currentUser, onClose, onSave }
               </button>
               <button
                 onClick={handleSaveClose}
-                disabled={!executionDate || !executionKm || !responsibleSignature || !receivedSignature}
+                disabled={!executionDate || !executionKm || kmAnalysis.isLower || !responsibleSignature || !receivedSignature}
                 className={`w-full sm:w-auto sm:min-w-40 py-2.5 px-5 rounded-lg font-bold transition-colors ${
-                  !executionDate || !executionKm || !responsibleSignature || !receivedSignature
+                  !executionDate || !executionKm || kmAnalysis.isLower || !responsibleSignature || !receivedSignature
                     ? 'bg-slate-300 text-slate-500 cursor-not-allowed'
                     : 'bg-blue-900 text-white hover:bg-blue-800'
                 }`}

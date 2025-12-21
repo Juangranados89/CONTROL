@@ -994,6 +994,13 @@ const PlanningView = ({ fleet, setFleet, onCreateOT, workOrders = [], setWorkOrd
   const [showBulkLoad, setShowBulkLoad] = useState(false);
   const [statusFilter, setStatusFilter] = useState('ALL'); // ALL, VENCIDO, PROXIMO, OK
   const [closingOT, setClosingOT] = useState(null);
+
+  const closingVehicle = useMemo(() => {
+    if (!closingOT) return null;
+    const code = closingOT.vehicleCode || closingOT.code;
+    const plate = closingOT.plate;
+    return fleet.find(v => (code && v.code === code) || (plate && v.plate === plate)) || null;
+  }, [closingOT, fleet]);
   
   // Estado para edición inline
   const [editingCell, setEditingCell] = useState(null); // { vehicleId, field }
@@ -1156,12 +1163,14 @@ const PlanningView = ({ fleet, setFleet, onCreateOT, workOrders = [], setWorkOrd
 
   // Handler para cerrar OT con firmas
   const handleCloseOT = async (closedOT) => {
+    const vehicleCode = closedOT.vehicleCode || closedOT.code;
     try {
       // Actualizar en API primero
       await api.updateWorkOrder(closedOT.id, {
         status: closedOT.status,
         closedDate: closedOT.closedDate,
         closedTime: closedOT.closedTime,
+        executionKm: closedOT.executionKm,
         signatures: closedOT.signatures
       });
       
@@ -1183,6 +1192,48 @@ const PlanningView = ({ fleet, setFleet, onCreateOT, workOrders = [], setWorkOrd
         localStorage.setItem('work_orders', JSON.stringify(updated));
         return updated;
       });
+    }
+
+    // Actualizar fleet + historial inmediatamente (UI)
+    if (closedOT.executionKm) {
+      const newMileage = parseInt(closedOT.executionKm);
+      setFleet(prevFleet => {
+        const updatedFleet = prevFleet.map(vehicle => {
+          if (vehicle.code === vehicleCode || vehicle.plate === closedOT.plate) {
+            return {
+              ...vehicle,
+              mileage: newMileage,
+              lastMaintenance: newMileage,
+              lastMaintenanceDate: closedOT.closedDate
+            };
+          }
+          return vehicle;
+        });
+        localStorage.setItem('fleet_data', JSON.stringify(updatedFleet));
+        return updatedFleet;
+      });
+
+      if (setVariableHistory) {
+        const now = new Date();
+        const timeStr = closedOT.closedTime || `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}:${now.getSeconds().toString().padStart(2, '0')}`;
+        const newRecord = {
+          id: Date.now(),
+          code: vehicleCode,
+          plate: closedOT.plate,
+          date: `${closedOT.closedDate} ${timeStr}`,
+          km: newMileage,
+          mileage: newMileage,
+          change: 0,
+          updatedBy: currentUser?.name || currentUser?.username || 'Sistema',
+          source: 'OT_CLOSE'
+        };
+
+        setVariableHistory(prev => {
+          const updated = [...prev, newRecord];
+          localStorage.setItem('variable_history', JSON.stringify(updated));
+          return updated;
+        });
+      }
     }
     
     setClosingOT(null);
@@ -1422,6 +1473,8 @@ const PlanningView = ({ fleet, setFleet, onCreateOT, workOrders = [], setWorkOrd
         <CloseOTModal
           workOrder={closingOT}
           currentUser={currentUser}
+          currentMileage={closingVehicle?.mileage}
+          maintenanceCycle={closingVehicle?.maintenanceCycle}
           onClose={() => setClosingOT(null)}
           onSave={handleCloseOT}
         />
@@ -3641,10 +3694,24 @@ const MaintenanceAdminView = ({ workOrders, setWorkOrders, fleet, setFleet, rout
   const [activeTab, setActiveTab] = useState('ots'); // 'ots', 'routines', or 'history'
   const [closingOT, setClosingOT] = useState(null);
 
+  const closingVehicle = useMemo(() => {
+    if (!closingOT) return null;
+    const code = closingOT.vehicleCode || closingOT.code;
+    const plate = closingOT.plate;
+    return fleet.find(v => (code && v.code === code) || (plate && v.plate === plate)) || null;
+  }, [closingOT, fleet]);
+
   const handleSaveClosedOT = async (closedOT) => {
+    const vehicleCode = closedOT.vehicleCode || closedOT.code;
     // 1. Try to save to API/LocalStorage
     try {
-        await api.updateWorkOrder(closedOT.id, closedOT);
+      await api.updateWorkOrder(closedOT.id, {
+        status: closedOT.status,
+        closedDate: closedOT.closedDate,
+        closedTime: closedOT.closedTime,
+        executionKm: closedOT.executionKm,
+        signatures: closedOT.signatures
+      });
         console.log('✅ OT cerrada en BD:', closedOT.id);
     } catch (error) {
         console.error('Error cerrando OT en BD (Offline Mode):', error);
@@ -3658,8 +3725,8 @@ const MaintenanceAdminView = ({ workOrders, setWorkOrders, fleet, setFleet, rout
              const currentFleet = JSON.parse(localStorage.getItem('fleet_data') || '[]');
              const newMileage = parseInt(closedOT.executionKm);
              const updatedFleet = currentFleet.map(v => {
-                 if (v.code === closedOT.vehicleCode || v.plate === closedOT.plate) {
-                     return { ...v, mileage: newMileage, lastMaintenance: newMileage };
+           if (v.code === vehicleCode || v.plate === closedOT.plate) {
+             return { ...v, mileage: newMileage, lastMaintenance: newMileage, lastMaintenanceDate: closedOT.closedDate };
                  }
                  return v;
              });
@@ -3676,15 +3743,37 @@ const MaintenanceAdminView = ({ workOrders, setWorkOrders, fleet, setFleet, rout
     if (closedOT.executionKm) {
       const newMileage = parseInt(closedOT.executionKm);
       setFleet(prevFleet => prevFleet.map(vehicle => {
-        if (vehicle.code === closedOT.vehicleCode || vehicle.plate === closedOT.plate) {
+        if (vehicle.code === vehicleCode || vehicle.plate === closedOT.plate) {
           return {
             ...vehicle,
             mileage: newMileage, // Update current mileage to the one reported in OT
-            lastMaintenance: newMileage // Reset the maintenance counter/cycle
+            lastMaintenance: newMileage, // Reset the maintenance counter/cycle
+            lastMaintenanceDate: closedOT.closedDate
           };
         }
         return vehicle;
       }));
+
+      // Actualizar historial de variables inmediatamente (UI)
+      const now = new Date();
+      const timeStr = closedOT.closedTime || `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}:${now.getSeconds().toString().padStart(2, '0')}`;
+      const newRecord = {
+        id: Date.now(),
+        code: vehicleCode,
+        plate: closedOT.plate,
+        date: `${closedOT.closedDate} ${timeStr}`,
+        km: newMileage,
+        mileage: newMileage,
+        change: 0,
+        updatedBy: currentUser?.name || currentUser?.username || 'Sistema',
+        source: 'OT_CLOSE'
+      };
+
+      setVariableHistory(prev => {
+        const updated = [...prev, newRecord];
+        localStorage.setItem('variable_history', JSON.stringify(updated));
+        return updated;
+      });
     }
 
     setClosingOT(null);
@@ -3870,6 +3959,8 @@ const MaintenanceAdminView = ({ workOrders, setWorkOrders, fleet, setFleet, rout
         <CloseOTModal 
           workOrder={closingOT}
           currentUser={currentUser}
+          currentMileage={closingVehicle?.mileage}
+          maintenanceCycle={closingVehicle?.maintenanceCycle}
           onClose={() => setClosingOT(null)}
           onSave={handleSaveClosedOT}
         />
@@ -5440,6 +5531,51 @@ function App() {
           return [];
         };
 
+        const safeParseArray = (value, fallback = []) => {
+          if (value == null) return fallback;
+          if (Array.isArray(value)) return value;
+          if (typeof value === 'string') {
+            try {
+              const parsed = JSON.parse(value);
+              return Array.isArray(parsed) ? parsed : fallback;
+            } catch {
+              return fallback;
+            }
+          }
+          return fallback;
+        };
+
+        const safeParseJson = (value) => {
+          if (value == null) return null;
+          if (typeof value !== 'string') return value;
+          const text = value.trim();
+          if (!text) return null;
+          if (!(text.startsWith('{') || text.startsWith('['))) return value;
+          try {
+            return JSON.parse(text);
+          } catch {
+            return value;
+          }
+        };
+
+        const normalizeWorkOrder = (ot) => {
+          if (!ot) return ot;
+          const responsible = safeParseJson(ot.signatureResponsible ?? ot?.signatures?.responsible);
+          const received = safeParseJson(ot.signatureReceived ?? ot?.signatures?.received);
+          const approver = ot.signatureApprover ?? ot?.signatures?.approver;
+
+          return {
+            ...ot,
+            items: safeParseArray(ot.items, []),
+            supplies: safeParseArray(ot.supplies, []),
+            signatures: {
+              responsible: responsible ?? null,
+              approver: approver ?? null,
+              received: received ?? null
+            }
+          };
+        };
+
         const toNumberOr = (value, fallback = 0) => {
           const n = typeof value === 'string' ? Number(value.replace(/,/g, '')) : Number(value);
           return Number.isFinite(n) ? n : fallback;
@@ -5557,6 +5693,8 @@ function App() {
 
         // Normalize fleet shape to avoid runtime crashes in PlanningView
         vehicles = asArray(vehicles).map(normalizeVehicle);
+        orders = asArray(orders).map(normalizeWorkOrder);
+        history = asArray(history);
         
         // Set state
         setFleet(vehicles);
