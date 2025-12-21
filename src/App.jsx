@@ -240,7 +240,7 @@ const generatePDF = async (workOrder, notify) => {
   doc.text("OT CONSECUTIVO", startX + 140 + 25, startY + 5, { align: 'center' });
   doc.setFontSize(12);
   doc.setTextColor(0, 0, 0); // Black color for number (was red)
-  doc.text(String(workOrder.id), startX + 140 + 25, startY + 12, { align: 'center' });
+  doc.text(String(workOrder.otNumber ?? workOrder.id), startX + 140 + 25, startY + 12, { align: 'center' });
   
   // Bottom part: solo código + fecha (MES-YY)
   const headerCode = 'FEYM936.00.CO';
