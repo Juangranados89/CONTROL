@@ -336,6 +336,13 @@ const generatePDF = async (workOrder, notify) => {
   // --- GENERAL INFO (Grid Layout) ---
   const infoStartY = startY + headerHeight + 5; // Spacing after header
 
+  const serialNumber =
+    workOrder?.vin ||
+    workOrder?.serieChasis ||
+    workOrder?.vehicle?.vin ||
+    workOrder?.vehicle?.serieChasis ||
+    '';
+
   // Get area operativa from vehicle, default to 40BU-TM1-TM2
   const areaOperativa = workOrder.area || '40BU-TM1-TM2';
   
@@ -344,7 +351,7 @@ const generatePDF = async (workOrder, notify) => {
     ['PROCESO', 'MTTO-PREVENTIVO', 'UBICACION', workOrder.workshop || 'TALLER EL HATO'],
     ['ACTIVO', workOrder.vehicleCode || workOrder.vehicleModel, 'PLACA', workOrder.plate],
     ['FUNCION', 'TRANSPORTE DE PERSONAL', 'TIPO OT', 'S'],
-    ['DESCRIPCION CORTA', workOrder.vehicleModel, 'NO. SERIE', workOrder.vin || ''], 
+    ['DESCRIPCION CORTA', workOrder.vehicleModel, 'NO. SERIE', serialNumber], 
     ['TRABAJO A REALIZAR', workOrder.routineName, 'APROBADA', ''],
     ['FECHA SOLICITUD', new Date().toLocaleDateString(), 'HORA SOLICITUD', '02:00 p.m.'], 
     ['FECHA REAL EJECUCION', '', 'HORA REAL EJECUCION', ''],
@@ -1491,7 +1498,7 @@ const PlanningView = ({ fleet, setFleet, onCreateOT, workOrders = [], setWorkOrd
       vehicleCode: selectedVehicle.code,
       vehicleModel: selectedVehicle.model,
       plate: selectedVehicle.plate,
-      vin: selectedVehicle.vin || '',
+      vin: selectedVehicle.vin || selectedVehicle.serieChasis || '',
       routineName: `MANTENIMIENTO PREVENTIVO ${routine.km} KM`,
       mileage: selectedVehicle.mileage,
       items: routine.items || [],
@@ -1582,7 +1589,7 @@ const PlanningView = ({ fleet, setFleet, onCreateOT, workOrders = [], setWorkOrd
       vehicleCode: selectedVehicle.code,
       vehicleModel: selectedVehicle.model,
       plate: selectedVehicle.plate,
-      vin: selectedVehicle.vin || '',
+      vin: selectedVehicle.vin || selectedVehicle.serieChasis || '',
       routine: String(routineKm),
       routineName: `MANTENIMIENTO PREVENTIVO ${routineKm} KM`,
       mileage: targetKm,
@@ -4388,7 +4395,7 @@ const WorkOrders = ({ fleet }) => {
       code: vehicle.code,
       plate: vehicle.plate,
       model: vehicle.model,
-      vin: vehicle.year.toString(),
+      vin: vehicle.vin || vehicle.serieChasis || '',
       mileage: '',
       maintenanceType: '',
       maintenanceDescription: '',
@@ -4419,6 +4426,7 @@ const WorkOrders = ({ fleet }) => {
       vehicleCode: formData.code,
       vehicleModel: formData.model,
       plate: formData.plate,
+      vin: formData.vin,
       routineName: routine.name || formData.maintenanceDescription,
       mileage: formData.mileage,
       items: routine.items || [],
@@ -5930,8 +5938,11 @@ function App() {
           const received = safeParseJson(ot.signatureReceived ?? ot?.signatures?.received);
           const approver = ot.signatureApprover ?? ot?.signatures?.approver;
 
+          const vin = ot?.vin || ot?.vehicle?.vin || ot?.vehicle?.serieChasis || ot?.serieChasis || '';
+
           return {
             ...ot,
+            vin,
             items: safeParseArray(ot.items, []),
             supplies: safeParseArray(ot.supplies, []),
             signatures: {
@@ -6022,6 +6033,8 @@ function App() {
             plate: vehicle?.plate ?? vehicle?.placa ?? '',
             model: vehicle?.model ?? vehicle?.modeloLinea ?? vehicle?.description ?? vehicle?.descripcion ?? '',
             brand: vehicle?.brand ?? vehicle?.marca ?? '',
+            vin: vehicle?.vin ?? vehicle?.serieChasis ?? vehicle?.serie_chasis ?? vehicle?.serieChasis ?? '',
+            serieChasis: vehicle?.serieChasis ?? vehicle?.serie_chasis ?? vehicle?.vin ?? '',
             status: vehicle?.status ?? vehicle?.estadoActual ?? 'OPERATIVO',
             mileage: Math.round(toNumberOr(normalizedMileage, 0)),
             lastMaintenance: Math.round(toNumberOr(normalizedLastMaintenance, 0)),
