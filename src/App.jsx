@@ -417,7 +417,25 @@ const generatePDF = async (workOrder, notify) => {
     }
   }
 
-  doc.save(`OT-${workOrder.id}-${workOrder.plate}.pdf`);
+  const sanitizeFilenamePart = (value) => {
+    const text = String(value ?? '').trim();
+    if (!text) return 'NA';
+    return text
+      .replace(/[\\/:*?"<>|]/g, '-')
+      .replace(/\s+/g, '_')
+      .replace(/_+/g, '_')
+      .slice(0, 60);
+  };
+
+  const otConsecutive = sanitizeFilenamePart(workOrder.otNumber ?? workOrder.id);
+  const otCode = sanitizeFilenamePart(workOrder.vehicleCode || workOrder.code);
+  const otPlate = sanitizeFilenamePart(workOrder.plate);
+  const otLocation = sanitizeFilenamePart(workOrder.workshop || workOrder.location);
+
+  const rawDate = workOrder.creationDate || (workOrder.createdAt ? new Date(workOrder.createdAt).toISOString().slice(0, 10) : new Date().toISOString().slice(0, 10));
+  const otDate = sanitizeFilenamePart(String(rawDate).replace(/\//g, '-'));
+
+  doc.save(`OT_${otConsecutive}_${otCode}_${otPlate}_${otLocation}_${otDate}.pdf`);
 };
 
 // --- Components ---
@@ -1374,6 +1392,94 @@ const PlanningView = ({ fleet, setFleet, onCreateOT, workOrders = [], setWorkOrd
     setWorkshop('');
   };
 
+  const extractRoutineKmFromOT = (ot) => {
+    const direct = Number(ot?.routine);
+    if (Number.isFinite(direct) && direct > 0) return direct;
+    const text = String(ot?.routineName || ot?.routine || '').toUpperCase();
+    const m = text.match(/(\d[\d\.,]*)\s*KM/);
+    if (!m) return null;
+    const cleaned = m[1].replace(/\./g, '').replace(/,/g, '');
+    const n = Number(cleaned);
+    return Number.isFinite(n) ? n : null;
+  };
+
+  const confirmForceLastMaintenanceGeneration = async () => {
+    if (!selectedVehicle) return;
+
+    const cycle = selectedVehicle.maintenanceCycle || 5000;
+    const last = Number(selectedVehicle.lastMaintenance) || 0;
+    const targetKm = last > 0 ? last : cycle;
+
+    // Reusar la lógica existente para obtener items/variants del KM objetivo
+    const routine = getNextRoutineLocal(
+      selectedVehicle.mileage,
+      selectedVehicle.model,
+      Math.max(targetKm - cycle, 0),
+      cycle
+    );
+    const routineKm = routine?.km || targetKm;
+
+    const ok = await dialog.confirm({
+      title: 'Forzar generación de OT',
+      message: `Esto ANULARÁ la última OT ABIERTA de ${selectedVehicle.plate} (${selectedVehicle.code}) para ${routineKm.toLocaleString()} KM y creará una nueva.\n\n¿Desea continuar?`,
+      variant: 'warning',
+      confirmText: 'Forzar',
+      cancelText: 'Cancelar'
+    });
+    if (!ok) return;
+
+    // Encontrar la última OT ABIERTA para este vehículo + esta rutina
+    const vehicleCode = selectedVehicle.code;
+    const vehiclePlate = selectedVehicle.plate;
+
+    const parseSortDate = (ot) => {
+      const d1 = ot?.createdAt ? new Date(ot.createdAt) : null;
+      if (d1 && !Number.isNaN(d1.getTime())) return d1.getTime();
+      const d2 = ot?.creationDate ? new Date(String(ot.creationDate)) : null;
+      if (d2 && !Number.isNaN(d2.getTime())) return d2.getTime();
+      return 0;
+    };
+
+    const lastOpen = (workOrders || [])
+      .filter(ot => (ot.vehicleCode === vehicleCode || ot.plate === vehiclePlate) && ot.status === 'ABIERTA')
+      .filter(ot => extractRoutineKmFromOT(ot) === routineKm)
+      .sort((a, b) => parseSortDate(b) - parseSortDate(a))[0];
+
+    if (lastOpen) {
+      try {
+        await api.updateWorkOrder(lastOpen.id, { status: 'ANULADA' });
+      } catch (error) {
+        console.error('Error anulando OT anterior (fallback local):', error);
+        const currentOrders = JSON.parse(localStorage.getItem('work_orders') || '[]');
+        const updatedOrders = currentOrders.map(ot => ot.id === lastOpen.id ? { ...ot, status: 'ANULADA' } : ot);
+        localStorage.setItem('work_orders', JSON.stringify(updatedOrders));
+      }
+
+      setWorkOrders(prev => prev.map(ot => ot.id === lastOpen.id ? { ...ot, status: 'ANULADA' } : ot));
+    }
+
+    const workOrder = {
+      vehicleCode: selectedVehicle.code,
+      vehicleModel: selectedVehicle.model,
+      plate: selectedVehicle.plate,
+      vin: selectedVehicle.vin || '',
+      routine: String(routineKm),
+      routineName: `MANTENIMIENTO PREVENTIVO ${routineKm} KM`,
+      mileage: targetKm,
+      items: routine?.items || [],
+      supplies: routine?.supplies || [],
+      workshop: workshop,
+      status: 'ABIERTA',
+      creationDate: new Date().toISOString().split('T')[0]
+    };
+
+    const savedOT = await onCreateOT(workOrder);
+    generatePDF(savedOT || workOrder, alert);
+
+    setSelectedVehicle(null);
+    setWorkshop('');
+  };
+
   const getVehicleHistory = (vehicle) => {
     return workOrders.filter(ot => 
       ot.vehicleCode === vehicle.code || ot.plate === vehicle.plate
@@ -1509,6 +1615,12 @@ const PlanningView = ({ fleet, setFleet, onCreateOT, workOrders = [], setWorkOrd
                 className="px-4 py-2 text-slate-600 hover:bg-slate-100 rounded"
               >
                 Cancelar
+              </button>
+              <button
+                onClick={confirmForceLastMaintenanceGeneration}
+                className="px-4 py-2 bg-amber-600 text-white rounded hover:bg-amber-700 font-bold"
+              >
+                Forzar (Últ. mtto)
               </button>
               <button 
                 onClick={confirmGeneration}
