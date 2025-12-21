@@ -12,6 +12,12 @@ const __dirname = path.dirname(__filename);
 
 let bdOrtizSerialMap = null;
 
+const normalizeLookupKey = (value) => {
+  const str = String(value || '').toUpperCase();
+  // Keep alphanumerics only to tolerate formats like "PWL-494" vs "PWL494".
+  return str.replace(/[^A-Z0-9]/g, '');
+};
+
 const buildSerialMapFromBdOrtiz = () => {
   try {
     const excelPath = path.resolve(__dirname, '../../BD-ORTIZ.xlsx');
@@ -56,8 +62,8 @@ const buildSerialMapFromBdOrtiz = () => {
       const serial = String(row[idxSerial] || '').trim();
       if (!serial) continue;
 
-      if (code) byCode.set(code.toUpperCase(), serial);
-      if (plate) byPlate.set(plate.toUpperCase(), serial);
+      if (code) byCode.set(normalizeLookupKey(code), serial);
+      if (plate) byPlate.set(normalizeLookupKey(plate), serial);
     }
 
     return { byCode, byPlate };
@@ -74,8 +80,8 @@ const ensureBdOrtizSerialMap = () => {
 
 const lookupSerialFromBdOrtiz = (code, plate) => {
   const map = ensureBdOrtizSerialMap();
-  const codeKey = String(code || '').trim().toUpperCase();
-  const plateKey = String(plate || '').trim().toUpperCase();
+  const codeKey = normalizeLookupKey(code);
+  const plateKey = normalizeLookupKey(plate);
   return (codeKey && map.byCode.get(codeKey)) || (plateKey && map.byPlate.get(plateKey)) || null;
 };
 
@@ -478,6 +484,23 @@ router.post('/workorders', async (req, res) => {
         }
       });
     }
+
+    const incomingSerial = String(vin || '').trim();
+    const vehicleSerial = String(vehicle?.vin || vehicle?.serieChasis || '').trim();
+    const bdSerial = lookupSerialFromBdOrtiz(vehicleCode, plate);
+    const serialToUse = incomingSerial || vehicleSerial || bdSerial || null;
+
+    // If we found a serial and the vehicle doesn't have one yet, persist it.
+    if (serialToUse && !vehicleSerial && vehicle?.id) {
+      try {
+        vehicle = await prisma.vehicle.update({
+          where: { id: vehicle.id },
+          data: { vin: serialToUse, serieChasis: serialToUse }
+        });
+      } catch {
+        // Best-effort: do not block OT creation.
+      }
+    }
     
     const workOrder = await prisma.workOrder.create({
       data: {
@@ -492,7 +515,7 @@ router.post('/workorders', async (req, res) => {
         supplies: supplies ? JSON.stringify(supplies) : null,
         workshop,
         area,
-        vin,
+        vin: serialToUse,
         status: status || 'ABIERTA',
         creationDate: creationDate || new Date().toISOString().split('T')[0]
       }
