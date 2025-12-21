@@ -114,6 +114,12 @@ class ApiClient {
       body: JSON.stringify(updates),
     });
   }
+
+  async deleteWorkOrder(id) {
+    return this.request(`/api/workorders/${id}`, {
+      method: 'DELETE'
+    });
+  }
 }
 
 export const api = new ApiClient(API_URL);

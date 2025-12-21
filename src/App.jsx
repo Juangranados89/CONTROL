@@ -62,6 +62,37 @@ import { useDialog } from './components/DialogProvider.jsx';
 
 // --- Helper Functions ---
 
+const detectRoutineVariant = (vehicleModel = '') => {
+  const modelUpper = String(vehicleModel || '').toUpperCase();
+
+  // Direct brand/model hints
+  if (modelUpper.includes('RAM')) return 'RAM';
+  if (modelUpper.includes('JMC')) return 'JMC';
+  if (modelUpper.includes('HILUX')) return 'HILUX';
+  if (modelUpper.includes('DUSTER') || modelUpper.includes('RENAULT')) return 'DUSTER';
+
+  // Common internal descriptors: "700" tends to be RAM 700
+  if (/\b700\b/.test(modelUpper) || modelUpper.includes('RAM 700')) return 'RAM';
+
+  return null;
+};
+
+const pickVariantRoutine = (baseRoutine, variantKey) => {
+  if (!baseRoutine || typeof baseRoutine !== 'object') {
+    return { name: 'Mantenimiento Estándar', items: [], supplies: [] };
+  }
+
+  const variants = baseRoutine.variants && typeof baseRoutine.variants === 'object' ? baseRoutine.variants : null;
+  if (!variants) return baseRoutine;
+
+  if (variantKey && variants?.[variantKey]) return variants[variantKey];
+
+  const keys = Object.keys(variants).filter(k => variants[k]);
+  if (keys.length === 1) return variants[keys[0]];
+
+  return baseRoutine;
+};
+
 const getBase64ImageFromURL = (url) => {
   return new Promise((resolve, reject) => {
     const img = new Image();
@@ -85,15 +116,13 @@ const getNextRoutine = (mileage, vehicleModel = '') => {
 
   // Filter intervals based on model availability
   if (vehicleModel) {
-      const modelUpper = vehicleModel.toUpperCase();
-      intervals = intervals.filter(interval => {
+      const variantKey = detectRoutineVariant(vehicleModel);
+      if (variantKey) {
+        intervals = intervals.filter(interval => {
           const r = MAINTENANCE_ROUTINES[interval];
-          if (modelUpper.includes('RAM')) return r.variants && r.variants['RAM'];
-          if (modelUpper.includes('JMC')) return r.variants && r.variants['JMC'];
-        if (modelUpper.includes('HILUX')) return r.variants && r.variants['HILUX'];
-        if (modelUpper.includes('DUSTER') || modelUpper.includes('RENAULT')) return r.variants && r.variants['DUSTER'];
-          return true; 
-      });
+          return r?.variants && r.variants[variantKey];
+        });
+      }
   }
 
   // Find the first interval greater than current mileage
@@ -105,19 +134,8 @@ const getNextRoutine = (mileage, vehicleModel = '') => {
   const baseRoutine = MAINTENANCE_ROUTINES[targetInterval] || { name: 'Mantenimiento Estándar', items: [], supplies: [], variants: {} };
   
   // Check for variants
-  let finalRoutine = baseRoutine;
-  if (vehicleModel) {
-      const modelUpper = vehicleModel.toUpperCase();
-      if (modelUpper.includes('RAM') && baseRoutine.variants?.['RAM']) {
-          finalRoutine = baseRoutine.variants['RAM'];
-      } else if (modelUpper.includes('JMC') && baseRoutine.variants?.['JMC']) {
-          finalRoutine = baseRoutine.variants['JMC'];
-      } else if (modelUpper.includes('HILUX') && baseRoutine.variants?.['HILUX']) {
-        finalRoutine = baseRoutine.variants['HILUX'];
-      } else if ((modelUpper.includes('DUSTER') || modelUpper.includes('RENAULT')) && baseRoutine.variants?.['DUSTER']) {
-        finalRoutine = baseRoutine.variants['DUSTER'];
-      }
-  }
+  const variantKey = detectRoutineVariant(vehicleModel);
+  const finalRoutine = pickVariantRoutine(baseRoutine, variantKey);
 
   return {
     km: targetInterval,
@@ -306,11 +324,54 @@ const generatePDF = async (workOrder, notify) => {
   doc.setFont("helvetica", "bold");
   doc.setFontSize(10);
   doc.text("TAREAS REALIZADAS", 10, finalY);
+
+  const parseRoutineKm = (routineName) => {
+    const str = String(routineName || '');
+    const m = str.match(/(\d{1,6})\s*KM/i);
+    return m ? Number(m[1]) : null;
+  };
+
+  const ensureArray = (value) => {
+    if (Array.isArray(value)) return value;
+    if (typeof value === 'string' && value.trim()) {
+      try {
+        const parsed = JSON.parse(value);
+        return Array.isArray(parsed) ? parsed : [];
+      } catch {
+        return [];
+      }
+    }
+    return [];
+  };
+
+  const routineKm =
+    typeof workOrder?.routine === 'number'
+      ? workOrder.routine
+      : parseRoutineKm(workOrder?.routineName);
+
+  const fallbackRoutine =
+    typeof routineKm === 'number' && MAINTENANCE_ROUTINES?.[routineKm]
+      ? pickVariantRoutine(MAINTENANCE_ROUTINES[routineKm], detectRoutineVariant(workOrder?.vehicleModel))
+      : null;
+
+  const itemsToRender = (() => {
+    const items = ensureArray(workOrder?.items);
+    if (items.length) return items;
+    const fallbackItems = ensureArray(fallbackRoutine?.items);
+    return fallbackItems;
+  })();
+
+  const suppliesToRender = (() => {
+    const supplies = ensureArray(workOrder?.supplies);
+    if (supplies.length) return supplies;
+    const fallbackSupplies = ensureArray(fallbackRoutine?.supplies);
+    return fallbackSupplies;
+  })();
   
   doc.autoTable({
     startY: finalY + 2,
     head: [['CODIGO', 'DESCRIPCION', 'SISTEMA', 'EJECUCION']],
-    body: workOrder.items.map(item => [
+    body: itemsToRender.map(item => [
       generateTaskCode(item.description), 
       item.description, 
       item.type === 'Preventivo' ? 'SISTEMA MOTOR' : 'INSPECCION',
@@ -335,7 +396,7 @@ const generatePDF = async (workOrder, notify) => {
   doc.autoTable({
     startY: repuestosY + 3,
     head: [['FECHA', 'BODEGA', 'REPUESTO', 'DESCRIPCION', 'UND', 'CANT', 'VL. TOTAL']],
-    body: workOrder.supplies.map(s => [
+    body: suppliesToRender.map(s => [
       new Date().toLocaleDateString(),
       'BODEGA',
       (s && typeof s === 'object' ? (s.reference || s.codigo || s.ref) : '') || '---',
@@ -1273,15 +1334,13 @@ const PlanningView = ({ fleet, setFleet, onCreateOT, workOrders = [], setWorkOrd
 
     // Filter intervals based on model availability
     if (vehicleModel) {
-        const modelUpper = vehicleModel.toUpperCase();
-        intervals = intervals.filter(interval => {
+        const variantKey = detectRoutineVariant(vehicleModel);
+        if (variantKey) {
+          intervals = intervals.filter(interval => {
             const r = routines[interval];
-            if (modelUpper.includes('RAM')) return r.variants && r.variants['RAM'];
-            if (modelUpper.includes('JMC')) return r.variants && r.variants['JMC'];
-        if (modelUpper.includes('HILUX')) return r.variants && r.variants['HILUX'];
-        if (modelUpper.includes('DUSTER') || modelUpper.includes('RENAULT')) return r.variants && r.variants['DUSTER'];
-            return true; 
-        });
+            return r?.variants && r.variants[variantKey];
+          });
+        }
     }
 
     if (intervals.length === 0) return { km: 5000, name: 'Mantenimiento Estándar', items: [], supplies: [] };
@@ -1319,19 +1378,8 @@ const PlanningView = ({ fleet, setFleet, onCreateOT, workOrders = [], setWorkOrd
     }
     
     // Check for variants (RAM/JMC)
-    let finalRoutine = baseRoutine;
-    if (vehicleModel) {
-        const modelUpper = vehicleModel.toUpperCase();
-        if (modelUpper.includes('RAM') && baseRoutine.variants?.['RAM']) {
-            finalRoutine = baseRoutine.variants['RAM'];
-        } else if (modelUpper.includes('JMC') && baseRoutine.variants?.['JMC']) {
-            finalRoutine = baseRoutine.variants['JMC'];
-      } else if (modelUpper.includes('HILUX') && baseRoutine.variants?.['HILUX']) {
-        finalRoutine = baseRoutine.variants['HILUX'];
-      } else if ((modelUpper.includes('DUSTER') || modelUpper.includes('RENAULT')) && baseRoutine.variants?.['DUSTER']) {
-        finalRoutine = baseRoutine.variants['DUSTER'];
-        }
-    }
+    const variantKey = detectRoutineVariant(vehicleModel);
+    const finalRoutine = pickVariantRoutine(baseRoutine, variantKey);
 
     return {
       km: targetKm,
@@ -3929,20 +3977,133 @@ const MaintenanceAdminView = ({ workOrders, setWorkOrders, fleet, setFleet, rout
     });
 
     if (ok) {
-        const updates = { status: 'ANULADA' };
+      const updates = { status: 'ANULADA' };
+      try {
+        await api.updateWorkOrder(otId, updates);
+      } catch (error) {
+        console.error('Error anulando OT en BD (Offline Mode):', error);
+        const currentOrders = JSON.parse(localStorage.getItem('work_orders') || '[]');
+        const updatedOrders = currentOrders.map(ot => ot.id === otId ? { ...ot, ...updates } : ot);
+        localStorage.setItem('work_orders', JSON.stringify(updatedOrders));
+      }
+
+      setWorkOrders(prev => prev.map(ot =>
+        ot.id === otId ? { ...ot, status: 'ANULADA' } : ot
+      ));
+    }
+  };
+
+  const handleEliminarOT = async (otId) => {
+    const ot = workOrders.find(o => o.id === otId);
+    const label = ot?.otNumber ?? otId;
+    const ok = await dialog.confirm({
+      title: 'Eliminar OT',
+      message: `Esto eliminará definitivamente la OT #${label} y la removerá del historial.\n\n¿Desea continuar?`,
+      variant: 'danger',
+      confirmText: 'Eliminar',
+      cancelText: 'Cancelar'
+    });
+    if (!ok) return;
+
+    let updatedVehicle = null;
+    try {
+      const result = await api.deleteWorkOrder(otId);
+      updatedVehicle = result?.updatedVehicle || null;
+    } catch (error) {
+      console.error('Error eliminando OT en BD (Offline Mode):', error);
+    }
+
+    // UI/state removal
+    setWorkOrders(prev => prev.filter(w => w.id !== otId));
+    if (closingOT?.id === otId) setClosingOT(null);
+
+    // localStorage removal (offline cache)
+    try {
+      const currentOrders = JSON.parse(localStorage.getItem('work_orders') || '[]');
+      const updatedOrders = Array.isArray(currentOrders) ? currentOrders.filter(w => w?.id !== otId) : [];
+      localStorage.setItem('work_orders', JSON.stringify(updatedOrders));
+    } catch {
+      // ignore
+    }
+
+    // Remove legacy ot number mapping if present
+    try {
+      const mapKey = 'ot_number_legacy_map';
+      const map = JSON.parse(localStorage.getItem(mapKey) || '{}') || {};
+      delete map[String(otId)];
+      localStorage.setItem(mapKey, JSON.stringify(map));
+    } catch {
+      // ignore
+    }
+
+    // Best-effort: remove matching variable history record created by OT close (local cache)
+    if (ot) {
+      const km = Number.isFinite(Number(ot.mileage)) ? Number(ot.mileage) : null;
+      const closedDate = ot.closedDate || null;
+      const ddmmyyyy = (iso) => {
+        const m = String(iso || '').match(/^(\d{4})-(\d{2})-(\d{2})$/);
+        if (!m) return String(iso || '').trim();
+        return `${m[3]}/${m[2]}/${m[1]}`;
+      };
+
+      setVariableHistory(prev => {
+        const list = Array.isArray(prev) ? prev : [];
+        const updated = list.filter(r => {
+          if (!r) return false;
+          const sameCode = (r.code || r.vehicleCode) && (ot.vehicleCode || ot.code) ? String(r.code || r.vehicleCode) === String(ot.vehicleCode || ot.code) : true;
+          const samePlate = r.plate && ot.plate ? String(r.plate) === String(ot.plate) : true;
+          const sameKm = km != null ? Number(r.km ?? r.mileage) === km : true;
+          const dateText = String(r.date || '');
+          const dateMatch = closedDate ? (dateText.includes(closedDate) || dateText.includes(ddmmyyyy(closedDate))) : true;
+
+          // remove only when we have enough evidence
+          if (closedDate && km != null) {
+            return !(sameCode && samePlate && sameKm && dateMatch);
+          }
+          return true;
+        });
+
         try {
-            await api.updateWorkOrder(otId, updates);
-        } catch (error) {
-            console.error('Error anulando OT en BD (Offline Mode):', error);
-            const currentOrders = JSON.parse(localStorage.getItem('work_orders') || '[]');
-            const updatedOrders = currentOrders.map(ot => ot.id === otId ? { ...ot, ...updates } : ot);
-            localStorage.setItem('work_orders', JSON.stringify(updatedOrders));
+          localStorage.setItem('variable_history', JSON.stringify(updated));
+        } catch {
+          // ignore
         }
 
-        setWorkOrders(prev => prev.map(ot => 
-            ot.id === otId ? { ...ot, status: 'ANULADA' } : ot
-        ));
+        return updated;
+      });
     }
+
+    // Update fleet if backend recomputed maintenance
+    if (updatedVehicle) {
+      setFleet(prev => {
+        const next = Array.isArray(prev) ? prev.map(v => {
+          if (!v) return v;
+          if (v.code === updatedVehicle.code || v.plate === updatedVehicle.plate) {
+            return {
+              ...v,
+              mileage: Number.isFinite(Number(updatedVehicle.mileage)) ? Number(updatedVehicle.mileage) : v.mileage,
+              lastMaintenance: Number.isFinite(Number(updatedVehicle.lastMaintenance)) ? Number(updatedVehicle.lastMaintenance) : v.lastMaintenance,
+              lastMaintenanceDate: updatedVehicle.lastMaintenanceDate ?? v.lastMaintenanceDate
+            };
+          }
+          return v;
+        }) : prev;
+
+        try {
+          localStorage.setItem('fleet_data', JSON.stringify(next));
+        } catch {
+          // ignore
+        }
+
+        return next;
+      });
+    }
+
+    await dialog.alert({
+      title: 'OT eliminada',
+      message: `La OT #${label} fue eliminada.`,
+      variant: 'success'
+    });
   };
 
   const filteredOTs = workOrders.filter(ot => 
@@ -4075,6 +4236,14 @@ const MaintenanceAdminView = ({ workOrders, setWorkOrders, fleet, setFleet, rout
                                 Anular OT
                             </button>
                           )}
+
+                          <button
+                            onClick={() => handleEliminarOT(ot.id)}
+                            className="px-2 py-1 bg-red-600 text-white rounded hover:bg-red-700 text-xs font-medium"
+                            title="Eliminar definitivamente"
+                          >
+                            Eliminar OT
+                          </button>
                         </div>
                       </td>
                     </tr>

@@ -496,6 +496,90 @@ router.patch('/workorders/:id', async (req, res) => {
   }
 });
 
+// Delete work order (ADMIN)
+router.delete('/workorders/:id', async (req, res) => {
+  try {
+    if (req.user?.role !== 'admin') {
+      return res.status(403).json({ error: 'Forbidden' });
+    }
+
+    const workOrder = await prisma.workOrder.findFirst({
+      where: { id: req.params.id },
+      include: { vehicle: true }
+    });
+
+    if (!workOrder) return res.status(404).json({ error: 'Work order not found' });
+
+    const vehicleId = workOrder.vehicleId;
+    const closedDateIso = workOrder.closedDate || null;
+    const km = Number.isFinite(Number(workOrder.mileage)) ? Number(workOrder.mileage) : null;
+
+    // Attempt to remove the variable history record created during OT close.
+    // VariableHistory does not currently store a workOrderId, so we match conservatively.
+    if (workOrder.status === 'CERRADA' && vehicleId && km != null && closedDateIso) {
+      const ddmmyyyy = (iso) => {
+        const m = String(iso || '').match(/^(\d{4})-(\d{2})-(\d{2})$/);
+        if (!m) return String(iso || '').trim();
+        return `${m[3]}/${m[2]}/${m[1]}`;
+      };
+      const datePrefixA = ddmmyyyy(closedDateIso);
+      const datePrefixB = String(closedDateIso);
+
+      await prisma.variableHistory.deleteMany({
+        where: {
+          vehicleId,
+          km,
+          OR: [
+            { date: { contains: datePrefixA } },
+            { date: { contains: datePrefixB } }
+          ]
+        }
+      });
+    }
+
+    // Delete the work order itself
+    const deleted = await prisma.workOrder.delete({
+      where: { id: req.params.id }
+    });
+
+    // If this OT affected the vehicle lastMaintenance, recompute from remaining closed OTs
+    let updatedVehicle = null;
+    if (vehicleId && workOrder.status === 'CERRADA') {
+      const lastClosed = await prisma.workOrder.findFirst({
+        where: { vehicleId, status: 'CERRADA' },
+        orderBy: [
+          { closedDate: 'desc' },
+          { mileage: 'desc' },
+          { createdAt: 'desc' }
+        ]
+      });
+
+      if (lastClosed) {
+        updatedVehicle = await prisma.vehicle.update({
+          where: { id: vehicleId },
+          data: {
+            lastMaintenance: lastClosed.mileage,
+            lastMaintenanceDate: lastClosed.closedDate || null,
+            mileage: lastClosed.mileage
+          }
+        });
+      } else {
+        updatedVehicle = await prisma.vehicle.update({
+          where: { id: vehicleId },
+          data: {
+            lastMaintenance: null,
+            lastMaintenanceDate: null
+          }
+        });
+      }
+    }
+
+    res.json({ success: true, workOrder: deleted, updatedVehicle });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 // Sync all vehicles with their latest closed work orders (intelligent sync)
 router.post('/vehicles/sync-maintenance', async (req, res) => {
   try {
