@@ -1,8 +1,83 @@
 import express from 'express';
 import { PrismaClient } from '@prisma/client';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import xlsx from 'xlsx';
 
 const router = express.Router();
 const prisma = new PrismaClient();
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+let bdOrtizSerialMap = null;
+
+const buildSerialMapFromBdOrtiz = () => {
+  try {
+    const excelPath = path.resolve(__dirname, '../../BD-ORTIZ.xlsx');
+    const workbook = xlsx.readFile(excelPath, { cellDates: false });
+    const sheetName = workbook.SheetNames?.[0];
+    if (!sheetName) return { byCode: new Map(), byPlate: new Map() };
+
+    const sheet = workbook.Sheets[sheetName];
+    const rows = xlsx.utils.sheet_to_json(sheet, { header: 1, defval: '' });
+
+    let headerRowIndex = -1;
+    for (let i = 0; i < Math.min(rows.length, 200); i++) {
+      const row = rows[i] || [];
+      const upper = row.map(v => String(v || '').toUpperCase());
+      const hasCode = upper.some(v => v.includes('CODIGO DEL EQUIPO'));
+      const hasPlate = upper.some(v => v.includes('PLACA'));
+      const hasSerial = upper.some(v => v.includes('SERIE CHASIS') || v.includes('VIN'));
+      if (hasCode && hasPlate && hasSerial) {
+        headerRowIndex = i;
+        break;
+      }
+    }
+
+    if (headerRowIndex < 0) return { byCode: new Map(), byPlate: new Map() };
+
+    const header = (rows[headerRowIndex] || []).map(v => String(v || '').toUpperCase().trim());
+    const colIndex = (needle) => header.findIndex(h => h === needle);
+
+    const idxCode = colIndex('CODIGO DEL EQUIPO');
+    const idxPlate = colIndex('PLACA');
+    const idxSerial = header.findIndex(h => h.includes('SERIE CHASIS') || h.includes('VIN'));
+
+    if (idxCode < 0 || idxPlate < 0 || idxSerial < 0) return { byCode: new Map(), byPlate: new Map() };
+
+    const byCode = new Map();
+    const byPlate = new Map();
+
+    for (let i = headerRowIndex + 1; i < rows.length; i++) {
+      const row = rows[i] || [];
+      const code = String(row[idxCode] || '').trim();
+      const plate = String(row[idxPlate] || '').trim();
+      const serial = String(row[idxSerial] || '').trim();
+      if (!serial) continue;
+
+      if (code) byCode.set(code.toUpperCase(), serial);
+      if (plate) byPlate.set(plate.toUpperCase(), serial);
+    }
+
+    return { byCode, byPlate };
+  } catch (e) {
+    console.warn('BD-ORTIZ.xlsx no disponible o no se pudo leer:', e?.message || e);
+    return { byCode: new Map(), byPlate: new Map() };
+  }
+};
+
+const ensureBdOrtizSerialMap = () => {
+  if (!bdOrtizSerialMap) bdOrtizSerialMap = buildSerialMapFromBdOrtiz();
+  return bdOrtizSerialMap;
+};
+
+const lookupSerialFromBdOrtiz = (code, plate) => {
+  const map = ensureBdOrtizSerialMap();
+  const codeKey = String(code || '').trim().toUpperCase();
+  const plateKey = String(plate || '').trim().toUpperCase();
+  return (codeKey && map.byCode.get(codeKey)) || (plateKey && map.byPlate.get(plateKey)) || null;
+};
 
 // ============ VEHICLES ============
 
@@ -50,6 +125,10 @@ router.post('/vehicles', async (req, res) => {
       estadoActual, ubicacionFrente 
     } = req.body;
 
+    const incomingSerial = (vin || serieChasis || '').trim();
+    const bdSerial = !incomingSerial ? lookupSerialFromBdOrtiz(code, plate) : null;
+    const serialToUse = incomingSerial || bdSerial || null;
+
     const maintenanceCycle = Number.isFinite(Number(req.body?.maintenanceCycle))
       ? Number(req.body.maintenanceCycle)
       : (Number.isFinite(Number(req.body?.frequency)) ? Number(req.body.frequency) : undefined);
@@ -58,12 +137,18 @@ router.post('/vehicles', async (req, res) => {
       where: { code },
       update: { 
         plate, model, brand, owner, mileage, lastMaintenance, lastMaintenanceDate, 
-        vin, area, familiaTipologia, descripcion, serieChasis, serieMotor, anioModelo,
+        vin: serialToUse ?? vin,
+        area, familiaTipologia, descripcion,
+        serieChasis: serialToUse ?? serieChasis,
+        serieMotor, anioModelo,
         estadoActual, ubicacionFrente 
       },
       create: { 
         code, plate, model, brand, owner, mileage, lastMaintenance, lastMaintenanceDate, 
-        vin, area, familiaTipologia, descripcion, serieChasis, serieMotor, anioModelo,
+        vin: serialToUse ?? vin,
+        area, familiaTipologia, descripcion,
+        serieChasis: serialToUse ?? serieChasis,
+        serieMotor, anioModelo,
         estadoActual, ubicacionFrente 
       }
     });
@@ -125,6 +210,9 @@ router.post('/vehicles/bulk', async (req, res) => {
           });
           continue;
         }
+
+        const incomingSerial = String(v.vin || v.serieChasis || '').trim();
+        const serialToUse = incomingSerial || lookupSerialFromBdOrtiz(v.code, v.plate) || null;
         
         // Crear o actualizar vehículo
         const vehicle = await prisma.vehicle.upsert({
@@ -136,7 +224,8 @@ router.post('/vehicles/bulk', async (req, res) => {
             owner: v.owner,
             familiaTipologia: v.familiaTipologia,
             descripcion: v.descripcion,
-            serieChasis: v.serieChasis || v.vin,
+            vin: v.vin || serialToUse || null,
+            serieChasis: v.serieChasis || serialToUse || v.vin,
             serieMotor: v.serieMotor,
             anioModelo: v.anioModelo,
             estadoActual: v.estadoActual,
@@ -145,7 +234,7 @@ router.post('/vehicles/bulk', async (req, res) => {
             maintenanceCycle: v.maintenanceCycle || v.frequency || 5000,
             lastMaintenance: v.lastMaintenance,
             lastMaintenanceDate: v.lastMaintenanceDate,
-            vin: v.vin || v.serieChasis,
+            vin: v.vin || serialToUse || v.serieChasis,
             area: v.area || v.ubicacionFrente
           },
           create: {
@@ -156,7 +245,8 @@ router.post('/vehicles/bulk', async (req, res) => {
             owner: v.owner,
             familiaTipologia: v.familiaTipologia,
             descripcion: v.descripcion,
-            serieChasis: v.serieChasis || v.vin,
+            vin: v.vin || serialToUse || null,
+            serieChasis: v.serieChasis || serialToUse || v.vin,
             serieMotor: v.serieMotor,
             anioModelo: v.anioModelo,
             estadoActual: v.estadoActual,
@@ -165,7 +255,7 @@ router.post('/vehicles/bulk', async (req, res) => {
             maintenanceCycle: v.maintenanceCycle || v.frequency || 5000,
             lastMaintenance: v.lastMaintenance,
             lastMaintenanceDate: v.lastMaintenanceDate,
-            vin: v.vin || v.serieChasis,
+            vin: v.vin || serialToUse || v.serieChasis,
             area: v.area || v.ubicacionFrente
           }
         });
@@ -375,13 +465,16 @@ router.post('/workorders', async (req, res) => {
     
     // Si no existe el vehículo, crearlo temporalmente
     if (!vehicle) {
+      const incomingSerial = String(vin || '').trim();
+      const serialToUse = incomingSerial || lookupSerialFromBdOrtiz(vehicleCode, plate) || null;
       vehicle = await prisma.vehicle.create({
         data: {
           code: vehicleCode,
           plate: plate,
           model: vehicleModel || 'N/A',
           mileage: mileage || 0,
-          vin: vin || null
+          vin: serialToUse,
+          serieChasis: serialToUse
         }
       });
     }
@@ -409,6 +502,52 @@ router.post('/workorders', async (req, res) => {
     res.json(workOrder);
   } catch (error) {
     console.error('Error creating work order:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// ADMIN: Backfill seriales desde BD-ORTIZ.xlsx
+router.post('/admin/backfill-serials', async (req, res) => {
+  try {
+    if (req.user?.role !== 'admin') {
+      return res.status(403).json({ error: 'Forbidden' });
+    }
+
+    ensureBdOrtizSerialMap();
+
+    const vehicles = await prisma.vehicle.findMany({
+      where: {
+        OR: [
+          { vin: null },
+          { vin: '' },
+          { serieChasis: null },
+          { serieChasis: '' }
+        ]
+      },
+      select: { id: true, code: true, plate: true, vin: true, serieChasis: true }
+    });
+
+    let updated = 0;
+    let notFound = 0;
+
+    for (const v of vehicles) {
+      const serial = lookupSerialFromBdOrtiz(v.code, v.plate);
+      if (!serial) {
+        notFound += 1;
+        continue;
+      }
+      await prisma.vehicle.update({
+        where: { id: v.id },
+        data: {
+          vin: v.vin && String(v.vin).trim() ? v.vin : serial,
+          serieChasis: v.serieChasis && String(v.serieChasis).trim() ? v.serieChasis : serial
+        }
+      });
+      updated += 1;
+    }
+
+    res.json({ success: true, candidates: vehicles.length, updated, notFound });
+  } catch (error) {
     res.status(500).json({ error: error.message });
   }
 });
