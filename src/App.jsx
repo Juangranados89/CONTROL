@@ -90,6 +90,8 @@ const getNextRoutine = (mileage, vehicleModel = '') => {
           const r = MAINTENANCE_ROUTINES[interval];
           if (modelUpper.includes('RAM')) return r.variants && r.variants['RAM'];
           if (modelUpper.includes('JMC')) return r.variants && r.variants['JMC'];
+        if (modelUpper.includes('HILUX')) return r.variants && r.variants['HILUX'];
+        if (modelUpper.includes('DUSTER') || modelUpper.includes('RENAULT')) return r.variants && r.variants['DUSTER'];
           return true; 
       });
   }
@@ -110,6 +112,10 @@ const getNextRoutine = (mileage, vehicleModel = '') => {
           finalRoutine = baseRoutine.variants['RAM'];
       } else if (modelUpper.includes('JMC') && baseRoutine.variants?.['JMC']) {
           finalRoutine = baseRoutine.variants['JMC'];
+      } else if (modelUpper.includes('HILUX') && baseRoutine.variants?.['HILUX']) {
+        finalRoutine = baseRoutine.variants['HILUX'];
+      } else if ((modelUpper.includes('DUSTER') || modelUpper.includes('RENAULT')) && baseRoutine.variants?.['DUSTER']) {
+        finalRoutine = baseRoutine.variants['DUSTER'];
       }
   }
 
@@ -332,10 +338,10 @@ const generatePDF = async (workOrder, notify) => {
     body: workOrder.supplies.map(s => [
       new Date().toLocaleDateString(),
       'BODEGA',
-      s.reference || '---',
-      s.name || s,
-      'UND',
-      s.quantity || '1',
+      (s && typeof s === 'object' ? (s.reference || s.codigo || s.ref) : '') || '---',
+      (s && typeof s === 'object' ? (s.name || s.description || s.descripcion) : s) || '---',
+      String((s && typeof s === 'object' ? (s.unit || s.unidad) : null) || 'UND').toUpperCase(),
+      (s && typeof s === 'object' ? (s.quantity ?? s.cantidad) : null) || '1',
       ''
     ]),
     theme: 'grid',
@@ -1272,6 +1278,8 @@ const PlanningView = ({ fleet, setFleet, onCreateOT, workOrders = [], setWorkOrd
             const r = routines[interval];
             if (modelUpper.includes('RAM')) return r.variants && r.variants['RAM'];
             if (modelUpper.includes('JMC')) return r.variants && r.variants['JMC'];
+        if (modelUpper.includes('HILUX')) return r.variants && r.variants['HILUX'];
+        if (modelUpper.includes('DUSTER') || modelUpper.includes('RENAULT')) return r.variants && r.variants['DUSTER'];
             return true; 
         });
     }
@@ -1318,6 +1326,10 @@ const PlanningView = ({ fleet, setFleet, onCreateOT, workOrders = [], setWorkOrd
             finalRoutine = baseRoutine.variants['RAM'];
         } else if (modelUpper.includes('JMC') && baseRoutine.variants?.['JMC']) {
             finalRoutine = baseRoutine.variants['JMC'];
+      } else if (modelUpper.includes('HILUX') && baseRoutine.variants?.['HILUX']) {
+        finalRoutine = baseRoutine.variants['HILUX'];
+      } else if ((modelUpper.includes('DUSTER') || modelUpper.includes('RENAULT')) && baseRoutine.variants?.['DUSTER']) {
+        finalRoutine = baseRoutine.variants['DUSTER'];
         }
     }
 
@@ -2676,7 +2688,7 @@ const RoutinesManager = ({ routines, setRoutines }) => {
   const [isCreating, setIsCreating] = useState(false);
   const [editData, setEditData] = useState(null);
   const [newRoutineInterval, setNewRoutineInterval] = useState('');
-  const [activeVariant, setActiveVariant] = useState('GENERAL'); // GENERAL, RAM, JMC
+  const [activeVariant, setActiveVariant] = useState('GENERAL'); // GENERAL, RAM, JMC, HILUX, DUSTER
 
   const handleEdit = (key) => {
     setSelectedRoutineKey(key);
@@ -2797,7 +2809,7 @@ const RoutinesManager = ({ routines, setRoutines }) => {
 
   const handleAddSupply = () => {
       const currentSupplies = currentData?.supplies || [];
-      updateField('supplies', [...currentSupplies, { name: '', reference: '', quantity: '1' }]);
+      updateField('supplies', [...currentSupplies, { name: '', reference: '', unit: 'UND', quantity: '1' }]);
   };
 
   const handleUpdateSupply = (idx, field, value) => {
@@ -2845,7 +2857,7 @@ const RoutinesManager = ({ routines, setRoutines }) => {
 
         {/* Variant Tabs */}
         <div className="flex gap-2 mb-6 border-b border-slate-200">
-            {['GENERAL', 'RAM', 'JMC'].map(variant => (
+            {['GENERAL', 'RAM', 'JMC', 'HILUX', 'DUSTER'].map(variant => (
                 <button
                     key={variant}
                     onClick={() => setActiveVariant(variant)}
@@ -2935,21 +2947,35 @@ const RoutinesManager = ({ routines, setRoutines }) => {
                         <div className="space-y-2 max-h-[400px] overflow-y-auto pr-2 bg-slate-50 p-2 rounded border">
                             {currentData.supplies?.length > 0 ? (
                                 currentData.supplies.map((item, idx) => (
-                                    <div key={idx} className="flex gap-2 items-center bg-white p-2 rounded border border-slate-200 shadow-sm">
-                                        <input 
-                                            className="flex-1 p-1 border rounded text-sm"
-                                            value={item.name}
-                                            onChange={e => handleUpdateSupply(idx, 'name', e.target.value)}
-                                            placeholder="Nombre del Insumo"
-                                        />
-                                        <input 
-                                            className="w-20 p-1 border rounded text-sm"
-                                            value={item.quantity}
-                                            onChange={e => handleUpdateSupply(idx, 'quantity', e.target.value)}
-                                            placeholder="Cant."
-                                        />
-                                        <button onClick={() => handleDeleteSupply(idx)} className="text-red-400 hover:text-red-600"><X size={16}/></button>
-                                    </div>
+                            <div key={idx} className="grid grid-cols-12 gap-2 items-center bg-white p-2 rounded border border-slate-200 shadow-sm">
+                              <input
+                                className="col-span-5 p-1 border rounded text-sm"
+                                value={item.name || ''}
+                                onChange={e => handleUpdateSupply(idx, 'name', e.target.value)}
+                                placeholder="Insumo (ej: ACEITE DE MOTOR)"
+                              />
+                              <input
+                                className="col-span-3 p-1 border rounded text-sm"
+                                value={item.reference || ''}
+                                onChange={e => handleUpdateSupply(idx, 'reference', e.target.value)}
+                                placeholder="Referencia/Especificación"
+                              />
+                              <select
+                                className="col-span-2 p-1 border rounded text-xs"
+                                value={(item.unit || 'UND').toUpperCase()}
+                                onChange={e => handleUpdateSupply(idx, 'unit', e.target.value)}
+                              >
+                                <option value="UND">UND</option>
+                                <option value="GAL">GAL</option>
+                              </select>
+                              <input
+                                className="col-span-1 p-1 border rounded text-sm"
+                                value={item.quantity ?? ''}
+                                onChange={e => handleUpdateSupply(idx, 'quantity', e.target.value)}
+                                placeholder="Cant."
+                              />
+                              <button onClick={() => handleDeleteSupply(idx)} className="col-span-1 text-red-400 hover:text-red-600 justify-self-end"><X size={16}/></button>
+                            </div>
                                 ))
                             ) : (
                                 <div className="text-center p-4 text-slate-400 text-sm">Sin insumos requeridos.</div>

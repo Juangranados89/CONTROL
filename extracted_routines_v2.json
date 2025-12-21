@@ -1,6 +1,6 @@
 {
   "RAM": {
-    "10": {
+    "10000": {
       "items": [
         {
           "description": "CAMBIAR ACEITE DE MOTOR",
@@ -143,26 +143,30 @@
         {
           "name": "ACEITE DE MOTOR",
           "reference": "0W20",
+          "unit": "GAL",
           "quantity": "1"
         },
         {
           "name": "FILTRO DE ACEITE DE MOTOR",
           "reference": "7094709",
+          "unit": "GAL",
           "quantity": "1"
         },
         {
           "name": "FILTRO DE AIRE",
           "reference": "52046268",
+          "unit": "UND",
           "quantity": "1"
         },
         {
           "name": "FILTRO AIRE ACONDICIONADO",
           "reference": "51842923",
+          "unit": "UND",
           "quantity": "1"
         }
       ]
     },
-    "20": {
+    "20000": {
       "items": [
         {
           "description": "CAMBIAR ACEITE DE MOTOR",
@@ -305,26 +309,30 @@
         {
           "name": "ACEITE DE MOTOR",
           "reference": "0W20",
+          "unit": "GAL",
           "quantity": "1"
         },
         {
           "name": "FILTRO DE ACEITE DE MOTOR",
           "reference": "7094709",
+          "unit": "GAL",
           "quantity": "1"
         },
         {
           "name": "FILTRO DE AIRE",
           "reference": "52046268",
+          "unit": "UND",
           "quantity": "1"
         },
         {
           "name": "FILTRO AIRE ACONDICIONADO",
           "reference": "51842923",
+          "unit": "UND",
           "quantity": "1"
         }
       ]
     },
-    "30": {
+    "30000": {
       "items": [
         {
           "description": "FILTRO COMBUSTIBLE",
@@ -479,26 +487,31 @@
         {
           "name": "ACEITE DE MOTOR",
           "reference": "0W20",
+          "unit": "GAL",
           "quantity": "1"
         },
         {
           "name": "FILTRO DE ACEITE DE MOTOR",
           "reference": "7094709",
+          "unit": "GAL",
           "quantity": "1"
         },
         {
           "name": "FILTRO DE AIRE",
           "reference": "52046268",
+          "unit": "UND",
           "quantity": "1"
         },
         {
           "name": "FILTRO AIRE ACONDICIONADO",
           "reference": "51842923",
+          "unit": "UND",
           "quantity": "1"
         },
         {
           "name": "BUJIAS",
           "reference": "55260260",
+          "unit": "UND",
           "quantity": "4"
         }
       ]
@@ -646,31 +659,36 @@
         {
           "name": "ACEITE DE MOTOR",
           "reference": "0W20",
+          "unit": "GAL",
           "quantity": "1"
         },
         {
           "name": "LIQUIDO DE FRENOS",
           "reference": "16 107 255 80",
+          "unit": "GAL",
           "quantity": "2"
         },
         {
           "name": "FILTRO DE ACEITE DE MOTOR",
           "reference": "7094709",
+          "unit": "GAL",
           "quantity": "1"
         },
         {
           "name": "FILTRO DE AIRE",
           "reference": "52046268",
+          "unit": "UND",
           "quantity": "1"
         },
         {
           "name": "FILTRO AIRE ACONDICIONADO",
           "reference": "51842923",
+          "unit": "UND",
           "quantity": "1"
         }
       ]
     },
-    "50": {
+    "50000": {
       "items": [
         {
           "description": "CAMBIAR ACEITE DE MOTOR",
@@ -813,31 +831,36 @@
         {
           "name": "ACEITE DE MOTOR",
           "reference": "0W20",
+          "unit": "GAL",
           "quantity": "1"
         },
         {
           "name": "REFRIGERANTE",
           "reference": "68163848",
+          "unit": "GAL",
           "quantity": "1"
         },
         {
           "name": "FILTRO DE ACEITE DE MOTOR",
           "reference": "7094709",
+          "unit": "GAL",
           "quantity": "1"
         },
         {
           "name": "FILTRO DE AIRE",
           "reference": "52046268",
+          "unit": "UND",
           "quantity": "1"
         },
         {
           "name": "FILTRO AIRE ACONDICIONADO",
           "reference": "51842923",
+          "unit": "UND",
           "quantity": "1"
         }
       ]
     },
-    "60": {
+    "60000": {
       "items": [
         {
           "description": "FILTRO COMBUSTIBLE",
@@ -992,41 +1015,48 @@
         {
           "name": "ACEITE DE MOTOR",
           "reference": "0W20",
+          "unit": "GAL",
           "quantity": "1"
         },
         {
           "name": "FILTRO DE ACEITE DE MOTOR",
           "reference": "7094709",
+          "unit": "GAL",
           "quantity": "1"
         },
         {
           "name": "FILTRO DE AIRE",
           "reference": "52046268",
+          "unit": "UND",
           "quantity": "1"
         },
         {
           "name": "FILTRO AIRE ACONDICIONADO",
           "reference": "51842923",
+          "unit": "UND",
           "quantity": "1"
         },
         {
           "name": "BUJIAS",
           "reference": "55260260",
+          "unit": "UND",
           "quantity": "4"
         },
         {
           "name": "CORREA ACCESORIOS",
           "reference": "55267966",
+          "unit": "UND",
           "quantity": "1"
         },
         {
           "name": "TENSOR CORREA ACCESORIOS",
           "reference": "55267954",
+          "unit": "UND",
           "quantity": "1"
         }
       ]
     },
-    "70": {
+    "70000": {
       "items": [
         {
           "description": "CAMBIAR ACEITE DE MOTOR",
@@ -1169,21 +1199,25 @@
         {
           "name": "ACEITE DE MOTOR",
           "reference": "0W20",
+          "unit": "GAL",
           "quantity": "1"
         },
         {
           "name": "FILTRO DE ACEITE DE MOTOR",
           "reference": "7094709",
+          "unit": "GAL",
           "quantity": "1"
         },
         {
           "name": "FILTRO DE AIRE",
           "reference": "52046268",
+          "unit": "UND",
           "quantity": "1"
         },
         {
           "name": "FILTRO AIRE ACONDICIONADO",
           "reference": "51842923",
+          "unit": "UND",
           "quantity": "1"
         }
       ]
@@ -1335,31 +1369,36 @@
         {
           "name": "ACEITE DE MOTOR",
           "reference": "0W20",
+          "unit": "GAL",
           "quantity": "1"
         },
         {
           "name": "LIQUIDO DE FRENOS",
           "reference": "16 107 255 80",
+          "unit": "GAL",
           "quantity": "2"
         },
         {
           "name": "FILTRO DE ACEITE DE MOTOR",
           "reference": "7094709",
+          "unit": "GAL",
           "quantity": "1"
         },
         {
           "name": "FILTRO DE AIRE",
           "reference": "52046268",
+          "unit": "UND",
           "quantity": "1"
         },
         {
           "name": "FILTRO AIRE ACONDICIONADO",
           "reference": "51842923",
+          "unit": "UND",
           "quantity": "1"
         }
       ]
     },
-    "90": {
+    "90000": {
       "items": [
         {
           "description": "FILTRO COMBUSTIBLE",
@@ -1514,31 +1553,36 @@
         {
           "name": "ACEITE DE MOTOR",
           "reference": "0W20",
+          "unit": "GAL",
           "quantity": "1"
         },
         {
           "name": "FILTRO DE ACEITE DE MOTOR",
           "reference": "7094709",
+          "unit": "GAL",
           "quantity": "1"
         },
         {
           "name": "FILTRO DE AIRE",
           "reference": "52046268",
+          "unit": "UND",
           "quantity": "1"
         },
         {
           "name": "FILTRO AIRE ACONDICIONADO",
           "reference": "51842923",
+          "unit": "UND",
           "quantity": "1"
         },
         {
           "name": "BUJIAS",
           "reference": "55260260",
+          "unit": "UND",
           "quantity": "4"
         }
       ]
     },
-    "100": {
+    "100000": {
       "items": [
         {
           "description": "CAMBIAR ACEITE DE MOTOR",
@@ -1685,31 +1729,36 @@
         {
           "name": "ACEITE DE MOTOR",
           "reference": "0W20",
+          "unit": "GAL",
           "quantity": "1"
         },
         {
           "name": "REFRIGERANTE",
           "reference": "68163848",
+          "unit": "GAL",
           "quantity": "1"
         },
         {
           "name": "FILTRO DE ACEITE DE MOTOR",
           "reference": "7094709",
+          "unit": "GAL",
           "quantity": "1"
         },
         {
           "name": "FILTRO DE AIRE",
           "reference": "52046268",
+          "unit": "UND",
           "quantity": "1"
         },
         {
           "name": "FILTRO AIRE ACONDICIONADO",
           "reference": "51842923",
+          "unit": "UND",
           "quantity": "1"
         }
       ]
     },
-    "110": {
+    "110000": {
       "items": [
         {
           "description": "CAMBIAR ACEITE DE MOTOR",
@@ -1852,26 +1901,30 @@
         {
           "name": "ACEITE DE MOTOR",
           "reference": "0W20",
+          "unit": "GAL",
           "quantity": "1"
         },
         {
           "name": "FILTRO DE ACEITE DE MOTOR",
           "reference": "7094709",
+          "unit": "GAL",
           "quantity": "1"
         },
         {
           "name": "FILTRO DE AIRE",
           "reference": "52046268",
+          "unit": "UND",
           "quantity": "1"
         },
         {
           "name": "FILTRO AIRE ACONDICIONADO",
           "reference": "51842923",
+          "unit": "UND",
           "quantity": "1"
         }
       ]
     },
-    "120": {
+    "120000": {
       "items": [
         {
           "description": "FILTRO COMBUSTIBLE",
@@ -2038,31 +2091,37 @@
         {
           "name": "ACEITE DE MOTOR",
           "reference": "0W20",
+          "unit": "GAL",
           "quantity": "1"
         },
         {
           "name": "LIQUIDO DE FRENOS",
           "reference": "16 107 255 80",
+          "unit": "GAL",
           "quantity": "2"
         },
         {
           "name": "ACEITE DE TRANSMISION",
           "reference": "Lubricante Sintetico Mopar ;APIGL4;SAE75W CADA 120.000KM",
+          "unit": "GAL",
           "quantity": "3"
         },
         {
           "name": "FILTRO DE ACEITE DE MOTOR",
           "reference": "7094709",
+          "unit": "GAL",
           "quantity": "1"
         },
         {
           "name": "FILTRO DE AIRE",
           "reference": "52046268",
+          "unit": "UND",
           "quantity": "1"
         },
         {
           "name": "FILTRO AIRE ACONDICIONADO",
           "reference": "51842923",
+          "unit": "UND",
           "quantity": "1"
         }
       ]
@@ -2204,21 +2263,25 @@
         {
           "name": "ACEITE DE MOTOR",
           "reference": "(Mobil Delvac 15W40) API CK-4",
+          "unit": "GAL",
           "quantity": "1.75"
         },
         {
           "name": "FILTRO DE ACEITE DE MOTOR",
           "reference": "EP1-6612-AB",
+          "unit": "GAL",
           "quantity": "1"
         },
         {
           "name": "FILTRO DE AIRE",
           "reference": "EJP1-9601-AB",
+          "unit": "UND",
           "quantity": "1"
         },
         {
           "name": "FILTRO DE  COMBUSTIBLE",
           "reference": "E9P2-9156AA",
+          "unit": "UND",
           "quantity": "1"
         }
       ]
@@ -2366,26 +2429,31 @@
         {
           "name": "ACEITE DE MOTOR",
           "reference": "(Mobil Delvac 15W40) API CK-4",
+          "unit": "GAL",
           "quantity": "1.75"
         },
         {
           "name": "FILTRO DE ACEITE DE MOTOR",
           "reference": "EP1-6612-AB",
+          "unit": "GAL",
           "quantity": "1"
         },
         {
           "name": "FILTRO DE AIRE",
           "reference": "EJP1-9601-AB",
+          "unit": "UND",
           "quantity": "1"
         },
         {
           "name": "FILTRO DE  COMBUSTIBLE",
           "reference": "E9P2-9156AA",
+          "unit": "UND",
           "quantity": "1"
         },
         {
           "name": "ADITIVO LIMPIADOR SISTEMA INYECCION",
           "reference": "3890 182",
+          "unit": "UND",
           "quantity": "1"
         }
       ]
@@ -2525,21 +2593,25 @@
         {
           "name": "ACEITE DE MOTOR",
           "reference": "(Mobil Delvac 15W40) API CK-4",
+          "unit": "GAL",
           "quantity": "1.75"
         },
         {
           "name": "FILTRO DE ACEITE DE MOTOR",
           "reference": "EP1-6612-AB",
+          "unit": "GAL",
           "quantity": "1"
         },
         {
           "name": "FILTRO DE AIRE",
           "reference": "EJP1-9601-AB",
+          "unit": "UND",
           "quantity": "1"
         },
         {
           "name": "FILTRO DE  COMBUSTIBLE",
           "reference": "E9P2-9156AA",
+          "unit": "UND",
           "quantity": "1"
         }
       ]
@@ -2687,26 +2759,31 @@
         {
           "name": "ACEITE DE MOTOR",
           "reference": "(Mobil Delvac 15W40) API CK-4",
+          "unit": "GAL",
           "quantity": "1.75"
         },
         {
           "name": "FILTRO DE ACEITE DE MOTOR",
           "reference": "EP1-6612-AB",
+          "unit": "GAL",
           "quantity": "1"
         },
         {
           "name": "FILTRO DE AIRE",
           "reference": "EJP1-9601-AB",
+          "unit": "UND",
           "quantity": "1"
         },
         {
           "name": "FILTRO DE  COMBUSTIBLE",
           "reference": "E9P2-9156AA",
+          "unit": "UND",
           "quantity": "1"
         },
         {
           "name": "ADITIVO LIMPIADOR SISTEMA INYECCION",
           "reference": "3890 182",
+          "unit": "UND",
           "quantity": "1"
         }
       ]
@@ -2850,61 +2927,73 @@
         {
           "name": "ACEITE DE MOTOR",
           "reference": "(Mobil Delvac 15W40) API CK-4",
+          "unit": "GAL",
           "quantity": "1.75"
         },
         {
           "name": "ACEITE DE DIFERENCIAL",
           "reference": "85W140",
+          "unit": "GAL",
           "quantity": "0.75"
         },
         {
           "name": "ACEITE DE TRANSMISION",
           "reference": "80W90",
+          "unit": "GAL",
           "quantity": "0.75"
         },
         {
           "name": "ACEITE TRANSFER",
           "reference": "ATF III",
+          "unit": "GAL",
           "quantity": "0.75"
         },
         {
           "name": "REFRIGERANTE",
           "reference": "50/50",
+          "unit": "GAL",
           "quantity": "2"
         },
         {
           "name": "LIQUIDO DE FRENOS",
           "reference": "DOT4",
+          "unit": "GAL",
           "quantity": "2"
         },
         {
           "name": "FILTRO DE ACEITE DE MOTOR",
           "reference": "EP1-6612-AB",
+          "unit": "GAL",
           "quantity": "1"
         },
         {
           "name": "FILTRO DE AIRE",
           "reference": "EJP1-9601-AB",
+          "unit": "UND",
           "quantity": "1"
         },
         {
           "name": "FILTRO DE  COMBUSTIBLE",
           "reference": "E9P2-9156AA",
+          "unit": "UND",
           "quantity": "1"
         },
         {
           "name": "FILTRO DE UREA",
           "reference": "ELP1-5L210-AA",
+          "unit": "UND",
           "quantity": "1"
         },
         {
           "name": "CORREA ACCESORIOS",
           "reference": "CN3-6C301-AC",
+          "unit": "UND",
           "quantity": "1"
         },
         {
           "name": "CORREA A/C",
           "reference": "JP1-19896-BB",
+          "unit": "UND",
           "quantity": "1"
         }
       ]
@@ -3052,26 +3141,31 @@
         {
           "name": "ACEITE DE MOTOR",
           "reference": "(Mobil Delvac 15W40) API CK-4",
+          "unit": "GAL",
           "quantity": "1.75"
         },
         {
           "name": "FILTRO DE ACEITE DE MOTOR",
           "reference": "EP1-6612-AB",
+          "unit": "GAL",
           "quantity": "1"
         },
         {
           "name": "FILTRO DE AIRE",
           "reference": "EJP1-9601-AB",
+          "unit": "UND",
           "quantity": "1"
         },
         {
           "name": "FILTRO DE  COMBUSTIBLE",
           "reference": "E9P2-9156AA",
+          "unit": "UND",
           "quantity": "1"
         },
         {
           "name": "ADITIVO LIMPIADOR SISTEMA INYECCION",
           "reference": "3890 182",
+          "unit": "UND",
           "quantity": "1"
         }
       ]
@@ -3211,21 +3305,25 @@
         {
           "name": "ACEITE DE MOTOR",
           "reference": "(Mobil Delvac 15W40) API CK-4",
+          "unit": "GAL",
           "quantity": "1.75"
         },
         {
           "name": "FILTRO DE ACEITE DE MOTOR",
           "reference": "EP1-6612-AB",
+          "unit": "GAL",
           "quantity": "1"
         },
         {
           "name": "FILTRO DE AIRE",
           "reference": "EJP1-9601-AB",
+          "unit": "UND",
           "quantity": "1"
         },
         {
           "name": "FILTRO DE  COMBUSTIBLE",
           "reference": "E9P2-9156AA",
+          "unit": "UND",
           "quantity": "1"
         }
       ]
@@ -3373,26 +3471,31 @@
         {
           "name": "ACEITE DE MOTOR",
           "reference": "(Mobil Delvac 15W40) API CK-4",
+          "unit": "GAL",
           "quantity": "1.75"
         },
         {
           "name": "FILTRO DE ACEITE DE MOTOR",
           "reference": "EP1-6612-AB",
+          "unit": "GAL",
           "quantity": "1"
         },
         {
           "name": "FILTRO DE AIRE",
           "reference": "EJP1-9601-AB",
+          "unit": "UND",
           "quantity": "1"
         },
         {
           "name": "FILTRO DE  COMBUSTIBLE",
           "reference": "E9P2-9156AA",
+          "unit": "UND",
           "quantity": "1"
         },
         {
           "name": "ADITIVO LIMPIADOR SISTEMA INYECCION",
           "reference": "3890 182",
+          "unit": "UND",
           "quantity": "1"
         }
       ]
@@ -3532,21 +3635,25 @@
         {
           "name": "ACEITE DE MOTOR",
           "reference": "(Mobil Delvac 15W40) API CK-4",
+          "unit": "GAL",
           "quantity": "1.75"
         },
         {
           "name": "FILTRO DE ACEITE DE MOTOR",
           "reference": "EP1-6612-AB",
+          "unit": "GAL",
           "quantity": "1"
         },
         {
           "name": "FILTRO DE AIRE",
           "reference": "EJP1-9601-AB",
+          "unit": "UND",
           "quantity": "1"
         },
         {
           "name": "FILTRO DE  COMBUSTIBLE",
           "reference": "E9P2-9156AA",
+          "unit": "UND",
           "quantity": "1"
         }
       ]
@@ -3678,66 +3785,79 @@
         {
           "name": "ACEITE DE MOTOR",
           "reference": "(Mobil Delvac 15W40) API CK-4",
+          "unit": "GAL",
           "quantity": "1.75"
         },
         {
           "name": "ACEITE DE DIFERENCIAL",
           "reference": "85W140",
+          "unit": "GAL",
           "quantity": "0.75"
         },
         {
           "name": "ACEITE DE TRANSMISION",
           "reference": "80W90",
+          "unit": "GAL",
           "quantity": "0.75"
         },
         {
           "name": "ACEITE TRANSFER",
           "reference": "ATF III",
+          "unit": "GAL",
           "quantity": "0.75"
         },
         {
           "name": "REFRIGERANTE",
           "reference": "50/50",
+          "unit": "GAL",
           "quantity": "2"
         },
         {
           "name": "LIQUIDO DE FRENOS",
           "reference": "DOT4",
+          "unit": "GAL",
           "quantity": "2"
         },
         {
           "name": "FILTRO DE ACEITE DE MOTOR",
           "reference": "EP1-6612-AB",
+          "unit": "GAL",
           "quantity": "1"
         },
         {
           "name": "FILTRO DE AIRE",
           "reference": "EJP1-9601-AB",
+          "unit": "UND",
           "quantity": "1"
         },
         {
           "name": "FILTRO DE  COMBUSTIBLE",
           "reference": "E9P2-9156AA",
+          "unit": "UND",
           "quantity": "1"
         },
         {
           "name": "FILTRO DE UREA",
           "reference": "ELP1-5L210-AA",
+          "unit": "UND",
           "quantity": "1"
         },
         {
           "name": "CORREA ACCESORIOS",
           "reference": "CN3-6C301-AC",
+          "unit": "UND",
           "quantity": "1"
         },
         {
           "name": "CORREA A/C",
           "reference": "JP1-19896-BB",
+          "unit": "UND",
           "quantity": "1"
         },
         {
           "name": "ADITIVO LIMPIADOR SISTEMA INYECCION",
           "reference": "3890 182",
+          "unit": "UND",
           "quantity": "1"
         }
       ]

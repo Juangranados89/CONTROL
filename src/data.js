@@ -8884,577 +8884,4033 @@ export const INITIAL_FLEET = [
 ];
 
 export const MAINTENANCE_ROUTINES = {
-  "10000": {
-    "name": "Mantenimiento PM1 (10000 km)",
-    "items": [
-      {
-        "description": "CAMBIAR ACEITE DE MOTOR",
-        "type": "Preventivo"
-      },
-      {
-        "description": "CAMBIAR FILTRO DE ACEITE DEL MOTOR",
-        "type": "Preventivo"
-      },
-      {
-        "description": "CAMBIAR FILTRO DE AIRE",
-        "type": "Preventivo"
-      },
-      {
-        "description": "CAMBIAR FILTRO DE COMBUSTIBLE",
-        "type": "Preventivo"
-      },
-      {
-        "description": "REVISION Y AJUSTE DE NIVEL DE REFRIGERANTE",
-        "type": "Inspecci\u00f3n"
-      },
-      {
-        "description": "REVISION Y AJUSTE DE NIVEL DE LIQUIDO DE FRENOS",
-        "type": "Inspecci\u00f3n"
-      },
-      {
-        "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE CORREA DE ACCESORIOS",
-        "type": "Inspecci\u00f3n"
-      },
-      {
-        "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE CORREA DE AIRE ACONDICIONADO",
-        "type": "Inspecci\u00f3n"
-      },
-      {
-        "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL DEL SISTEMA DE FRENOS",
-        "type": "Inspecci\u00f3n"
-      },
-      {
-        "description": "REVISION DEL ESTADO DE LA BANDA DE FRENOS",
-        "type": "Inspecci\u00f3n"
-      },
-      {
-        "description": "REVISION DEL ESTADO DE TAMBOR DE FRENOS",
-        "type": "Inspecci\u00f3n"
-      },
-      {
-        "description": "REVISION DE ESTADO DE LAS PASTILLAS DE FRENO",
-        "type": "Inspecci\u00f3n"
-      },
-      {
-        "description": "REVISION DEL ESTADO DE LOS DISCOS DE FRENO",
-        "type": "Inspecci\u00f3n"
-      },
-      {
-        "description": "REVISION DEL ESTADO DE LOS AMORTIGUADORES",
-        "type": "Inspecci\u00f3n"
-      },
-      {
-        "description": "REVISION DEL ESTADO DE LOS TERMINALES DE DIRECCION",
-        "type": "Inspecci\u00f3n"
-      },
-      {
-        "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE LAS PUNTAS DE EJE",
-        "type": "Inspecci\u00f3n"
-      },
-      {
-        "description": "REVISION DEL ESTADO DE LA BARRA TRANSVERSAL",
-        "type": "Inspecci\u00f3n"
-      },
-      {
-        "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL EMBRAGUE",
-        "type": "Inspecci\u00f3n"
-      },
-      {
-        "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE PEDALES(FRENO-ACELERACION-EMBRAGUE)",
-        "type": "Inspecci\u00f3n"
-      },
-      {
-        "description": "REVISION DEL ESTADO DE LAS LLANTAS",
-        "type": "Inspecci\u00f3n"
-      },
-      {
-        "description": "REVISION DEL ESTADO DE ELEMENTOS DE CABINA (PUERTAS-ASIENTOS-VOLANTE-ESPEJOS)",
-        "type": "Inspecci\u00f3n"
-      },
-      {
-        "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL TABLERO(LUCES-ALARMAS)",
-        "type": "Inspecci\u00f3n"
-      },
-      {
-        "description": "REVISION DEL ESTADO DE FUNCIONAMIENTO DE LAS ALARMAS DE EMERGENCIA",
-        "type": "Inspecci\u00f3n"
-      },
-      {
-        "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL SIST DE LUCES (DELANTERAS-DIRECIONALES-STOP-CABINA)",
-        "type": "Inspecci\u00f3n"
-      },
-      {
-        "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE BATERIAS",
-        "type": "Inspecci\u00f3n"
-      },
-      {
-        "description": "REVISION DEL ESTADOY FUNCIONAMIENTO DEL CABLEADO DEL EQUIPO",
-        "type": "Inspecci\u00f3n"
-      },
-      {
-        "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL ALTERNADOR",
-        "type": "Inspecci\u00f3n"
-      },
-      {
-        "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL SISTEMA DE ARRANQUE",
-        "type": "Inspecci\u00f3n"
-      },
-      {
-        "description": "REVISION DEL ESTADO DEL MOTOR(FUGAS-RUIDOS)",
-        "type": "Inspecci\u00f3n"
-      },
-      {
-        "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE MANGUERAS DEL SISTEMA",
-        "type": "Inspecci\u00f3n"
-      },
-      {
-        "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL RADIADOR",
-        "type": "Inspecci\u00f3n"
-      },
-      {
-        "description": "LIMPIAR Y/O LAVAR RADIADOR",
-        "type": "Inspecci\u00f3n"
+  "7000": {
+    "name": "Mantenimiento 7,000 KM",
+    "items": [],
+    "supplies": [],
+    "variants": {
+      "JMC": {
+        "name": "Mantenimiento 7,000 KM (JMC)",
+        "items": [
+          {
+            "description": "CAMBIAR ACEITE DE MOTOR",
+            "type": "Cambio"
+          },
+          {
+            "description": "CAMBIAR FILTRO DE ACEITE DEL MOTOR",
+            "type": "Cambio"
+          },
+          {
+            "description": "CAMBIAR FILTRO DE AIRE",
+            "type": "Cambio"
+          },
+          {
+            "description": "CAMBIAR FILTRO DE COMBUSTIBLE",
+            "type": "Cambio"
+          },
+          {
+            "description": "REVISION Y AJUSTE DE NIVEL DE REFRIGERANTE",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION Y AJUSTE DE NIVEL DE LIQUIDO DE FRENOS",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE CORREA DE ACCESORIOS",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE CORREA DE AIRE ACONDICIONADO",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL DEL SISTEMA DE FRENOS",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DE LA BANDA DE FRENOS",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DE TAMBOR DE FRENOS",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DE ESTADO DE LAS PASTILLAS DE FRENO",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DE LOS DISCOS DE FRENO",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DE LOS AMORTIGUADORES",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DE LOS TERMINALES DE DIRECCION",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE LAS PUNTAS DE EJE",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DE LA BARRA TRANSVERSAL",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL EMBRAGUE",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE PEDALES(FRENO-ACELERACION-EMBRAGUE)",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DE LAS LLANTAS",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DE ELEMENTOS DE CABINA (PUERTAS-ASIENTOS-VOLANTE-ESPEJOS)",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL TABLERO(LUCES-ALARMAS)",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DE FUNCIONAMIENTO DE LAS ALARMAS DE EMERGENCIA",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL SIST DE LUCES (DELANTERAS-DIRECIONALES-STOP-CABINA)",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE BATERIAS",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADOY FUNCIONAMIENTO DEL CABLEADO DEL EQUIPO",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL ALTERNADOR",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL SISTEMA DE ARRANQUE",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DEL MOTOR(FUGAS-RUIDOS)",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE MANGUERAS DEL SISTEMA",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL RADIADOR",
+            "type": "Inspección"
+          },
+          {
+            "description": "LIMPIAR Y/O LAVAR RADIADOR",
+            "type": "Inspección"
+          }
+        ],
+        "supplies": [
+          {
+            "name": "ACEITE DE MOTOR",
+            "reference": "(Mobil Delvac 15W40) API CK-4",
+            "unit": "GAL",
+            "quantity": "1.75"
+          },
+          {
+            "name": "FILTRO DE ACEITE DE MOTOR",
+            "reference": "EP1-6612-AB",
+            "unit": "GAL",
+            "quantity": "1"
+          },
+          {
+            "name": "FILTRO DE AIRE",
+            "reference": "EJP1-9601-AB",
+            "unit": "UND",
+            "quantity": "1"
+          },
+          {
+            "name": "FILTRO DE  COMBUSTIBLE",
+            "reference": "E9P2-9156AA",
+            "unit": "UND",
+            "quantity": "1"
+          }
+        ]
       }
-    ],
-    "supplies": [
-      "FILTRO ACEITE MOTOR",
-      "PRE-FILTRO COMBUSTIBLE",
-      "FILTRO PRINCIPAL COMBUSTIBLE"
-    ]
+    }
+  },
+  "10000": {
+    "name": "Mantenimiento 10,000 KM",
+    "items": [],
+    "supplies": [],
+    "variants": {
+      "RAM": {
+        "name": "Mantenimiento 10,000 KM (RAM)",
+        "items": [
+          {
+            "description": "CAMBIAR ACEITE DE MOTOR",
+            "type": "Cambio"
+          },
+          {
+            "description": "CAMBIAR FILTRO DE ACEITE DEL MOTOR",
+            "type": "Cambio"
+          },
+          {
+            "description": "CAMBIAR FILTRO DE AIRE",
+            "type": "Cambio"
+          },
+          {
+            "description": "CAMBIAR FILTRO DE AIRE ACONDICIONADO",
+            "type": "Cambio"
+          },
+          {
+            "description": "REVISION Y AJUSTE NIVEL ACEITE DE TRANSMISION",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION Y AJUSTE DE NIVEL DE REFRIGERANTE",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION Y AJUSTE DE NIVEL DE ACEITE DE FRENOS",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE CORREAS",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE POLEAS Y TENSORES",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION Y AJUSTE DE NIVEL DE ACEITE DE DIRECCION",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL DEL SISTEMA DE FRENOS",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DE LA BANDA DE FRENOS",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DE TAMBOR DE FRENOS",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DE ESTADO DE LAS PASTILLAS DE FRENO",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DE LOS DISCOS DE FRENO",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DE LOS AMORTIGUADORES",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DE LOS TERMINALES DE DIRECCION",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE LAS PUNTAS DE EJE",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DE LA BARRA TRANSVERSAL",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL EMBRAGUE",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE PEDALES(FRENO-ACELERACION-EMBRAGUE)",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DE LAS LLANTAS",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DE ELEMENTOS DE CABINA (PUERTAS-ASIENTOS-VOLANTE-ESPEJOS)",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL TABLERO(LUCES-ALARMAS)",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DE FUNCIONAMIENTO DE LAS ALARMAS DE EMERGENCIA",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL SIST DE LUCES (DELANTERAS-DIRECIONALES-STOP-CABINA)",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE BATERIAS",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADOY FUNCIONAMIENTO DEL CABLEADO DEL EQUIPO",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL ALTERNADOR",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL SISTEMA DE ARRANQUE",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DEL MOTOR(FUGAS-RUIDOS)",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE MANGUERAS DEL SISTEMA",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL RADIADOR",
+            "type": "Inspección"
+          },
+          {
+            "description": "LIMPIAR Y/O LAVAR RADIADOR",
+            "type": "Inspección"
+          }
+        ],
+        "supplies": [
+          {
+            "name": "ACEITE DE MOTOR",
+            "reference": "0W20",
+            "unit": "GAL",
+            "quantity": "1"
+          },
+          {
+            "name": "FILTRO DE ACEITE DE MOTOR",
+            "reference": "7094709",
+            "unit": "GAL",
+            "quantity": "1"
+          },
+          {
+            "name": "FILTRO DE AIRE",
+            "reference": "52046268",
+            "unit": "UND",
+            "quantity": "1"
+          },
+          {
+            "name": "FILTRO AIRE ACONDICIONADO",
+            "reference": "51842923",
+            "unit": "UND",
+            "quantity": "1"
+          }
+        ]
+      }
+    }
+  },
+  "14000": {
+    "name": "Mantenimiento 14,000 KM",
+    "items": [],
+    "supplies": [],
+    "variants": {
+      "JMC": {
+        "name": "Mantenimiento 14,000 KM (JMC)",
+        "items": [
+          {
+            "description": "CAMBIAR ACEITE DE MOTOR",
+            "type": "Cambio"
+          },
+          {
+            "description": "CAMBIAR FILTRO DE ACEITE DEL MOTOR",
+            "type": "Cambio"
+          },
+          {
+            "description": "CAMBIAR FILTRO DE AIRE",
+            "type": "Cambio"
+          },
+          {
+            "description": "CAMBIAR FILTRO DE COMBUSTIBLE",
+            "type": "Cambio"
+          },
+          {
+            "description": "CAMBIAR FILTRO AIRE ACONDICIONADO",
+            "type": "Cambio"
+          },
+          {
+            "description": "REVISION Y AJUSTE DE NIVEL DE REFRIGERANTE",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION Y AJUSTE DE NIVEL DE LIQUIDO DE FRENOS",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE CORREA DE ACCESORIOS",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE CORREA DE AIRE ACONDICIONADO",
+            "type": "Inspección"
+          },
+          {
+            "description": "ADICIONAR ADITIVO AL SISTEMA DE INYECCION",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL DEL SISTEMA DE FRENOS",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DE LA BANDA DE FRENOS",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DE TAMBOR DE FRENOS",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DE ESTADO DE LAS PASTILLAS DE FRENO",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DE LOS DISCOS DE FRENO",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DE LOS AMORTIGUADORES",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DE LOS TERMINALES DE DIRECCION",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE LAS PUNTAS DE EJE",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DE LA BARRA TRANSVERSAL",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL EMBRAGUE",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE PEDALES(FRENO-ACELERACION-EMBRAGUE)",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DE LAS LLANTAS",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DE ELEMENTOS DE CABINA (PUERTAS-ASIENTOS-VOLANTE-ESPEJOS)",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL TABLERO(LUCES-ALARMAS)",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DE FUNCIONAMIENTO DE LAS ALARMAS DE EMERGENCIA",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL SIST DE LUCES (DELANTERAS-DIRECIONALES-STOP-CABINA)",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE BATERIAS",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADOY FUNCIONAMIENTO DEL CABLEADO DEL EQUIPO",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL ALTERNADOR",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL SISTEMA DE ARRANQUE",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DEL MOTOR(FUGAS-RUIDOS)",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE MANGUERAS DEL SISTEMA",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL RADIADOR",
+            "type": "Inspección"
+          },
+          {
+            "description": "LIMPIAR Y/O LAVAR RADIADOR",
+            "type": "Inspección"
+          }
+        ],
+        "supplies": [
+          {
+            "name": "ACEITE DE MOTOR",
+            "reference": "(Mobil Delvac 15W40) API CK-4",
+            "unit": "GAL",
+            "quantity": "1.75"
+          },
+          {
+            "name": "FILTRO DE ACEITE DE MOTOR",
+            "reference": "EP1-6612-AB",
+            "unit": "GAL",
+            "quantity": "1"
+          },
+          {
+            "name": "FILTRO DE AIRE",
+            "reference": "EJP1-9601-AB",
+            "unit": "UND",
+            "quantity": "1"
+          },
+          {
+            "name": "FILTRO DE  COMBUSTIBLE",
+            "reference": "E9P2-9156AA",
+            "unit": "UND",
+            "quantity": "1"
+          },
+          {
+            "name": "ADITIVO LIMPIADOR SISTEMA INYECCION",
+            "reference": "3890 182",
+            "unit": "UND",
+            "quantity": "1"
+          }
+        ]
+      }
+    }
   },
   "20000": {
-    "name": "Mantenimiento PM2 (20000 km)",
-    "items": [
-      {
-        "description": "TAREAS A EJECUTAR",
-        "type": "Inspecci\u00f3n"
-      },
-      {
-        "description": "CAMBIAR ACEITE DE MOTOR",
-        "type": "Preventivo"
-      },
-      {
-        "description": "CAMBIAR FILTRO DE ACEITE DEL MOTOR",
-        "type": "Preventivo"
-      },
-      {
-        "description": "CAMBIAR FILTRO DE AIRE",
-        "type": "Preventivo"
-      },
-      {
-        "description": "CAMBIAR FILTRO DE COMBUSTIBLE",
-        "type": "Preventivo"
-      },
-      {
-        "description": "REVISION Y AJUSTE DE NIVEL DE REFRIGERANTE",
-        "type": "Inspecci\u00f3n"
-      },
-      {
-        "description": "REVISION Y AJUSTE DE NIVEL DE LIQUIDO DE FRENOS",
-        "type": "Inspecci\u00f3n"
-      },
-      {
-        "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE CORREA DE ACCESORIOS",
-        "type": "Inspecci\u00f3n"
-      },
-      {
-        "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE CORREA DE AIRE ACONDICIONADO",
-        "type": "Inspecci\u00f3n"
-      },
-      {
-        "description": "ADICIONAR ADITIVO AL SISTEMA DE INYECCION",
-        "type": "Inspecci\u00f3n"
-      },
-      {
-        "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL DEL SISTEMA DE FRENOS",
-        "type": "Inspecci\u00f3n"
-      },
-      {
-        "description": "REVISION DEL ESTADO DE LA BANDA DE FRENOS",
-        "type": "Inspecci\u00f3n"
-      },
-      {
-        "description": "REVISION DEL ESTADO DE TAMBOR DE FRENOS",
-        "type": "Inspecci\u00f3n"
-      },
-      {
-        "description": "REVISION DE ESTADO DE LAS PASTILLAS DE FRENO",
-        "type": "Inspecci\u00f3n"
-      },
-      {
-        "description": "REVISION DEL ESTADO DE LOS DISCOS DE FRENO",
-        "type": "Inspecci\u00f3n"
-      },
-      {
-        "description": "REVISION DEL ESTADO DE LOS AMORTIGUADORES",
-        "type": "Inspecci\u00f3n"
-      },
-      {
-        "description": "REVISION DEL ESTADO DE LOS TERMINALES DE DIRECCION",
-        "type": "Inspecci\u00f3n"
-      },
-      {
-        "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE LAS PUNTAS DE EJE",
-        "type": "Inspecci\u00f3n"
-      },
-      {
-        "description": "REVISION DEL ESTADO DE LA BARRA TRANSVERSAL",
-        "type": "Inspecci\u00f3n"
-      },
-      {
-        "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL EMBRAGUE",
-        "type": "Inspecci\u00f3n"
-      },
-      {
-        "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE PEDALES(FRENO-ACELERACION-EMBRAGUE)",
-        "type": "Inspecci\u00f3n"
-      },
-      {
-        "description": "REVISION DEL ESTADO DE LAS LLANTAS",
-        "type": "Inspecci\u00f3n"
-      },
-      {
-        "description": "REVISION DEL ESTADO DE ELEMENTOS DE CABINA (PUERTAS-ASIENTOS-VOLANTE-ESPEJOS)",
-        "type": "Inspecci\u00f3n"
-      },
-      {
-        "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL TABLERO(LUCES-ALARMAS)",
-        "type": "Inspecci\u00f3n"
-      },
-      {
-        "description": "REVISION DEL ESTADO DE FUNCIONAMIENTO DE LAS ALARMAS DE EMERGENCIA",
-        "type": "Inspecci\u00f3n"
-      },
-      {
-        "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL SIST DE LUCES (DELANTERAS-DIRECIONALES-STOP-CABINA)",
-        "type": "Inspecci\u00f3n"
-      },
-      {
-        "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE BATERIAS",
-        "type": "Inspecci\u00f3n"
-      },
-      {
-        "description": "REVISION DEL ESTADOY FUNCIONAMIENTO DEL CABLEADO DEL EQUIPO",
-        "type": "Inspecci\u00f3n"
-      },
-      {
-        "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL ALTERNADOR",
-        "type": "Inspecci\u00f3n"
-      },
-      {
-        "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL SISTEMA DE ARRANQUE",
-        "type": "Inspecci\u00f3n"
-      },
-      {
-        "description": "REVISION DEL ESTADO DEL MOTOR(FUGAS-RUIDOS)",
-        "type": "Inspecci\u00f3n"
-      },
-      {
-        "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE MANGUERAS DEL SISTEMA",
-        "type": "Inspecci\u00f3n"
-      },
-      {
-        "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL RADIADOR",
-        "type": "Inspecci\u00f3n"
-      },
-      {
-        "description": "LIMPIAR Y/O LAVAR RADIADOR",
-        "type": "Inspecci\u00f3n"
+    "name": "Mantenimiento 20,000 KM",
+    "items": [],
+    "supplies": [],
+    "variants": {
+      "RAM": {
+        "name": "Mantenimiento 20,000 KM (RAM)",
+        "items": [
+          {
+            "description": "CAMBIAR ACEITE DE MOTOR",
+            "type": "Cambio"
+          },
+          {
+            "description": "CAMBIAR FILTRO DE ACEITE DEL MOTOR",
+            "type": "Cambio"
+          },
+          {
+            "description": "CAMBIAR FILTRO DE AIRE",
+            "type": "Cambio"
+          },
+          {
+            "description": "CAMBIAR FILTRO DE AIRE ACONDICIONADO",
+            "type": "Cambio"
+          },
+          {
+            "description": "REVISION Y AJUSTE NIVEL ACEITE DE TRANSMISION",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION Y AJUSTE DE NIVEL DE REFRIGERANTE",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION Y AJUSTE DE NIVEL DE ACEITE DE FRENOS",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE CORREAS",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE POLEAS Y TENSORES",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION Y AJUSTE DE NIVEL DE ACEITE DE DIRECCION",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL DEL SISTEMA DE FRENOS",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DE LA BANDA DE FRENOS",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DE TAMBOR DE FRENOS",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DE ESTADO DE LAS PASTILLAS DE FRENO",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DE LOS DISCOS DE FRENO",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DE LOS AMORTIGUADORES",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DE LOS TERMINALES DE DIRECCION",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE LAS PUNTAS DE EJE",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DE LA BARRA TRANSVERSAL",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL EMBRAGUE",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE PEDALES(FRENO-ACELERACION-EMBRAGUE)",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DE LAS LLANTAS",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DE ELEMENTOS DE CABINA (PUERTAS-ASIENTOS-VOLANTE-ESPEJOS)",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL TABLERO(LUCES-ALARMAS)",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DE FUNCIONAMIENTO DE LAS ALARMAS DE EMERGENCIA",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL SIST DE LUCES (DELANTERAS-DIRECIONALES-STOP-CABINA)",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE BATERIAS",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADOY FUNCIONAMIENTO DEL CABLEADO DEL EQUIPO",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL ALTERNADOR",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL SISTEMA DE ARRANQUE",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DEL MOTOR(FUGAS-RUIDOS)",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE MANGUERAS DEL SISTEMA",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL RADIADOR",
+            "type": "Inspección"
+          },
+          {
+            "description": "LIMPIAR Y/O LAVAR RADIADOR",
+            "type": "Inspección"
+          }
+        ],
+        "supplies": [
+          {
+            "name": "ACEITE DE MOTOR",
+            "reference": "0W20",
+            "unit": "GAL",
+            "quantity": "1"
+          },
+          {
+            "name": "FILTRO DE ACEITE DE MOTOR",
+            "reference": "7094709",
+            "unit": "GAL",
+            "quantity": "1"
+          },
+          {
+            "name": "FILTRO DE AIRE",
+            "reference": "52046268",
+            "unit": "UND",
+            "quantity": "1"
+          },
+          {
+            "name": "FILTRO AIRE ACONDICIONADO",
+            "reference": "51842923",
+            "unit": "UND",
+            "quantity": "1"
+          }
+        ]
       }
-    ],
-    "supplies": [
-      "FILTRO ACEITE MOTOR",
-      "PRE-FILTRO COMBUSTIBLE",
-      "FILTRO PRINCIPAL COMBUSTIBLE",
-      "ADITIVO SISTEMA INYECCION"
-    ]
+    }
+  },
+  "21000": {
+    "name": "Mantenimiento 21,000 KM",
+    "items": [],
+    "supplies": [],
+    "variants": {
+      "JMC": {
+        "name": "Mantenimiento 21,000 KM (JMC)",
+        "items": [
+          {
+            "description": "CAMBIAR ACEITE DE MOTOR",
+            "type": "Cambio"
+          },
+          {
+            "description": "CAMBIAR FILTRO DE ACEITE DEL MOTOR",
+            "type": "Cambio"
+          },
+          {
+            "description": "CAMBIAR FILTRO DE AIRE",
+            "type": "Cambio"
+          },
+          {
+            "description": "CAMBIAR FILTRO DE COMBUSTIBLE",
+            "type": "Cambio"
+          },
+          {
+            "description": "REVISION Y AJUSTE DE NIVEL DE REFRIGERANTE",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION Y AJUSTE DE NIVEL DE LIQUIDO DE FRENOS",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE CORREA DE ACCESORIOS",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE CORREA DE AIRE ACONDICIONADO",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL DEL SISTEMA DE FRENOS",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DE LA BANDA DE FRENOS",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DE TAMBOR DE FRENOS",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DE ESTADO DE LAS PASTILLAS DE FRENO",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DE LOS DISCOS DE FRENO",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DE LOS AMORTIGUADORES",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DE LOS TERMINALES DE DIRECCION",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE LAS PUNTAS DE EJE",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DE LA BARRA TRANSVERSAL",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL EMBRAGUE",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE PEDALES(FRENO-ACELERACION-EMBRAGUE)",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DE LAS LLANTAS",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DE ELEMENTOS DE CABINA (PUERTAS-ASIENTOS-VOLANTE-ESPEJOS)",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL TABLERO(LUCES-ALARMAS)",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DE FUNCIONAMIENTO DE LAS ALARMAS DE EMERGENCIA",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL SIST DE LUCES (DELANTERAS-DIRECIONALES-STOP-CABINA)",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE BATERIAS",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADOY FUNCIONAMIENTO DEL CABLEADO DEL EQUIPO",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL ALTERNADOR",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL SISTEMA DE ARRANQUE",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DEL MOTOR(FUGAS-RUIDOS)",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE MANGUERAS DEL SISTEMA",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL RADIADOR",
+            "type": "Inspección"
+          },
+          {
+            "description": "LIMPIAR Y/O LAVAR RADIADOR",
+            "type": "Inspección"
+          }
+        ],
+        "supplies": [
+          {
+            "name": "ACEITE DE MOTOR",
+            "reference": "(Mobil Delvac 15W40) API CK-4",
+            "unit": "GAL",
+            "quantity": "1.75"
+          },
+          {
+            "name": "FILTRO DE ACEITE DE MOTOR",
+            "reference": "EP1-6612-AB",
+            "unit": "GAL",
+            "quantity": "1"
+          },
+          {
+            "name": "FILTRO DE AIRE",
+            "reference": "EJP1-9601-AB",
+            "unit": "UND",
+            "quantity": "1"
+          },
+          {
+            "name": "FILTRO DE  COMBUSTIBLE",
+            "reference": "E9P2-9156AA",
+            "unit": "UND",
+            "quantity": "1"
+          }
+        ]
+      }
+    }
+  },
+  "28000": {
+    "name": "Mantenimiento 28,000 KM",
+    "items": [],
+    "supplies": [],
+    "variants": {
+      "JMC": {
+        "name": "Mantenimiento 28,000 KM (JMC)",
+        "items": [
+          {
+            "description": "CAMBIAR ACEITE DE MOTOR",
+            "type": "Cambio"
+          },
+          {
+            "description": "CAMBIAR FILTRO DE ACEITE DEL MOTOR",
+            "type": "Cambio"
+          },
+          {
+            "description": "CAMBIAR FILTRO DE AIRE",
+            "type": "Cambio"
+          },
+          {
+            "description": "CAMBIAR FILTRO DE COMBUSTIBLE",
+            "type": "Cambio"
+          },
+          {
+            "description": "CAMBIAR FILTRO AIRE ACONDICIONADO",
+            "type": "Cambio"
+          },
+          {
+            "description": "REVISION Y AJUSTE DE NIVEL DE REFRIGERANTE",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION Y AJUSTE DE NIVEL DE LIQUIDO DE FRENOS",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE CORREA DE ACCESORIOS",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE CORREA DE AIRE ACONDICIONADO",
+            "type": "Inspección"
+          },
+          {
+            "description": "ADICIONAR ADITIVO AL SISTEMA DE INYECCION",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL DEL SISTEMA DE FRENOS",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DE LA BANDA DE FRENOS",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DE TAMBOR DE FRENOS",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DE ESTADO DE LAS PASTILLAS DE FRENO",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DE LOS DISCOS DE FRENO",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DE LOS AMORTIGUADORES",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DE LOS TERMINALES DE DIRECCION",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE LAS PUNTAS DE EJE",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DE LA BARRA TRANSVERSAL",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL EMBRAGUE",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE PEDALES(FRENO-ACELERACION-EMBRAGUE)",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DE LAS LLANTAS",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DE ELEMENTOS DE CABINA (PUERTAS-ASIENTOS-VOLANTE-ESPEJOS)",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL TABLERO(LUCES-ALARMAS)",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DE FUNCIONAMIENTO DE LAS ALARMAS DE EMERGENCIA",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL SIST DE LUCES (DELANTERAS-DIRECIONALES-STOP-CABINA)",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE BATERIAS",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADOY FUNCIONAMIENTO DEL CABLEADO DEL EQUIPO",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL ALTERNADOR",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL SISTEMA DE ARRANQUE",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DEL MOTOR(FUGAS-RUIDOS)",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE MANGUERAS DEL SISTEMA",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL RADIADOR",
+            "type": "Inspección"
+          },
+          {
+            "description": "LIMPIAR Y/O LAVAR RADIADOR",
+            "type": "Inspección"
+          }
+        ],
+        "supplies": [
+          {
+            "name": "ACEITE DE MOTOR",
+            "reference": "(Mobil Delvac 15W40) API CK-4",
+            "unit": "GAL",
+            "quantity": "1.75"
+          },
+          {
+            "name": "FILTRO DE ACEITE DE MOTOR",
+            "reference": "EP1-6612-AB",
+            "unit": "GAL",
+            "quantity": "1"
+          },
+          {
+            "name": "FILTRO DE AIRE",
+            "reference": "EJP1-9601-AB",
+            "unit": "UND",
+            "quantity": "1"
+          },
+          {
+            "name": "FILTRO DE  COMBUSTIBLE",
+            "reference": "E9P2-9156AA",
+            "unit": "UND",
+            "quantity": "1"
+          },
+          {
+            "name": "ADITIVO LIMPIADOR SISTEMA INYECCION",
+            "reference": "3890 182",
+            "unit": "UND",
+            "quantity": "1"
+          }
+        ]
+      }
+    }
   },
   "30000": {
-    "name": "Mantenimiento PM3 (30000 km)",
-    "items": [
-      {
-        "description": "ACTIVIDADES DE MANTENIMIENTO",
-        "type": "Inspecci\u00f3n"
-      },
-      {
-        "description": "TAREAS A EJECUTAR",
-        "type": "Inspecci\u00f3n"
-      },
-      {
-        "description": "CAMBIAR ACEITE DE MOTOR",
-        "type": "Preventivo"
-      },
-      {
-        "description": "CAMBIAR FILTRO DE ACEITE DEL MOTOR",
-        "type": "Preventivo"
-      },
-      {
-        "description": "CAMBIAR FILTRO DE AIRE",
-        "type": "Preventivo"
-      },
-      {
-        "description": "CAMBIAR FILTRO DE COMBUSTIBLE",
-        "type": "Preventivo"
-      },
-      {
-        "description": "CAMBIAR FILTRO DE UREA",
-        "type": "Preventivo"
-      },
-      {
-        "description": "CAMBIAR LIQUIDO DEL SISTEMA DE FRENOS",
-        "type": "Preventivo"
-      },
-      {
-        "description": "CAMBIO DE REFRIGERANTE DE MOTOR",
-        "type": "Inspecci\u00f3n"
-      },
-      {
-        "description": "CAMBIAR CORREA ACCESORIOS",
-        "type": "Preventivo"
-      },
-      {
-        "description": "CAMBIAR CORREA AIRE ACONDICIONADO",
-        "type": "Preventivo"
-      },
-      {
-        "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL DEL SISTEMA DE FRENOS",
-        "type": "Inspecci\u00f3n"
-      },
-      {
-        "description": "REVISION DEL ESTADO DE LA BANDA DE FRENOS",
-        "type": "Inspecci\u00f3n"
-      },
-      {
-        "description": "REVISION DEL ESTADO DE TAMBOR DE FRENOS",
-        "type": "Inspecci\u00f3n"
-      },
-      {
-        "description": "REVISION DE ESTADO DE LAS PASTILLAS DE FRENO",
-        "type": "Inspecci\u00f3n"
-      },
-      {
-        "description": "REVISION DEL ESTADO DE LOS DISCOS DE FRENO",
-        "type": "Inspecci\u00f3n"
-      },
-      {
-        "description": "REVISION DEL ESTADO DE LOS AMORTIGUADORES",
-        "type": "Inspecci\u00f3n"
-      },
-      {
-        "description": "REVISION DEL ESTADO DE LOS TERMINALES DE DIRECCION",
-        "type": "Inspecci\u00f3n"
-      },
-      {
-        "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE LAS PUNTAS DE EJE",
-        "type": "Inspecci\u00f3n"
-      },
-      {
-        "description": "REVISION DEL ESTADO DE LA BARRA TRANSVERSAL",
-        "type": "Inspecci\u00f3n"
-      },
-      {
-        "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL EMBRAGUE",
-        "type": "Inspecci\u00f3n"
-      },
-      {
-        "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE PEDALES(FRENO-ACELERACION-EMBRAGUE)",
-        "type": "Inspecci\u00f3n"
-      },
-      {
-        "description": "REVISION DEL ESTADO DE LAS LLANTAS",
-        "type": "Inspecci\u00f3n"
-      },
-      {
-        "description": "REVISION DEL ESTADO DE ELEMENTOS DE CABINA (PUERTAS-ASIENTOS-VOLANTE-ESPEJOS)",
-        "type": "Inspecci\u00f3n"
-      },
-      {
-        "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL TABLERO(LUCES-ALARMAS)",
-        "type": "Inspecci\u00f3n"
-      },
-      {
-        "description": "REVISION DEL ESTADO DE FUNCIONAMIENTO DE LAS ALARMAS DE EMERGENCIA",
-        "type": "Inspecci\u00f3n"
-      },
-      {
-        "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL SIST DE LUCES (DELANTERAS-DIRECIONALES-STOP-CABINA)",
-        "type": "Inspecci\u00f3n"
-      },
-      {
-        "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE BATERIAS",
-        "type": "Inspecci\u00f3n"
-      },
-      {
-        "description": "REVISION DEL ESTADOY FUNCIONAMIENTO DEL CABLEADO DEL EQUIPO",
-        "type": "Inspecci\u00f3n"
-      },
-      {
-        "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL ALTERNADOR",
-        "type": "Inspecci\u00f3n"
-      },
-      {
-        "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL SISTEMA DE ARRANQUE",
-        "type": "Inspecci\u00f3n"
-      },
-      {
-        "description": "REVISION DEL ESTADO DEL MOTOR(FUGAS-RUIDOS)",
-        "type": "Inspecci\u00f3n"
-      },
-      {
-        "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE MANGUERAS DEL SISTEMA",
-        "type": "Inspecci\u00f3n"
-      },
-      {
-        "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL RADIADOR",
-        "type": "Inspecci\u00f3n"
-      },
-      {
-        "description": "LIMPIAR Y/O LAVAR RADIADOR",
-        "type": "Inspecci\u00f3n"
+    "name": "Mantenimiento 30,000 KM",
+    "items": [],
+    "supplies": [],
+    "variants": {
+      "RAM": {
+        "name": "Mantenimiento 30,000 KM (RAM)",
+        "items": [
+          {
+            "description": "FILTRO COMBUSTIBLE",
+            "type": "Inspección"
+          },
+          {
+            "description": "CAMBIAR ACEITE DE MOTOR",
+            "type": "Cambio"
+          },
+          {
+            "description": "CAMBIAR FILTRO DE ACEITE DEL MOTOR",
+            "type": "Cambio"
+          },
+          {
+            "description": "CAMBIAR FILTRO DE AIRE",
+            "type": "Cambio"
+          },
+          {
+            "description": "CAMBIAR FILTRO COMBUSTIBLE",
+            "type": "Cambio"
+          },
+          {
+            "description": "CAMBIAR FILTRO DE AIRE ACONDICIONADO",
+            "type": "Cambio"
+          },
+          {
+            "description": "CAMBIO DE BUJIAS",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION Y AJUSTE NIVEL ACEITE DE TRANSMISION",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION Y AJUSTE DE NIVEL DE REFRIGERANTE",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION Y AJUSTE DE NIVEL DE ACEITE DE FRENOS",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE CORREAS",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE POLEAS Y TENSORES",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION Y AJUSTE DE NIVEL DE ACEITE DE DIRECCION",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL DEL SISTEMA DE FRENOS",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DE LA BANDA DE FRENOS",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DE TAMBOR DE FRENOS",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DE ESTADO DE LAS PASTILLAS DE FRENO",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DE LOS DISCOS DE FRENO",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DE LOS AMORTIGUADORES",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DE LOS TERMINALES DE DIRECCION",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE LAS PUNTAS DE EJE",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DE LA BARRA TRANSVERSAL",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL EMBRAGUE",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE PEDALES(FRENO-ACELERACION-EMBRAGUE)",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DE LAS LLANTAS",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DE ELEMENTOS DE CABINA (PUERTAS-ASIENTOS-VOLANTE-ESPEJOS)",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL TABLERO(LUCES-ALARMAS)",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DE FUNCIONAMIENTO DE LAS ALARMAS DE EMERGENCIA",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL SIST DE LUCES (DELANTERAS-DIRECIONALES-STOP-CABINA)",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE BATERIAS",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADOY FUNCIONAMIENTO DEL CABLEADO DEL EQUIPO",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL ALTERNADOR",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL SISTEMA DE ARRANQUE",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DEL MOTOR(FUGAS-RUIDOS)",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE MANGUERAS DEL SISTEMA",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL RADIADOR",
+            "type": "Inspección"
+          },
+          {
+            "description": "LIMPIAR Y/O LAVAR RADIADOR",
+            "type": "Inspección"
+          }
+        ],
+        "supplies": [
+          {
+            "name": "ACEITE DE MOTOR",
+            "reference": "0W20",
+            "unit": "GAL",
+            "quantity": "1"
+          },
+          {
+            "name": "FILTRO DE ACEITE DE MOTOR",
+            "reference": "7094709",
+            "unit": "GAL",
+            "quantity": "1"
+          },
+          {
+            "name": "FILTRO DE AIRE",
+            "reference": "52046268",
+            "unit": "UND",
+            "quantity": "1"
+          },
+          {
+            "name": "FILTRO AIRE ACONDICIONADO",
+            "reference": "51842923",
+            "unit": "UND",
+            "quantity": "1"
+          },
+          {
+            "name": "BUJIAS",
+            "reference": "55260260",
+            "unit": "UND",
+            "quantity": "4"
+          }
+        ]
       }
-    ],
-    "supplies": [
-      "FILTRO DE ACEITE DE MOTOR",
-      "FILTRO DE AIRE",
-      "FILTRO DE  COMBUSTIBLE",
-      "FILTRO DE UREA",
-      "CORREA ACCESORIOS"
-    ]
+    }
+  },
+  "35000": {
+    "name": "Mantenimiento 35,000 KM",
+    "items": [],
+    "supplies": [],
+    "variants": {
+      "JMC": {
+        "name": "Mantenimiento 35,000 KM (JMC)",
+        "items": [
+          {
+            "description": "CAMBIAR ACEITE DE MOTOR",
+            "type": "Cambio"
+          },
+          {
+            "description": "CAMBIAR FILTRO DE ACEITE DEL MOTOR",
+            "type": "Cambio"
+          },
+          {
+            "description": "CAMBIAR FILTRO DE AIRE",
+            "type": "Cambio"
+          },
+          {
+            "description": "CAMBIAR FILTRO DE COMBUSTIBLE",
+            "type": "Cambio"
+          },
+          {
+            "description": "CAMBIAR FILTRO DE UREA",
+            "type": "Cambio"
+          },
+          {
+            "description": "CAMBIAR LIQUIDO DEL SISTEMA DE FRENOS",
+            "type": "Cambio"
+          },
+          {
+            "description": "CAMBIO DE REFRIGERANTE DE MOTOR",
+            "type": "Inspección"
+          },
+          {
+            "description": "CAMBIAR CORREA ACCESORIOS",
+            "type": "Cambio"
+          },
+          {
+            "description": "CAMBIAR CORREA AIRE ACONDICIONADO",
+            "type": "Cambio"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL DEL SISTEMA DE FRENOS",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DE LA BANDA DE FRENOS",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DE TAMBOR DE FRENOS",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DE ESTADO DE LAS PASTILLAS DE FRENO",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DE LOS DISCOS DE FRENO",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DE LOS AMORTIGUADORES",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DE LOS TERMINALES DE DIRECCION",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE LAS PUNTAS DE EJE",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DE LA BARRA TRANSVERSAL",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL EMBRAGUE",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE PEDALES(FRENO-ACELERACION-EMBRAGUE)",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DE LAS LLANTAS",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DE ELEMENTOS DE CABINA (PUERTAS-ASIENTOS-VOLANTE-ESPEJOS)",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL TABLERO(LUCES-ALARMAS)",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DE FUNCIONAMIENTO DE LAS ALARMAS DE EMERGENCIA",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL SIST DE LUCES (DELANTERAS-DIRECIONALES-STOP-CABINA)",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE BATERIAS",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADOY FUNCIONAMIENTO DEL CABLEADO DEL EQUIPO",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL ALTERNADOR",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL SISTEMA DE ARRANQUE",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DEL MOTOR(FUGAS-RUIDOS)",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE MANGUERAS DEL SISTEMA",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL RADIADOR",
+            "type": "Inspección"
+          },
+          {
+            "description": "LIMPIAR Y/O LAVAR RADIADOR",
+            "type": "Inspección"
+          }
+        ],
+        "supplies": [
+          {
+            "name": "ACEITE DE MOTOR",
+            "reference": "(Mobil Delvac 15W40) API CK-4",
+            "unit": "GAL",
+            "quantity": "1.75"
+          },
+          {
+            "name": "ACEITE DE DIFERENCIAL",
+            "reference": "85W140",
+            "unit": "GAL",
+            "quantity": "0.75"
+          },
+          {
+            "name": "ACEITE DE TRANSMISION",
+            "reference": "80W90",
+            "unit": "GAL",
+            "quantity": "0.75"
+          },
+          {
+            "name": "ACEITE TRANSFER",
+            "reference": "ATF III",
+            "unit": "GAL",
+            "quantity": "0.75"
+          },
+          {
+            "name": "REFRIGERANTE",
+            "reference": "50/50",
+            "unit": "GAL",
+            "quantity": "2"
+          },
+          {
+            "name": "LIQUIDO DE FRENOS",
+            "reference": "DOT4",
+            "unit": "GAL",
+            "quantity": "2"
+          },
+          {
+            "name": "FILTRO DE ACEITE DE MOTOR",
+            "reference": "EP1-6612-AB",
+            "unit": "GAL",
+            "quantity": "1"
+          },
+          {
+            "name": "FILTRO DE AIRE",
+            "reference": "EJP1-9601-AB",
+            "unit": "UND",
+            "quantity": "1"
+          },
+          {
+            "name": "FILTRO DE  COMBUSTIBLE",
+            "reference": "E9P2-9156AA",
+            "unit": "UND",
+            "quantity": "1"
+          },
+          {
+            "name": "FILTRO DE UREA",
+            "reference": "ELP1-5L210-AA",
+            "unit": "UND",
+            "quantity": "1"
+          },
+          {
+            "name": "CORREA ACCESORIOS",
+            "reference": "CN3-6C301-AC",
+            "unit": "UND",
+            "quantity": "1"
+          },
+          {
+            "name": "CORREA A/C",
+            "reference": "JP1-19896-BB",
+            "unit": "UND",
+            "quantity": "1"
+          }
+        ]
+      }
+    }
+  },
+  "40000": {
+    "name": "Mantenimiento 40,000 KM",
+    "items": [],
+    "supplies": [],
+    "variants": {
+      "RAM": {
+        "name": "Mantenimiento 40,000 KM (RAM)",
+        "items": [
+          {
+            "description": "CAMBIAR ACEITE DE MOTOR",
+            "type": "Cambio"
+          },
+          {
+            "description": "CAMBIAR FILTRO DE ACEITE DEL MOTOR",
+            "type": "Cambio"
+          },
+          {
+            "description": "CAMBIAR FILTRO DE AIRE",
+            "type": "Cambio"
+          },
+          {
+            "description": "CAMBIAR FILTRO DE AIRE ACONDICIONADO",
+            "type": "Cambio"
+          },
+          {
+            "description": "CAMBIAR LIQUIDO DEL SISTEMA DE FRENOS",
+            "type": "Cambio"
+          },
+          {
+            "description": "REVISION Y AJUSTE NIVEL ACEITE DE TRANSMISION",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION Y AJUSTE DE NIVEL DE REFRIGERANTE",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE CORREAS",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE POLEAS Y TENSORES",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION Y AJUSTE DE NIVEL DE ACEITE DE DIRECCION",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL DEL SISTEMA DE FRENOS",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DE LA BANDA DE FRENOS",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DE TAMBOR DE FRENOS",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DE ESTADO DE LAS PASTILLAS DE FRENO",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DE LOS DISCOS DE FRENO",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DE LOS AMORTIGUADORES",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DE LOS TERMINALES DE DIRECCION",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE LAS PUNTAS DE EJE",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DE LA BARRA TRANSVERSAL",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL EMBRAGUE",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE PEDALES(FRENO-ACELERACION-EMBRAGUE)",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DE LAS LLANTAS",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DE ELEMENTOS DE CABINA (PUERTAS-ASIENTOS-VOLANTE-ESPEJOS)",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL TABLERO(LUCES-ALARMAS)",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DE FUNCIONAMIENTO DE LAS ALARMAS DE EMERGENCIA",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL SIST DE LUCES (DELANTERAS-DIRECIONALES-STOP-CABINA)",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE BATERIAS",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADOY FUNCIONAMIENTO DEL CABLEADO DEL EQUIPO",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL ALTERNADOR",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL SISTEMA DE ARRANQUE",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DEL MOTOR(FUGAS-RUIDOS)",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE MANGUERAS DEL SISTEMA",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL RADIADOR",
+            "type": "Inspección"
+          },
+          {
+            "description": "LIMPIAR Y/O LAVAR RADIADOR",
+            "type": "Inspección"
+          }
+        ],
+        "supplies": [
+          {
+            "name": "ACEITE DE MOTOR",
+            "reference": "0W20",
+            "unit": "GAL",
+            "quantity": "1"
+          },
+          {
+            "name": "LIQUIDO DE FRENOS",
+            "reference": "16 107 255 80",
+            "unit": "GAL",
+            "quantity": "2"
+          },
+          {
+            "name": "FILTRO DE ACEITE DE MOTOR",
+            "reference": "7094709",
+            "unit": "GAL",
+            "quantity": "1"
+          },
+          {
+            "name": "FILTRO DE AIRE",
+            "reference": "52046268",
+            "unit": "UND",
+            "quantity": "1"
+          },
+          {
+            "name": "FILTRO AIRE ACONDICIONADO",
+            "reference": "51842923",
+            "unit": "UND",
+            "quantity": "1"
+          }
+        ]
+      }
+    }
+  },
+  "42000": {
+    "name": "Mantenimiento 42,000 KM",
+    "items": [],
+    "supplies": [],
+    "variants": {
+      "JMC": {
+        "name": "Mantenimiento 42,000 KM (JMC)",
+        "items": [
+          {
+            "description": "CAMBIAR ACEITE DE MOTOR",
+            "type": "Cambio"
+          },
+          {
+            "description": "CAMBIAR FILTRO DE ACEITE DEL MOTOR",
+            "type": "Cambio"
+          },
+          {
+            "description": "CAMBIAR FILTRO DE AIRE",
+            "type": "Cambio"
+          },
+          {
+            "description": "CAMBIAR FILTRO DE COMBUSTIBLE",
+            "type": "Cambio"
+          },
+          {
+            "description": "CAMBIAR FILTRO AIRE ACONDICIONADO",
+            "type": "Cambio"
+          },
+          {
+            "description": "REVISION Y AJUSTE DE NIVEL DE REFRIGERANTE",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION Y AJUSTE DE NIVEL DE LIQUIDO DE FRENOS",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE CORREA DE ACCESORIOS",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE CORREA DE AIRE ACONDICIONADO",
+            "type": "Inspección"
+          },
+          {
+            "description": "ADICIONAR ADITIVO AL SISTEMA DE INYECCION",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL DEL SISTEMA DE FRENOS",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DE LA BANDA DE FRENOS",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DE TAMBOR DE FRENOS",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DE ESTADO DE LAS PASTILLAS DE FRENO",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DE LOS DISCOS DE FRENO",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DE LOS AMORTIGUADORES",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DE LOS TERMINALES DE DIRECCION",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE LAS PUNTAS DE EJE",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DE LA BARRA TRANSVERSAL",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL EMBRAGUE",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE PEDALES(FRENO-ACELERACION-EMBRAGUE)",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DE LAS LLANTAS",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DE ELEMENTOS DE CABINA (PUERTAS-ASIENTOS-VOLANTE-ESPEJOS)",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL TABLERO(LUCES-ALARMAS)",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DE FUNCIONAMIENTO DE LAS ALARMAS DE EMERGENCIA",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL SIST DE LUCES (DELANTERAS-DIRECIONALES-STOP-CABINA)",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE BATERIAS",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADOY FUNCIONAMIENTO DEL CABLEADO DEL EQUIPO",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL ALTERNADOR",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL SISTEMA DE ARRANQUE",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DEL MOTOR(FUGAS-RUIDOS)",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE MANGUERAS DEL SISTEMA",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL RADIADOR",
+            "type": "Inspección"
+          },
+          {
+            "description": "LIMPIAR Y/O LAVAR RADIADOR",
+            "type": "Inspección"
+          }
+        ],
+        "supplies": [
+          {
+            "name": "ACEITE DE MOTOR",
+            "reference": "(Mobil Delvac 15W40) API CK-4",
+            "unit": "GAL",
+            "quantity": "1.75"
+          },
+          {
+            "name": "FILTRO DE ACEITE DE MOTOR",
+            "reference": "EP1-6612-AB",
+            "unit": "GAL",
+            "quantity": "1"
+          },
+          {
+            "name": "FILTRO DE AIRE",
+            "reference": "EJP1-9601-AB",
+            "unit": "UND",
+            "quantity": "1"
+          },
+          {
+            "name": "FILTRO DE  COMBUSTIBLE",
+            "reference": "E9P2-9156AA",
+            "unit": "UND",
+            "quantity": "1"
+          },
+          {
+            "name": "ADITIVO LIMPIADOR SISTEMA INYECCION",
+            "reference": "3890 182",
+            "unit": "UND",
+            "quantity": "1"
+          }
+        ]
+      }
+    }
+  },
+  "49000": {
+    "name": "Mantenimiento 49,000 KM",
+    "items": [],
+    "supplies": [],
+    "variants": {
+      "JMC": {
+        "name": "Mantenimiento 49,000 KM (JMC)",
+        "items": [
+          {
+            "description": "CAMBIAR ACEITE DE MOTOR",
+            "type": "Cambio"
+          },
+          {
+            "description": "CAMBIAR FILTRO DE ACEITE DEL MOTOR",
+            "type": "Cambio"
+          },
+          {
+            "description": "CAMBIAR FILTRO DE AIRE",
+            "type": "Cambio"
+          },
+          {
+            "description": "CAMBIAR FILTRO DE COMBUSTIBLE",
+            "type": "Cambio"
+          },
+          {
+            "description": "REVISION Y AJUSTE DE NIVEL DE REFRIGERANTE",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION Y AJUSTE DE NIVEL DE LIQUIDO DE FRENOS",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE CORREA DE ACCESORIOS",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE CORREA DE AIRE ACONDICIONADO",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL DEL SISTEMA DE FRENOS",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DE LA BANDA DE FRENOS",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DE TAMBOR DE FRENOS",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DE ESTADO DE LAS PASTILLAS DE FRENO",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DE LOS DISCOS DE FRENO",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DE LOS AMORTIGUADORES",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DE LOS TERMINALES DE DIRECCION",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE LAS PUNTAS DE EJE",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DE LA BARRA TRANSVERSAL",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL EMBRAGUE",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE PEDALES(FRENO-ACELERACION-EMBRAGUE)",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DE LAS LLANTAS",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DE ELEMENTOS DE CABINA (PUERTAS-ASIENTOS-VOLANTE-ESPEJOS)",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL TABLERO(LUCES-ALARMAS)",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DE FUNCIONAMIENTO DE LAS ALARMAS DE EMERGENCIA",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL SIST DE LUCES (DELANTERAS-DIRECIONALES-STOP-CABINA)",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE BATERIAS",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADOY FUNCIONAMIENTO DEL CABLEADO DEL EQUIPO",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL ALTERNADOR",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL SISTEMA DE ARRANQUE",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DEL MOTOR(FUGAS-RUIDOS)",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE MANGUERAS DEL SISTEMA",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL RADIADOR",
+            "type": "Inspección"
+          },
+          {
+            "description": "LIMPIAR Y/O LAVAR RADIADOR",
+            "type": "Inspección"
+          }
+        ],
+        "supplies": [
+          {
+            "name": "ACEITE DE MOTOR",
+            "reference": "(Mobil Delvac 15W40) API CK-4",
+            "unit": "GAL",
+            "quantity": "1.75"
+          },
+          {
+            "name": "FILTRO DE ACEITE DE MOTOR",
+            "reference": "EP1-6612-AB",
+            "unit": "GAL",
+            "quantity": "1"
+          },
+          {
+            "name": "FILTRO DE AIRE",
+            "reference": "EJP1-9601-AB",
+            "unit": "UND",
+            "quantity": "1"
+          },
+          {
+            "name": "FILTRO DE  COMBUSTIBLE",
+            "reference": "E9P2-9156AA",
+            "unit": "UND",
+            "quantity": "1"
+          }
+        ]
+      }
+    }
   },
   "50000": {
-    "name": "Mantenimiento PM4 (50000 km)",
-    "items": [
-      {
-        "description": "ACTIVIDADES DE MANTENIMIENTO",
-        "type": "Inspecci\u00f3n"
-      },
-      {
-        "description": "TAREAS A EJECUTAR",
-        "type": "Inspecci\u00f3n"
-      },
-      {
-        "description": "CAMBIAR ACEITE DE MOTOR",
-        "type": "Preventivo"
-      },
-      {
-        "description": "CAMBIAR FILTRO DE ACEITE DEL MOTOR",
-        "type": "Preventivo"
-      },
-      {
-        "description": "CAMBIAR FILTRO DE AIRE",
-        "type": "Preventivo"
-      },
-      {
-        "description": "CAMBIAR FILTRO DE COMBUSTIBLE",
-        "type": "Preventivo"
-      },
-      {
-        "description": "ADICIONAR ADITIVO AL SISTEMA DE INYECCION",
-        "type": "Inspecci\u00f3n"
-      },
-      {
-        "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL DEL SISTEMA DE FRENOS",
-        "type": "Inspecci\u00f3n"
-      },
-      {
-        "description": "REVISION DEL ESTADO DE LA BANDA DE FRENOS",
-        "type": "Inspecci\u00f3n"
-      },
-      {
-        "description": "REVISION DEL ESTADO DE TAMBOR DE FRENOS",
-        "type": "Inspecci\u00f3n"
-      },
-      {
-        "description": "REVISION DE ESTADO DE LAS PASTILLAS DE FRENO",
-        "type": "Inspecci\u00f3n"
-      },
-      {
-        "description": "REVISION DEL ESTADO DE LOS DISCOS DE FRENO",
-        "type": "Inspecci\u00f3n"
-      },
-      {
-        "description": "REVISION DEL ESTADO DE LOS AMORTIGUADORES",
-        "type": "Inspecci\u00f3n"
-      },
-      {
-        "description": "REVISION DEL ESTADO DE LOS TERMINALES DE DIRECCION",
-        "type": "Inspecci\u00f3n"
-      },
-      {
-        "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE LAS PUNTAS DE EJE",
-        "type": "Inspecci\u00f3n"
-      },
-      {
-        "description": "REVISION DEL ESTADO DE LA BARRA TRANSVERSAL",
-        "type": "Inspecci\u00f3n"
-      },
-      {
-        "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL EMBRAGUE",
-        "type": "Inspecci\u00f3n"
-      },
-      {
-        "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE PEDALES(FRENO-ACELERACION-EMBRAGUE)",
-        "type": "Inspecci\u00f3n"
-      },
-      {
-        "description": "REVISION DEL ESTADO DE LAS LLANTAS",
-        "type": "Inspecci\u00f3n"
-      },
-      {
-        "description": "REVISION DEL ESTADO DE ELEMENTOS DE CABINA (PUERTAS-ASIENTOS-VOLANTE-ESPEJOS)",
-        "type": "Inspecci\u00f3n"
-      },
-      {
-        "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL TABLERO(LUCES-ALARMAS)",
-        "type": "Inspecci\u00f3n"
-      },
-      {
-        "description": "REVISION DEL ESTADO DE FUNCIONAMIENTO DE LAS ALARMAS DE EMERGENCIA",
-        "type": "Inspecci\u00f3n"
-      },
-      {
-        "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL SIST DE LUCES (DELANTERAS-DIRECIONALES-STOP-CABINA)",
-        "type": "Inspecci\u00f3n"
-      },
-      {
-        "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE BATERIAS",
-        "type": "Inspecci\u00f3n"
-      },
-      {
-        "description": "REVISION DEL ESTADOY FUNCIONAMIENTO DEL CABLEADO DEL EQUIPO",
-        "type": "Inspecci\u00f3n"
-      },
-      {
-        "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL ALTERNADOR",
-        "type": "Inspecci\u00f3n"
-      },
-      {
-        "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL SISTEMA DE ARRANQUE",
-        "type": "Inspecci\u00f3n"
-      },
-      {
-        "description": "REVISION DEL ESTADO DEL MOTOR(FUGAS-RUIDOS)",
-        "type": "Inspecci\u00f3n"
-      },
-      {
-        "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE MANGUERAS DEL SISTEMA",
-        "type": "Inspecci\u00f3n"
-      },
-      {
-        "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL RADIADOR",
-        "type": "Inspecci\u00f3n"
-      },
-      {
-        "description": "LIMPIAR Y/O LAVAR RADIADOR",
-        "type": "Inspecci\u00f3n"
+    "name": "Mantenimiento 50,000 KM",
+    "items": [],
+    "supplies": [],
+    "variants": {
+      "RAM": {
+        "name": "Mantenimiento 50,000 KM (RAM)",
+        "items": [
+          {
+            "description": "CAMBIAR ACEITE DE MOTOR",
+            "type": "Cambio"
+          },
+          {
+            "description": "CAMBIAR FILTRO DE ACEITE DEL MOTOR",
+            "type": "Cambio"
+          },
+          {
+            "description": "CAMBIAR FILTRO DE AIRE",
+            "type": "Cambio"
+          },
+          {
+            "description": "CAMBIAR FILTRO DE AIRE ACONDICIONADO",
+            "type": "Cambio"
+          },
+          {
+            "description": "CAMBIO DE REFRIGERANTE DE MOTOR",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION Y AJUSTE NIVEL ACEITE DE TRANSMISION",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION Y AJUSTE DE NIVEL DE ACEITE DE FRENOS",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE CORREAS",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE POLEAS Y TENSORES",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION Y AJUSTE DE NIVEL DE ACEITE DE DIRECCION",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL DEL SISTEMA DE FRENOS",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DE LA BANDA DE FRENOS",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DE TAMBOR DE FRENOS",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DE ESTADO DE LAS PASTILLAS DE FRENO",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DE LOS DISCOS DE FRENO",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DE LOS AMORTIGUADORES",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DE LOS TERMINALES DE DIRECCION",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE LAS PUNTAS DE EJE",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DE LA BARRA TRANSVERSAL",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL EMBRAGUE",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE PEDALES(FRENO-ACELERACION-EMBRAGUE)",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DE LAS LLANTAS",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DE ELEMENTOS DE CABINA (PUERTAS-ASIENTOS-VOLANTE-ESPEJOS)",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL TABLERO(LUCES-ALARMAS)",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DE FUNCIONAMIENTO DE LAS ALARMAS DE EMERGENCIA",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL SIST DE LUCES (DELANTERAS-DIRECIONALES-STOP-CABINA)",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE BATERIAS",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADOY FUNCIONAMIENTO DEL CABLEADO DEL EQUIPO",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL ALTERNADOR",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL SISTEMA DE ARRANQUE",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DEL MOTOR(FUGAS-RUIDOS)",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE MANGUERAS DEL SISTEMA",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL RADIADOR",
+            "type": "Inspección"
+          },
+          {
+            "description": "LIMPIAR Y/O LAVAR RADIADOR",
+            "type": "Inspección"
+          }
+        ],
+        "supplies": [
+          {
+            "name": "ACEITE DE MOTOR",
+            "reference": "0W20",
+            "unit": "GAL",
+            "quantity": "1"
+          },
+          {
+            "name": "REFRIGERANTE",
+            "reference": "68163848",
+            "unit": "GAL",
+            "quantity": "1"
+          },
+          {
+            "name": "FILTRO DE ACEITE DE MOTOR",
+            "reference": "7094709",
+            "unit": "GAL",
+            "quantity": "1"
+          },
+          {
+            "name": "FILTRO DE AIRE",
+            "reference": "52046268",
+            "unit": "UND",
+            "quantity": "1"
+          },
+          {
+            "name": "FILTRO AIRE ACONDICIONADO",
+            "reference": "51842923",
+            "unit": "UND",
+            "quantity": "1"
+          }
+        ]
       }
-    ],
-    "supplies": [
-      "FILTRO DE ACEITE DE MOTOR",
-      "FILTRO DE AIRE",
-      "FILTRO DE  COMBUSTIBLE",
-      "FILTRO DE UREA",
-      "CORREA ACCESORIOS"
-    ]
+    }
+  },
+  "56000": {
+    "name": "Mantenimiento 56,000 KM",
+    "items": [],
+    "supplies": [],
+    "variants": {
+      "JMC": {
+        "name": "Mantenimiento 56,000 KM (JMC)",
+        "items": [
+          {
+            "description": "CAMBIAR ACEITE DE MOTOR",
+            "type": "Cambio"
+          },
+          {
+            "description": "CAMBIAR FILTRO DE ACEITE DEL MOTOR",
+            "type": "Cambio"
+          },
+          {
+            "description": "CAMBIAR FILTRO DE AIRE",
+            "type": "Cambio"
+          },
+          {
+            "description": "CAMBIAR FILTRO DE COMBUSTIBLE",
+            "type": "Cambio"
+          },
+          {
+            "description": "CAMBIAR FILTRO AIRE ACONDICIONADO",
+            "type": "Cambio"
+          },
+          {
+            "description": "REVISION Y AJUSTE DE NIVEL DE REFRIGERANTE",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION Y AJUSTE DE NIVEL DE LIQUIDO DE FRENOS",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE CORREA DE ACCESORIOS",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE CORREA DE AIRE ACONDICIONADO",
+            "type": "Inspección"
+          },
+          {
+            "description": "ADICIONAR ADITIVO AL SISTEMA DE INYECCION",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL DEL SISTEMA DE FRENOS",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DE LA BANDA DE FRENOS",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DE TAMBOR DE FRENOS",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DE ESTADO DE LAS PASTILLAS DE FRENO",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DE LOS DISCOS DE FRENO",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DE LOS AMORTIGUADORES",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DE LOS TERMINALES DE DIRECCION",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE LAS PUNTAS DE EJE",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DE LA BARRA TRANSVERSAL",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL EMBRAGUE",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE PEDALES(FRENO-ACELERACION-EMBRAGUE)",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DE LAS LLANTAS",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DE ELEMENTOS DE CABINA (PUERTAS-ASIENTOS-VOLANTE-ESPEJOS)",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL TABLERO(LUCES-ALARMAS)",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DE FUNCIONAMIENTO DE LAS ALARMAS DE EMERGENCIA",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL SIST DE LUCES (DELANTERAS-DIRECIONALES-STOP-CABINA)",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE BATERIAS",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADOY FUNCIONAMIENTO DEL CABLEADO DEL EQUIPO",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL ALTERNADOR",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL SISTEMA DE ARRANQUE",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DEL MOTOR(FUGAS-RUIDOS)",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE MANGUERAS DEL SISTEMA",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL RADIADOR",
+            "type": "Inspección"
+          },
+          {
+            "description": "LIMPIAR Y/O LAVAR RADIADOR",
+            "type": "Inspección"
+          }
+        ],
+        "supplies": [
+          {
+            "name": "ACEITE DE MOTOR",
+            "reference": "(Mobil Delvac 15W40) API CK-4",
+            "unit": "GAL",
+            "quantity": "1.75"
+          },
+          {
+            "name": "FILTRO DE ACEITE DE MOTOR",
+            "reference": "EP1-6612-AB",
+            "unit": "GAL",
+            "quantity": "1"
+          },
+          {
+            "name": "FILTRO DE AIRE",
+            "reference": "EJP1-9601-AB",
+            "unit": "UND",
+            "quantity": "1"
+          },
+          {
+            "name": "FILTRO DE  COMBUSTIBLE",
+            "reference": "E9P2-9156AA",
+            "unit": "UND",
+            "quantity": "1"
+          },
+          {
+            "name": "ADITIVO LIMPIADOR SISTEMA INYECCION",
+            "reference": "3890 182",
+            "unit": "UND",
+            "quantity": "1"
+          }
+        ]
+      }
+    }
+  },
+  "60000": {
+    "name": "Mantenimiento 60,000 KM",
+    "items": [],
+    "supplies": [],
+    "variants": {
+      "RAM": {
+        "name": "Mantenimiento 60,000 KM (RAM)",
+        "items": [
+          {
+            "description": "FILTRO COMBUSTIBLE",
+            "type": "Inspección"
+          },
+          {
+            "description": "CAMBIAR ACEITE DE MOTOR",
+            "type": "Cambio"
+          },
+          {
+            "description": "CAMBIAR FILTRO DE ACEITE DEL MOTOR",
+            "type": "Cambio"
+          },
+          {
+            "description": "CAMBIAR FILTRO DE AIRE",
+            "type": "Cambio"
+          },
+          {
+            "description": "CAMBIAR FILTRO COMBUSTIBLE",
+            "type": "Cambio"
+          },
+          {
+            "description": "CAMBIAR FILTRO DE AIRE ACONDICIONADO",
+            "type": "Cambio"
+          },
+          {
+            "description": "CAMBIO DE BUJIAS",
+            "type": "Inspección"
+          },
+          {
+            "description": "CAMBIAR CORREA ACCESORIOS",
+            "type": "Cambio"
+          },
+          {
+            "description": "CAMBIAR TENSOR CORREA ACCESORIOS",
+            "type": "Cambio"
+          },
+          {
+            "description": "REVISION Y AJUSTE NIVEL ACEITE DE TRANSMISION",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION Y AJUSTE DE NIVEL DE REFRIGERANTE",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION Y AJUSTE DE NIVEL DE ACEITE DE FRENOS",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION Y AJUSTE DE NIVEL DE ACEITE DE DIRECCION",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL DEL SISTEMA DE FRENOS",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DE LA BANDA DE FRENOS",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DE TAMBOR DE FRENOS",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DE ESTADO DE LAS PASTILLAS DE FRENO",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DE LOS DISCOS DE FRENO",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DE LOS AMORTIGUADORES",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DE LOS TERMINALES DE DIRECCION",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE LAS PUNTAS DE EJE",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DE LA BARRA TRANSVERSAL",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL EMBRAGUE",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE PEDALES(FRENO-ACELERACION-EMBRAGUE)",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DE LAS LLANTAS",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DE ELEMENTOS DE CABINA (PUERTAS-ASIENTOS-VOLANTE-ESPEJOS)",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL TABLERO(LUCES-ALARMAS)",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DE FUNCIONAMIENTO DE LAS ALARMAS DE EMERGENCIA",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL SIST DE LUCES (DELANTERAS-DIRECIONALES-STOP-CABINA)",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE BATERIAS",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADOY FUNCIONAMIENTO DEL CABLEADO DEL EQUIPO",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL ALTERNADOR",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL SISTEMA DE ARRANQUE",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DEL MOTOR(FUGAS-RUIDOS)",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE MANGUERAS DEL SISTEMA",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL RADIADOR",
+            "type": "Inspección"
+          },
+          {
+            "description": "LIMPIAR Y/O LAVAR RADIADOR",
+            "type": "Inspección"
+          }
+        ],
+        "supplies": [
+          {
+            "name": "ACEITE DE MOTOR",
+            "reference": "0W20",
+            "unit": "GAL",
+            "quantity": "1"
+          },
+          {
+            "name": "FILTRO DE ACEITE DE MOTOR",
+            "reference": "7094709",
+            "unit": "GAL",
+            "quantity": "1"
+          },
+          {
+            "name": "FILTRO DE AIRE",
+            "reference": "52046268",
+            "unit": "UND",
+            "quantity": "1"
+          },
+          {
+            "name": "FILTRO AIRE ACONDICIONADO",
+            "reference": "51842923",
+            "unit": "UND",
+            "quantity": "1"
+          },
+          {
+            "name": "BUJIAS",
+            "reference": "55260260",
+            "unit": "UND",
+            "quantity": "4"
+          },
+          {
+            "name": "CORREA ACCESORIOS",
+            "reference": "55267966",
+            "unit": "UND",
+            "quantity": "1"
+          },
+          {
+            "name": "TENSOR CORREA ACCESORIOS",
+            "reference": "55267954",
+            "unit": "UND",
+            "quantity": "1"
+          }
+        ]
+      }
+    }
+  },
+  "63000": {
+    "name": "Mantenimiento 63,000 KM",
+    "items": [],
+    "supplies": [],
+    "variants": {
+      "JMC": {
+        "name": "Mantenimiento 63,000 KM (JMC)",
+        "items": [
+          {
+            "description": "CAMBIAR ACEITE DE MOTOR",
+            "type": "Cambio"
+          },
+          {
+            "description": "CAMBIAR FILTRO DE ACEITE DEL MOTOR",
+            "type": "Cambio"
+          },
+          {
+            "description": "CAMBIAR FILTRO DE AIRE",
+            "type": "Cambio"
+          },
+          {
+            "description": "CAMBIAR FILTRO DE COMBUSTIBLE",
+            "type": "Cambio"
+          },
+          {
+            "description": "REVISION Y AJUSTE DE NIVEL DE REFRIGERANTE",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION Y AJUSTE DE NIVEL DE LIQUIDO DE FRENOS",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE CORREA DE ACCESORIOS",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE CORREA DE AIRE ACONDICIONADO",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL DEL SISTEMA DE FRENOS",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DE LA BANDA DE FRENOS",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DE TAMBOR DE FRENOS",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DE ESTADO DE LAS PASTILLAS DE FRENO",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DE LOS DISCOS DE FRENO",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DE LOS AMORTIGUADORES",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DE LOS TERMINALES DE DIRECCION",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE LAS PUNTAS DE EJE",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DE LA BARRA TRANSVERSAL",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL EMBRAGUE",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE PEDALES(FRENO-ACELERACION-EMBRAGUE)",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DE LAS LLANTAS",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DE ELEMENTOS DE CABINA (PUERTAS-ASIENTOS-VOLANTE-ESPEJOS)",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL TABLERO(LUCES-ALARMAS)",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DE FUNCIONAMIENTO DE LAS ALARMAS DE EMERGENCIA",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL SIST DE LUCES (DELANTERAS-DIRECIONALES-STOP-CABINA)",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE BATERIAS",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADOY FUNCIONAMIENTO DEL CABLEADO DEL EQUIPO",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL ALTERNADOR",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL SISTEMA DE ARRANQUE",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DEL MOTOR(FUGAS-RUIDOS)",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE MANGUERAS DEL SISTEMA",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL RADIADOR",
+            "type": "Inspección"
+          },
+          {
+            "description": "LIMPIAR Y/O LAVAR RADIADOR",
+            "type": "Inspección"
+          }
+        ],
+        "supplies": [
+          {
+            "name": "ACEITE DE MOTOR",
+            "reference": "(Mobil Delvac 15W40) API CK-4",
+            "unit": "GAL",
+            "quantity": "1.75"
+          },
+          {
+            "name": "FILTRO DE ACEITE DE MOTOR",
+            "reference": "EP1-6612-AB",
+            "unit": "GAL",
+            "quantity": "1"
+          },
+          {
+            "name": "FILTRO DE AIRE",
+            "reference": "EJP1-9601-AB",
+            "unit": "UND",
+            "quantity": "1"
+          },
+          {
+            "name": "FILTRO DE  COMBUSTIBLE",
+            "reference": "E9P2-9156AA",
+            "unit": "UND",
+            "quantity": "1"
+          }
+        ]
+      }
+    }
+  },
+  "70000": {
+    "name": "Mantenimiento 70,000 KM",
+    "items": [],
+    "supplies": [],
+    "variants": {
+      "RAM": {
+        "name": "Mantenimiento 70,000 KM (RAM)",
+        "items": [
+          {
+            "description": "CAMBIAR ACEITE DE MOTOR",
+            "type": "Cambio"
+          },
+          {
+            "description": "CAMBIAR FILTRO DE ACEITE DEL MOTOR",
+            "type": "Cambio"
+          },
+          {
+            "description": "CAMBIAR FILTRO DE AIRE",
+            "type": "Cambio"
+          },
+          {
+            "description": "CAMBIAR FILTRO DE AIRE ACONDICIONADO",
+            "type": "Cambio"
+          },
+          {
+            "description": "REVISION Y AJUSTE NIVEL ACEITE DE TRANSMISION",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION Y AJUSTE DE NIVEL DE REFRIGERANTE",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION Y AJUSTE DE NIVEL DE ACEITE DE FRENOS",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE CORREAS",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE POLEAS Y TENSORES",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION Y AJUSTE DE NIVEL DE ACEITE DE DIRECCION",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL DEL SISTEMA DE FRENOS",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DE LA BANDA DE FRENOS",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DE TAMBOR DE FRENOS",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DE ESTADO DE LAS PASTILLAS DE FRENO",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DE LOS DISCOS DE FRENO",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DE LOS AMORTIGUADORES",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DE LOS TERMINALES DE DIRECCION",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE LAS PUNTAS DE EJE",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DE LA BARRA TRANSVERSAL",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL EMBRAGUE",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE PEDALES(FRENO-ACELERACION-EMBRAGUE)",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DE LAS LLANTAS",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DE ELEMENTOS DE CABINA (PUERTAS-ASIENTOS-VOLANTE-ESPEJOS)",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL TABLERO(LUCES-ALARMAS)",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DE FUNCIONAMIENTO DE LAS ALARMAS DE EMERGENCIA",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL SIST DE LUCES (DELANTERAS-DIRECIONALES-STOP-CABINA)",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE BATERIAS",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADOY FUNCIONAMIENTO DEL CABLEADO DEL EQUIPO",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL ALTERNADOR",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL SISTEMA DE ARRANQUE",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DEL MOTOR(FUGAS-RUIDOS)",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE MANGUERAS DEL SISTEMA",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL RADIADOR",
+            "type": "Inspección"
+          },
+          {
+            "description": "LIMPIAR Y/O LAVAR RADIADOR",
+            "type": "Inspección"
+          }
+        ],
+        "supplies": [
+          {
+            "name": "ACEITE DE MOTOR",
+            "reference": "0W20",
+            "unit": "GAL",
+            "quantity": "1"
+          },
+          {
+            "name": "FILTRO DE ACEITE DE MOTOR",
+            "reference": "7094709",
+            "unit": "GAL",
+            "quantity": "1"
+          },
+          {
+            "name": "FILTRO DE AIRE",
+            "reference": "52046268",
+            "unit": "UND",
+            "quantity": "1"
+          },
+          {
+            "name": "FILTRO AIRE ACONDICIONADO",
+            "reference": "51842923",
+            "unit": "UND",
+            "quantity": "1"
+          }
+        ]
+      },
+      "JMC": {
+        "name": "Mantenimiento 70,000 KM (JMC)",
+        "items": [
+          {
+            "description": "CAMBIAR ACEITE DE MOTOR",
+            "type": "Cambio"
+          },
+          {
+            "description": "CAMBIAR FILTRO DE ACEITE DEL MOTOR",
+            "type": "Cambio"
+          },
+          {
+            "description": "CAMBIAR FILTRO DE AIRE",
+            "type": "Cambio"
+          },
+          {
+            "description": "CAMBIAR FILTRO DE COMBUSTIBLE",
+            "type": "Cambio"
+          },
+          {
+            "description": "CAMBIAR FILTRO AIRE ACONDICIONADO",
+            "type": "Cambio"
+          },
+          {
+            "description": "ADICIONAR ADITIVO AL SISTEMA DE INYECCION",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL DEL SISTEMA DE FRENOS",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DE LA BANDA DE FRENOS",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DE TAMBOR DE FRENOS",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DE ESTADO DE LAS PASTILLAS DE FRENO",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DE LOS DISCOS DE FRENO",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DE LOS AMORTIGUADORES",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DE LOS TERMINALES DE DIRECCION",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE LAS PUNTAS DE EJE",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DE LA BARRA TRANSVERSAL",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL EMBRAGUE",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE PEDALES(FRENO-ACELERACION-EMBRAGUE)",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DE LAS LLANTAS",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DE ELEMENTOS DE CABINA (PUERTAS-ASIENTOS-VOLANTE-ESPEJOS)",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL TABLERO(LUCES-ALARMAS)",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DE FUNCIONAMIENTO DE LAS ALARMAS DE EMERGENCIA",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL SIST DE LUCES (DELANTERAS-DIRECIONALES-STOP-CABINA)",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE BATERIAS",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADOY FUNCIONAMIENTO DEL CABLEADO DEL EQUIPO",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL ALTERNADOR",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL SISTEMA DE ARRANQUE",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DEL MOTOR(FUGAS-RUIDOS)",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE MANGUERAS DEL SISTEMA",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL RADIADOR",
+            "type": "Inspección"
+          },
+          {
+            "description": "LIMPIAR Y/O LAVAR RADIADOR",
+            "type": "Inspección"
+          }
+        ],
+        "supplies": [
+          {
+            "name": "ACEITE DE MOTOR",
+            "reference": "(Mobil Delvac 15W40) API CK-4",
+            "unit": "GAL",
+            "quantity": "1.75"
+          },
+          {
+            "name": "ACEITE DE DIFERENCIAL",
+            "reference": "85W140",
+            "unit": "GAL",
+            "quantity": "0.75"
+          },
+          {
+            "name": "ACEITE DE TRANSMISION",
+            "reference": "80W90",
+            "unit": "GAL",
+            "quantity": "0.75"
+          },
+          {
+            "name": "ACEITE TRANSFER",
+            "reference": "ATF III",
+            "unit": "GAL",
+            "quantity": "0.75"
+          },
+          {
+            "name": "REFRIGERANTE",
+            "reference": "50/50",
+            "unit": "GAL",
+            "quantity": "2"
+          },
+          {
+            "name": "LIQUIDO DE FRENOS",
+            "reference": "DOT4",
+            "unit": "GAL",
+            "quantity": "2"
+          },
+          {
+            "name": "FILTRO DE ACEITE DE MOTOR",
+            "reference": "EP1-6612-AB",
+            "unit": "GAL",
+            "quantity": "1"
+          },
+          {
+            "name": "FILTRO DE AIRE",
+            "reference": "EJP1-9601-AB",
+            "unit": "UND",
+            "quantity": "1"
+          },
+          {
+            "name": "FILTRO DE  COMBUSTIBLE",
+            "reference": "E9P2-9156AA",
+            "unit": "UND",
+            "quantity": "1"
+          },
+          {
+            "name": "FILTRO DE UREA",
+            "reference": "ELP1-5L210-AA",
+            "unit": "UND",
+            "quantity": "1"
+          },
+          {
+            "name": "CORREA ACCESORIOS",
+            "reference": "CN3-6C301-AC",
+            "unit": "UND",
+            "quantity": "1"
+          },
+          {
+            "name": "CORREA A/C",
+            "reference": "JP1-19896-BB",
+            "unit": "UND",
+            "quantity": "1"
+          },
+          {
+            "name": "ADITIVO LIMPIADOR SISTEMA INYECCION",
+            "reference": "3890 182",
+            "unit": "UND",
+            "quantity": "1"
+          }
+        ]
+      }
+    }
+  },
+  "80000": {
+    "name": "Mantenimiento 80,000 KM",
+    "items": [],
+    "supplies": [],
+    "variants": {
+      "RAM": {
+        "name": "Mantenimiento 80,000 KM (RAM)",
+        "items": [
+          {
+            "description": "CAMBIAR ACEITE DE MOTOR",
+            "type": "Cambio"
+          },
+          {
+            "description": "CAMBIAR FILTRO DE ACEITE DEL MOTOR",
+            "type": "Cambio"
+          },
+          {
+            "description": "CAMBIAR FILTRO DE AIRE",
+            "type": "Cambio"
+          },
+          {
+            "description": "CAMBIAR FILTRO DE AIRE ACONDICIONADO",
+            "type": "Cambio"
+          },
+          {
+            "description": "CAMBIAR LIQUIDO DEL SISTEMA DE FRENOS",
+            "type": "Cambio"
+          },
+          {
+            "description": "REVISION Y AJUSTE NIVEL ACEITE DE TRANSMISION",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION Y AJUSTE DE NIVEL DE REFRIGERANTE",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION Y AJUSTE DE NIVEL DE ACEITE DE FRENOS",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE CORREAS",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE POLEAS Y TENSORES",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION Y AJUSTE DE NIVEL DE ACEITE DE DIRECCION",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL DEL SISTEMA DE FRENOS",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DE LA BANDA DE FRENOS",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DE TAMBOR DE FRENOS",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DE ESTADO DE LAS PASTILLAS DE FRENO",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DE LOS DISCOS DE FRENO",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DE LOS AMORTIGUADORES",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DE LOS TERMINALES DE DIRECCION",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE LAS PUNTAS DE EJE",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DE LA BARRA TRANSVERSAL",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL EMBRAGUE",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE PEDALES(FRENO-ACELERACION-EMBRAGUE)",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DE LAS LLANTAS",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DE ELEMENTOS DE CABINA (PUERTAS-ASIENTOS-VOLANTE-ESPEJOS)",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL TABLERO(LUCES-ALARMAS)",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DE FUNCIONAMIENTO DE LAS ALARMAS DE EMERGENCIA",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL SIST DE LUCES (DELANTERAS-DIRECIONALES-STOP-CABINA)",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE BATERIAS",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADOY FUNCIONAMIENTO DEL CABLEADO DEL EQUIPO",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL ALTERNADOR",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL SISTEMA DE ARRANQUE",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DEL MOTOR(FUGAS-RUIDOS)",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE MANGUERAS DEL SISTEMA",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL RADIADOR",
+            "type": "Inspección"
+          },
+          {
+            "description": "LIMPIAR Y/O LAVAR RADIADOR",
+            "type": "Inspección"
+          }
+        ],
+        "supplies": [
+          {
+            "name": "ACEITE DE MOTOR",
+            "reference": "0W20",
+            "unit": "GAL",
+            "quantity": "1"
+          },
+          {
+            "name": "LIQUIDO DE FRENOS",
+            "reference": "16 107 255 80",
+            "unit": "GAL",
+            "quantity": "2"
+          },
+          {
+            "name": "FILTRO DE ACEITE DE MOTOR",
+            "reference": "7094709",
+            "unit": "GAL",
+            "quantity": "1"
+          },
+          {
+            "name": "FILTRO DE AIRE",
+            "reference": "52046268",
+            "unit": "UND",
+            "quantity": "1"
+          },
+          {
+            "name": "FILTRO AIRE ACONDICIONADO",
+            "reference": "51842923",
+            "unit": "UND",
+            "quantity": "1"
+          }
+        ]
+      }
+    }
+  },
+  "90000": {
+    "name": "Mantenimiento 90,000 KM",
+    "items": [],
+    "supplies": [],
+    "variants": {
+      "RAM": {
+        "name": "Mantenimiento 90,000 KM (RAM)",
+        "items": [
+          {
+            "description": "FILTRO COMBUSTIBLE",
+            "type": "Inspección"
+          },
+          {
+            "description": "CAMBIAR ACEITE DE MOTOR",
+            "type": "Cambio"
+          },
+          {
+            "description": "CAMBIAR FILTRO DE ACEITE DEL MOTOR",
+            "type": "Cambio"
+          },
+          {
+            "description": "CAMBIAR FILTRO DE AIRE",
+            "type": "Cambio"
+          },
+          {
+            "description": "CAMBIAR FILTRO COMBUSTIBLE",
+            "type": "Cambio"
+          },
+          {
+            "description": "CAMBIAR FILTRO DE AIRE ACONDICIONADO",
+            "type": "Cambio"
+          },
+          {
+            "description": "CAMBIO DE BUJIAS",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION Y AJUSTE NIVEL ACEITE DE TRANSMISION",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION Y AJUSTE DE NIVEL DE REFRIGERANTE",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION Y AJUSTE DE NIVEL DE ACEITE DE FRENOS",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE CORREAS",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE POLEAS Y TENSORES",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION Y AJUSTE DE NIVEL DE ACEITE DE DIRECCION",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL DEL SISTEMA DE FRENOS",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DE LA BANDA DE FRENOS",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DE TAMBOR DE FRENOS",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DE ESTADO DE LAS PASTILLAS DE FRENO",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DE LOS DISCOS DE FRENO",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DE LOS AMORTIGUADORES",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DE LOS TERMINALES DE DIRECCION",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE LAS PUNTAS DE EJE",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DE LA BARRA TRANSVERSAL",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL EMBRAGUE",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE PEDALES(FRENO-ACELERACION-EMBRAGUE)",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DE LAS LLANTAS",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DE ELEMENTOS DE CABINA (PUERTAS-ASIENTOS-VOLANTE-ESPEJOS)",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL TABLERO(LUCES-ALARMAS)",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DE FUNCIONAMIENTO DE LAS ALARMAS DE EMERGENCIA",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL SIST DE LUCES (DELANTERAS-DIRECIONALES-STOP-CABINA)",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE BATERIAS",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADOY FUNCIONAMIENTO DEL CABLEADO DEL EQUIPO",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL ALTERNADOR",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL SISTEMA DE ARRANQUE",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DEL MOTOR(FUGAS-RUIDOS)",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE MANGUERAS DEL SISTEMA",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL RADIADOR",
+            "type": "Inspección"
+          },
+          {
+            "description": "LIMPIAR Y/O LAVAR RADIADOR",
+            "type": "Inspección"
+          }
+        ],
+        "supplies": [
+          {
+            "name": "ACEITE DE MOTOR",
+            "reference": "0W20",
+            "unit": "GAL",
+            "quantity": "1"
+          },
+          {
+            "name": "FILTRO DE ACEITE DE MOTOR",
+            "reference": "7094709",
+            "unit": "GAL",
+            "quantity": "1"
+          },
+          {
+            "name": "FILTRO DE AIRE",
+            "reference": "52046268",
+            "unit": "UND",
+            "quantity": "1"
+          },
+          {
+            "name": "FILTRO AIRE ACONDICIONADO",
+            "reference": "51842923",
+            "unit": "UND",
+            "quantity": "1"
+          },
+          {
+            "name": "BUJIAS",
+            "reference": "55260260",
+            "unit": "UND",
+            "quantity": "4"
+          }
+        ]
+      }
+    }
+  },
+  "100000": {
+    "name": "Mantenimiento 100,000 KM",
+    "items": [],
+    "supplies": [],
+    "variants": {
+      "RAM": {
+        "name": "Mantenimiento 100,000 KM (RAM)",
+        "items": [
+          {
+            "description": "CAMBIAR ACEITE DE MOTOR",
+            "type": "Cambio"
+          },
+          {
+            "description": "CAMBIAR FILTRO DE ACEITE DEL MOTOR",
+            "type": "Cambio"
+          },
+          {
+            "description": "CAMBIAR FILTRO DE AIRE",
+            "type": "Cambio"
+          },
+          {
+            "description": "CAMBIAR FILTRO DE AIRE ACONDICIONADO",
+            "type": "Cambio"
+          },
+          {
+            "description": "CAMBIO DE REFRIGERANTE DE MOTOR",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION Y AJUSTE NIVEL ACEITE DE TRANSMISION",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION Y AJUSTE DE NIVEL DE REFRIGERANTE",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION Y AJUSTE DE NIVEL DE ACEITE DE FRENOS",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE CORREAS",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE POLEAS Y TENSORES",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION Y AJUSTE DE NIVEL DE ACEITE DE DIRECCION",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL DEL SISTEMA DE FRENOS",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DE LA BANDA DE FRENOS",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DE TAMBOR DE FRENOS",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DE ESTADO DE LAS PASTILLAS DE FRENO",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DE LOS DISCOS DE FRENO",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DE LOS AMORTIGUADORES",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DE LOS TERMINALES DE DIRECCION",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE LAS PUNTAS DE EJE",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DE LA BARRA TRANSVERSAL",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL EMBRAGUE",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE PEDALES(FRENO-ACELERACION-EMBRAGUE)",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DE LAS LLANTAS",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DE ELEMENTOS DE CABINA (PUERTAS-ASIENTOS-VOLANTE-ESPEJOS)",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL TABLERO(LUCES-ALARMAS)",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DE FUNCIONAMIENTO DE LAS ALARMAS DE EMERGENCIA",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL SIST DE LUCES (DELANTERAS-DIRECIONALES-STOP-CABINA)",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE BATERIAS",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADOY FUNCIONAMIENTO DEL CABLEADO DEL EQUIPO",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL ALTERNADOR",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL SISTEMA DE ARRANQUE",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DEL MOTOR(FUGAS-RUIDOS)",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE MANGUERAS DEL SISTEMA",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL RADIADOR",
+            "type": "Inspección"
+          },
+          {
+            "description": "LIMPIAR Y/O LAVAR RADIADOR",
+            "type": "Inspección"
+          }
+        ],
+        "supplies": [
+          {
+            "name": "ACEITE DE MOTOR",
+            "reference": "0W20",
+            "unit": "GAL",
+            "quantity": "1"
+          },
+          {
+            "name": "REFRIGERANTE",
+            "reference": "68163848",
+            "unit": "GAL",
+            "quantity": "1"
+          },
+          {
+            "name": "FILTRO DE ACEITE DE MOTOR",
+            "reference": "7094709",
+            "unit": "GAL",
+            "quantity": "1"
+          },
+          {
+            "name": "FILTRO DE AIRE",
+            "reference": "52046268",
+            "unit": "UND",
+            "quantity": "1"
+          },
+          {
+            "name": "FILTRO AIRE ACONDICIONADO",
+            "reference": "51842923",
+            "unit": "UND",
+            "quantity": "1"
+          }
+        ]
+      }
+    }
+  },
+  "110000": {
+    "name": "Mantenimiento 110,000 KM",
+    "items": [],
+    "supplies": [],
+    "variants": {
+      "RAM": {
+        "name": "Mantenimiento 110,000 KM (RAM)",
+        "items": [
+          {
+            "description": "CAMBIAR ACEITE DE MOTOR",
+            "type": "Cambio"
+          },
+          {
+            "description": "CAMBIAR FILTRO DE ACEITE DEL MOTOR",
+            "type": "Cambio"
+          },
+          {
+            "description": "CAMBIAR FILTRO DE AIRE",
+            "type": "Cambio"
+          },
+          {
+            "description": "CAMBIAR FILTRO DE AIRE ACONDICIONADO",
+            "type": "Cambio"
+          },
+          {
+            "description": "REVISION Y AJUSTE NIVEL ACEITE DE TRANSMISION",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION Y AJUSTE DE NIVEL DE REFRIGERANTE",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION Y AJUSTE DE NIVEL DE ACEITE DE FRENOS",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE CORREAS",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE POLEAS Y TENSORES",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION Y AJUSTE DE NIVEL DE ACEITE DE DIRECCION",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL DEL SISTEMA DE FRENOS",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DE LA BANDA DE FRENOS",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DE TAMBOR DE FRENOS",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DE ESTADO DE LAS PASTILLAS DE FRENO",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DE LOS DISCOS DE FRENO",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DE LOS AMORTIGUADORES",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DE LOS TERMINALES DE DIRECCION",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE LAS PUNTAS DE EJE",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DE LA BARRA TRANSVERSAL",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL EMBRAGUE",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE PEDALES(FRENO-ACELERACION-EMBRAGUE)",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DE LAS LLANTAS",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DE ELEMENTOS DE CABINA (PUERTAS-ASIENTOS-VOLANTE-ESPEJOS)",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL TABLERO(LUCES-ALARMAS)",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DE FUNCIONAMIENTO DE LAS ALARMAS DE EMERGENCIA",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL SIST DE LUCES (DELANTERAS-DIRECIONALES-STOP-CABINA)",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE BATERIAS",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADOY FUNCIONAMIENTO DEL CABLEADO DEL EQUIPO",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL ALTERNADOR",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL SISTEMA DE ARRANQUE",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DEL MOTOR(FUGAS-RUIDOS)",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE MANGUERAS DEL SISTEMA",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL RADIADOR",
+            "type": "Inspección"
+          },
+          {
+            "description": "LIMPIAR Y/O LAVAR RADIADOR",
+            "type": "Inspección"
+          }
+        ],
+        "supplies": [
+          {
+            "name": "ACEITE DE MOTOR",
+            "reference": "0W20",
+            "unit": "GAL",
+            "quantity": "1"
+          },
+          {
+            "name": "FILTRO DE ACEITE DE MOTOR",
+            "reference": "7094709",
+            "unit": "GAL",
+            "quantity": "1"
+          },
+          {
+            "name": "FILTRO DE AIRE",
+            "reference": "52046268",
+            "unit": "UND",
+            "quantity": "1"
+          },
+          {
+            "name": "FILTRO AIRE ACONDICIONADO",
+            "reference": "51842923",
+            "unit": "UND",
+            "quantity": "1"
+          }
+        ]
+      }
+    }
+  },
+  "120000": {
+    "name": "Mantenimiento 120,000 KM",
+    "items": [],
+    "supplies": [],
+    "variants": {
+      "RAM": {
+        "name": "Mantenimiento 120,000 KM (RAM)",
+        "items": [
+          {
+            "description": "FILTRO COMBUSTIBLE",
+            "type": "Inspección"
+          },
+          {
+            "description": "CAMBIAR ACEITE DE MOTOR",
+            "type": "Cambio"
+          },
+          {
+            "description": "CAMBIAR ACEITE DE TRANSMISION",
+            "type": "Cambio"
+          },
+          {
+            "description": "CAMBIAR FILTRO DE ACEITE DEL MOTOR",
+            "type": "Cambio"
+          },
+          {
+            "description": "CAMBIAR FILTRO DE AIRE",
+            "type": "Cambio"
+          },
+          {
+            "description": "CAMBIAR FILTRO COMBUSTIBLE",
+            "type": "Cambio"
+          },
+          {
+            "description": "CAMBIAR FILTRO DE AIRE ACONDICIONADO",
+            "type": "Cambio"
+          },
+          {
+            "description": "CAMBIAR LIQUIDO DEL SISTEMA DE FRENOS",
+            "type": "Cambio"
+          },
+          {
+            "description": "CAMBIO DE BUJIAS",
+            "type": "Inspección"
+          },
+          {
+            "description": "CAMBIAR CORREA ACCESORIOS",
+            "type": "Cambio"
+          },
+          {
+            "description": "CAMBIAR TENSOR CORREA ACCESORIOS",
+            "type": "Cambio"
+          },
+          {
+            "description": "REVISION Y AJUSTE DE NIVEL DE REFRIGERANTE",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION Y AJUSTE DE NIVEL DE ACEITE DE FRENOS",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE CORREAS",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE POLEAS Y TENSORES",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION Y AJUSTE DE NIVEL DE ACEITE DE DIRECCION",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL DEL SISTEMA DE FRENOS",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DE LA BANDA DE FRENOS",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DE TAMBOR DE FRENOS",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DE ESTADO DE LAS PASTILLAS DE FRENO",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DE LOS DISCOS DE FRENO",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DE LOS AMORTIGUADORES",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DE LOS TERMINALES DE DIRECCION",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE LAS PUNTAS DE EJE",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DE LA BARRA TRANSVERSAL",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL EMBRAGUE",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE PEDALES(FRENO-ACELERACION-EMBRAGUE)",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DE LAS LLANTAS",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DE ELEMENTOS DE CABINA (PUERTAS-ASIENTOS-VOLANTE-ESPEJOS)",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL TABLERO(LUCES-ALARMAS)",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DE FUNCIONAMIENTO DE LAS ALARMAS DE EMERGENCIA",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL SIST DE LUCES (DELANTERAS-DIRECIONALES-STOP-CABINA)",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE BATERIAS",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADOY FUNCIONAMIENTO DEL CABLEADO DEL EQUIPO",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL ALTERNADOR",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL SISTEMA DE ARRANQUE",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO DEL MOTOR(FUGAS-RUIDOS)",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DE MANGUERAS DEL SISTEMA",
+            "type": "Inspección"
+          },
+          {
+            "description": "REVISION DEL ESTADO Y FUNCIONAMIENTO DEL RADIADOR",
+            "type": "Inspección"
+          },
+          {
+            "description": "LIMPIAR Y/O LAVAR RADIADOR",
+            "type": "Inspección"
+          }
+        ],
+        "supplies": [
+          {
+            "name": "ACEITE DE MOTOR",
+            "reference": "0W20",
+            "unit": "GAL",
+            "quantity": "1"
+          },
+          {
+            "name": "LIQUIDO DE FRENOS",
+            "reference": "16 107 255 80",
+            "unit": "GAL",
+            "quantity": "2"
+          },
+          {
+            "name": "ACEITE DE TRANSMISION",
+            "reference": "Lubricante Sintetico Mopar ;APIGL4;SAE75W CADA 120.000KM",
+            "unit": "GAL",
+            "quantity": "3"
+          },
+          {
+            "name": "FILTRO DE ACEITE DE MOTOR",
+            "reference": "7094709",
+            "unit": "GAL",
+            "quantity": "1"
+          },
+          {
+            "name": "FILTRO DE AIRE",
+            "reference": "52046268",
+            "unit": "UND",
+            "quantity": "1"
+          },
+          {
+            "name": "FILTRO AIRE ACONDICIONADO",
+            "reference": "51842923",
+            "unit": "UND",
+            "quantity": "1"
+          }
+        ]
+      }
+    }
   }
 };

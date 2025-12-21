@@ -1,72 +1,102 @@
-import pandas as pd
 import json
 import re
+from openpyxl import load_workbook
+
+
+def parse_km(cell_value):
+    if cell_value is None:
+        return None
+    text = str(cell_value).replace('\n', ' ').upper().strip()
+    m = re.search(r'(\d[\d\.,]*)\s*KM', text)
+    if not m:
+        return None
+    cleaned = m.group(1).replace('.', '').replace(',', '')
+    try:
+        return int(cleaned)
+    except Exception:
+        return None
+
+
+def infer_unit(name, quantity_raw):
+    upper = str(name or '').upper()
+    # Reglas simples: fluidos se manejan en GAL (según requerimiento del usuario)
+    if any(word in upper for word in ['ACEITE', 'REFRIGERANTE', 'LIQUIDO DE FRENOS', 'LÍQUIDO DE FRENOS']):
+        return 'GAL'
+
+    # Si viene decimal (1.75 / 0.75) también asumir GAL
+    q = str(quantity_raw or '').strip()
+    if q and ('.' in q or ',' in q):
+        return 'GAL'
+
+    return 'UND'
+
 
 def extract_data(file_path, brand):
     print(f"Extracting from {file_path} ({brand})...")
-    df = pd.read_excel(file_path, header=None)
-    
-    # Header row is 18 (0-indexed)
-    header_row_idx = 18
-    header_row = df.iloc[header_row_idx]
-    
-    # Identify interval columns
+    wb = load_workbook(file_path, data_only=True)
+    ws = wb.active
+
+    # Header row is 19 (1-indexed) => 18 (0-indexed)
+    header_row_idx = 19
+
+    # Identify interval columns (H=8 onward); first 7 columns are metadata
     intervals = {}
-    for idx, cell in enumerate(header_row):
-        if idx < 7: continue # Skip first columns
-        if pd.isna(cell): continue
-        
-        # Extract number from "PM1\n10.000KM" or "PM1\n7000 KM"
-        s_cell = str(cell).replace('\n', ' ').upper()
-        match = re.search(r'(\d+)[.,]?\d*\s*KM', s_cell)
-        if match:
-            km_str = match.group(1).replace('.', '').replace(',', '')
-            try:
-                km = int(km_str)
-                intervals[idx] = km
-            except:
-                pass
-    
+    max_col = ws.max_column
+    for col_idx in range(8, max_col + 1):
+        km = parse_km(ws.cell(row=header_row_idx, column=col_idx).value)
+        if km:
+            intervals[col_idx] = km
+
     print(f"Found intervals: {list(intervals.values())}")
-    
-    routines = {}
-    for km in intervals.values():
-        routines[km] = {"items": [], "supplies": []}
-        
+
+    routines = {km: {"items": [], "supplies": []} for km in intervals.values()}
+
+    def cell_text(r, c):
+        v = ws.cell(row=r, column=c).value
+        if v is None:
+            return ''
+        return str(v).strip()
+
     # Iterate data rows
-    for r_idx in range(header_row_idx + 1, len(df)):
-        row = df.iloc[r_idx]
-        
-        col0 = str(row[0]).strip() if not pd.isna(row[0]) else ""
-        col1 = str(row[1]).strip() if not pd.isna(row[1]) else "" # Reference
-        col6 = str(row[6]).strip() if not pd.isna(row[6]) else "1" # Quantity
-        
-        if not col0 or col0.lower() == "nan": continue
-        
+    for r in range(header_row_idx + 1, ws.max_row + 1):
+        col_a = cell_text(r, 1)
+        if not col_a:
+            continue
+
+        col_b = cell_text(r, 2)  # referencia / tipo de lubricante
+        qty = cell_text(r, 7) or '1'  # cantidad
+
+        # Skip section headers (e.g. FILTROS)
+        if col_a.upper() in {'FILTROS', 'TIPO DE FILTROS', 'TIPO DE ACEITE O REFRIGERANTE'}:
+            continue
+
         # Check which intervals have 'X'
         for col_idx, km in intervals.items():
-            val = str(row[col_idx]).strip().upper()
-            if val == 'X':
-                # It's part of this routine
-                if col1 and col1.lower() != "nan":
-                    # Supply
-                    routines[km]["supplies"].append({
-                        "name": col0,
-                        "reference": col1,
-                        "quantity": col6
-                    })
-                else:
-                    # Activity
-                    routines[km]["items"].append({
-                        "description": col0,
-                        "type": "Cambio" if "CAMBIAR" in col0.upper() else "Inspección"
-                    })
-                    
+            marker = cell_text(r, col_idx).upper()
+            if marker != 'X':
+                continue
+
+            # If there's something in col_b, treat as supply (matches current spreadsheet structure)
+            if col_b:
+                routines[km]["supplies"].append({
+                    "name": col_a,
+                    "reference": col_b,
+                    "unit": infer_unit(col_a, qty),
+                    "quantity": qty
+                })
+            else:
+                routines[km]["items"].append({
+                    "description": col_a,
+                    "type": "Cambio" if "CAMBIAR" in col_a.upper() else "Inspección"
+                })
+
     return routines
 
-all_data = {}
-all_data["RAM"] = extract_data('CAMIONETAS RAM.xlsx', 'RAM')
-all_data["JMC"] = extract_data('CAMIONETAS JMC.xlsx', 'JMC')
+
+all_data = {
+    "RAM": extract_data('CAMIONETAS RAM.xlsx', 'RAM'),
+    "JMC": extract_data('CAMIONETAS JMC.xlsx', 'JMC')
+}
 
 with open('extracted_routines_v2.json', 'w') as f:
     json.dump(all_data, f, indent=2, ensure_ascii=False)
