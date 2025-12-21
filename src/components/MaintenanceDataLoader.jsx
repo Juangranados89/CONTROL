@@ -1,8 +1,10 @@
 import { useState, useMemo } from 'react';
 import { Upload, Database, CheckCircle2, AlertCircle, FileSpreadsheet, X, Loader2, Eye, PlusCircle, RefreshCw } from 'lucide-react';
 import api from '../api';
+import { useDialog } from './DialogProvider.jsx';
 
 export default function MaintenanceDataLoader({ fleet, setFleet, setVariableHistory, onClose }) {
+  const dialog = useDialog();
   const [rawData, setRawData] = useState('');
   const [parsedData, setParsedData] = useState([]);
   const [showPreview, setShowPreview] = useState(false);
@@ -180,7 +182,7 @@ export default function MaintenanceDataLoader({ fleet, setFleet, setVariableHist
   // Función principal de parsing
   const parseData = () => {
     if (!rawData.trim()) {
-      alert('❌ Por favor pegue los datos antes de analizar');
+      dialog.alert({ title: 'Datos requeridos', message: '❌ Por favor pegue los datos antes de analizar', variant: 'warning' });
       return;
     }
 
@@ -190,7 +192,7 @@ export default function MaintenanceDataLoader({ fleet, setFleet, setVariableHist
       const lines = rawData.trim().split('\n').filter(line => line.trim());
       
       if (lines.length === 0) {
-        alert('❌ No se encontraron datos válidos');
+        dialog.alert({ title: 'Sin datos', message: '❌ No se encontraron datos válidos', variant: 'warning' });
         setIsProcessing(false);
         return;
       }
@@ -354,7 +356,7 @@ export default function MaintenanceDataLoader({ fleet, setFleet, setVariableHist
 
     } catch (error) {
       console.error('❌ Error al parsear datos:', error);
-      alert(`Error al procesar los datos: ${error.message}`);
+      dialog.alert({ title: 'Error', message: `Error al procesar los datos: ${error.message}`, variant: 'danger' });
       setIsProcessing(false);
     }
   };
@@ -362,7 +364,7 @@ export default function MaintenanceDataLoader({ fleet, setFleet, setVariableHist
   // Función para aplicar los cambios (UPSERT: Update or Insert)
   const applyChanges = () => {
     if (parsedData.length === 0) {
-      alert('❌ No hay datos para aplicar');
+      dialog.alert({ title: 'Sin datos', message: '❌ No hay datos para aplicar', variant: 'warning' });
       return;
     }
 
@@ -460,12 +462,12 @@ export default function MaintenanceDataLoader({ fleet, setFleet, setVariableHist
         if (variablesResponse?.failed > 0) message.push(`⚠️ Historial falló en ${variablesResponse.failed} registro(s)`);
         if (vehicleErrors.length > 0) message.push(`⚠️ Vehículos con error: ${vehicleErrors.length}`);
 
-        alert(message.join('\n'));
+        await dialog.alert({ title: 'Resultado', message: message.join('\n'), variant: 'success' });
         setIsProcessing(false);
         onClose?.();
       } catch (error) {
         console.error('❌ Error al aplicar cambios:', error);
-        alert(`Error al guardar los cambios en servidor: ${error.message}`);
+        await dialog.alert({ title: 'Error', message: `Error al guardar los cambios en servidor: ${error.message}`, variant: 'danger' });
         setIsProcessing(false);
       }
     };

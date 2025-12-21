@@ -1,14 +1,24 @@
 import { useState, useMemo } from 'react';
 import { Calendar, Filter, Download, Search, Trash2 } from 'lucide-react';
+import { useDialog } from './DialogProvider.jsx';
 
 export default function VariableHistory({ variableHistory, fleet, setVariableHistory, setFleet }) {
+  const dialog = useDialog();
   const [searchTerm, setSearchTerm] = useState('');
   const [dateRange, setDateRange] = useState({ start: '', end: '' });
   const [selectedVehicle, setSelectedVehicle] = useState('ALL');
 
   // Function to delete a record
-  const handleDeleteRecord = (recordId) => {
-    if (confirm('¿Está seguro de eliminar este registro del historial?')) {
+  const handleDeleteRecord = async (recordId) => {
+    const ok = await dialog.confirm({
+      title: 'Confirmar eliminación',
+      message: '¿Está seguro de eliminar este registro del historial?',
+      variant: 'warning',
+      confirmText: 'Eliminar',
+      cancelText: 'Cancelar'
+    });
+
+    if (ok) {
       const deletedRecord = variableHistory.find(h => h.id === recordId);
       const updatedHistory = variableHistory.filter(h => h.id !== recordId);
       setVariableHistory(updatedHistory);
@@ -39,7 +49,7 @@ export default function VariableHistory({ variableHistory, fleet, setVariableHis
         }
       }
       
-      alert('✅ Registro eliminado correctamente');
+      await dialog.alert({ title: 'Registro eliminado', message: '✅ Registro eliminado correctamente', variant: 'success' });
     }
   };
 

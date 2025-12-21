@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import { FileSpreadsheet, Upload, CheckCircle2, X, AlertTriangle } from 'lucide-react';
+import { useDialog } from './DialogProvider.jsx';
 
 export default function BulkImportGrid({ onClose, onConfirmImport }) {
+  const dialog = useDialog();
   const [pastedData, setPastedData] = useState([]);
   const [parsedVehicles, setParsedVehicles] = useState([]);
   const [importing, setImporting] = useState(false);
@@ -115,7 +117,7 @@ export default function BulkImportGrid({ onClose, onConfirmImport }) {
       onClose();
     } catch (error) {
       console.error('Error al importar:', error);
-      alert('Error al importar los datos. Revise la consola.');
+      await dialog.alert({ title: 'Error', message: 'Error al importar los datos. Revise la consola.', variant: 'danger' });
     } finally {
       setImporting(false);
     }

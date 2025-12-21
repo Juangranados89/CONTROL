@@ -1,8 +1,10 @@
 import { useState, useRef } from 'react';
 import { Download, FileText, FileSpreadsheet, X, Check, Loader2, Database, Upload } from 'lucide-react';
 import * as XLSX from 'xlsx';
+import { useDialog } from './DialogProvider.jsx';
 
 export default function ExportMenu({ fleet, workOrders, variableHistory, dashboardStats, setFleet, setWorkOrders, setVariableHistory }) {
+  const dialog = useDialog();
   const [isOpen, setIsOpen] = useState(false);
   const [exporting, setExporting] = useState(false);
   const [exportType, setExportType] = useState('');
@@ -87,7 +89,7 @@ export default function ExportMenu({ fleet, workOrders, variableHistory, dashboa
       }, 1000);
     } catch (error) {
       console.error('Error exportando:', error);
-      alert('Error al generar el archivo Excel');
+      await dialog.alert({ title: 'Error', message: 'Error al generar el archivo Excel', variant: 'danger' });
       setExporting(false);
       setExportType('');
     }
@@ -122,12 +124,12 @@ export default function ExportMenu({ fleet, workOrders, variableHistory, dashboa
     if (!file) return;
 
     const reader = new FileReader();
-    reader.onload = (e) => {
+    reader.onload = async (e) => {
       try {
         const backup = JSON.parse(e.target.result);
         
         if (!backup.data) {
-          alert('Archivo de backup inválido');
+          await dialog.alert({ title: 'Backup inválido', message: 'Archivo de backup inválido', variant: 'warning' });
           return;
         }
 
@@ -144,16 +146,20 @@ export default function ExportMenu({ fleet, workOrders, variableHistory, dashboa
           localStorage.setItem('variable_history', JSON.stringify(backup.data.variableHistory));
         }
 
-        alert(`✅ Backup restaurado correctamente\n\n` +
-              `Vehículos: ${backup.data.fleet?.length || 0}\n` +
-              `Órdenes: ${backup.data.workOrders?.length || 0}\n` +
-              `Historial: ${backup.data.variableHistory?.length || 0}`);
+        await dialog.alert({
+          title: 'Backup restaurado',
+          message: `✅ Backup restaurado correctamente\n\n` +
+            `Vehículos: ${backup.data.fleet?.length || 0}\n` +
+            `Órdenes: ${backup.data.workOrders?.length || 0}\n` +
+            `Historial: ${backup.data.variableHistory?.length || 0}`,
+          variant: 'success'
+        });
         
         setIsOpen(false);
         window.location.reload(); // Recargar para aplicar cambios
       } catch (error) {
         console.error('Error al importar backup:', error);
-        alert('Error al leer el archivo de backup');
+        await dialog.alert({ title: 'Error', message: 'Error al leer el archivo de backup', variant: 'danger' });
       }
     };
     reader.readAsText(file);

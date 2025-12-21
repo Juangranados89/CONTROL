@@ -1,7 +1,9 @@
 import { useState, useRef, useEffect } from 'react';
 import { X } from 'lucide-react';
+import { useDialog } from './DialogProvider.jsx';
 
 export default function SignatureCanvas({ label, onSave, onCancel, initialSignature = null }) {
+  const dialog = useDialog();
   const canvasRef = useRef(null);
   const [isDrawing, setIsDrawing] = useState(false);
   
@@ -81,13 +83,13 @@ export default function SignatureCanvas({ label, onSave, onCancel, initialSignat
     ctx.clearRect(0, 0, canvas.width, canvas.height);
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!name.trim()) {
-      alert('Por favor ingrese el nombre');
+      await dialog.alert({ title: 'Campo requerido', message: 'Por favor ingrese el nombre', variant: 'warning' });
       return;
     }
     if (!position.trim()) {
-      alert('Por favor ingrese el cargo');
+      await dialog.alert({ title: 'Campo requerido', message: 'Por favor ingrese el cargo', variant: 'warning' });
       return;
     }
 

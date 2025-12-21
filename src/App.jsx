@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import { 
   LayoutDashboard, 
   Car, 
@@ -58,6 +58,7 @@ import VariableHistory from './components/VariableHistory';
 import BulkImportGrid from './components/BulkImportGrid';
 import MaintenanceDataLoader from './components/MaintenanceDataLoader';
 import CloseOTModal from './components/CloseOTModal';
+import { useDialog } from './components/DialogProvider.jsx';
 
 // --- Helper Functions ---
 
@@ -153,9 +154,12 @@ const generateTaskCode = (description) => {
   return `${action}-${object}`;
 };
 
-const generatePDF = async (workOrder) => {
+const generatePDF = async (workOrder, notify) => {
+  const notifyFn = typeof notify === 'function' ? notify : null;
   if (!window.jspdf) {
-    alert("La librería jsPDF no está cargada.");
+    if (notifyFn) {
+      await notifyFn('La librería jsPDF no está cargada.', { title: 'Error', variant: 'danger' });
+    }
     return;
   }
 
@@ -972,6 +976,15 @@ const Dashboard = ({ fleet, workOrders, variableHistory }) => {
 };
 
 const PlanningView = ({ fleet, setFleet, onCreateOT, workOrders = [], setWorkOrders, variableHistory = [], setVariableHistory, routines = MAINTENANCE_ROUTINES, currentUser }) => {
+  const dialog = useDialog();
+  const alert = useCallback(
+    (message, options = {}) => {
+      const title = options.title || 'Mensaje';
+      const variant = options.variant || 'info';
+      return dialog.alert({ title, message: String(message ?? ''), variant });
+    },
+    [dialog]
+  );
   const [selectedVehicle, setSelectedVehicle] = useState(null);
   const [workshop, setWorkshop] = useState('');
   const [viewingHistoryVehicle, setViewingHistoryVehicle] = useState(null);
@@ -1173,10 +1186,10 @@ const PlanningView = ({ fleet, setFleet, onCreateOT, workOrders = [], setWorkOrd
     }
     
     setClosingOT(null);
-    alert(`✅ OT #${closedOT.id} cerrada exitosamente\n${closedOT.plate} - ${closedOT.code}`);
+    alert(`✅ OT #${closedOT.otNumber ?? closedOT.id} cerrada exitosamente\n${closedOT.plate} - ${closedOT.vehicleCode || closedOT.code}`);
     
     // Generar PDF con firmas
-    generatePDF(closedOT);
+    generatePDF(closedOT, alert);
   };
 
   // Helper to get next routine using the passed routines prop
@@ -1284,15 +1297,8 @@ const PlanningView = ({ fleet, setFleet, onCreateOT, workOrders = [], setWorkOrd
     if (!selectedVehicle) return;
     
     const routine = getNextRoutineLocal(selectedVehicle.mileage, selectedVehicle.model, selectedVehicle.lastMaintenance, selectedVehicle.maintenanceCycle);
-    
-    // Generate consecutive ID (range 1000-9999)
-    const maxId = workOrders.length > 0 
-      ? Math.max(...workOrders.map(ot => ot.id)) 
-      : 999;
-    const newId = maxId + 1;
 
     const workOrder = {
-      id: newId,
       vehicleCode: selectedVehicle.code,
       vehicleModel: selectedVehicle.model,
       plate: selectedVehicle.plate,
@@ -1307,10 +1313,10 @@ const PlanningView = ({ fleet, setFleet, onCreateOT, workOrders = [], setWorkOrd
     };
 
     // 1. Create OT in system (API will handle persistence)
-    await onCreateOT(workOrder);
+    const savedOT = await onCreateOT(workOrder);
     
-    // 2. Generate PDF
-    generatePDF(workOrder);
+    // 2. Generate PDF (use persisted record to include correct id/otNumber)
+    generatePDF(savedOT || workOrder, alert);
 
     // 3. Reset
     setSelectedVehicle(null);
@@ -1710,7 +1716,7 @@ const PlanningView = ({ fleet, setFleet, onCreateOT, workOrders = [], setWorkOrd
                     {getVehicleHistory(viewingHistoryVehicle).map(ot => (
                       <tr key={ot.id}>
                         <td className="p-2">{ot.creationDate}</td>
-                        <td className="p-2 font-mono text-blue-600">#{ot.id}</td>
+                        <td className="p-2 font-mono text-blue-600">#{ot.otNumber ?? ot.id}</td>
                         <td className="p-2">{ot.routineName}</td>
                         <td className="p-2">
                           <span className={`px-2 py-0.5 rounded-full text-xs font-bold ${
@@ -1722,7 +1728,7 @@ const PlanningView = ({ fleet, setFleet, onCreateOT, workOrders = [], setWorkOrd
                         <td className="p-2">
                           <div className="flex items-center gap-2">
                             <button 
-                              onClick={() => generatePDF(ot)}
+                              onClick={() => generatePDF(ot, alert)}
                               className="text-slate-600 hover:text-blue-600"
                               title="Descargar PDF"
                             >
@@ -2491,6 +2497,15 @@ const PlanningView = ({ fleet, setFleet, onCreateOT, workOrders = [], setWorkOrd
 };
 
 const RoutinesManager = ({ routines, setRoutines }) => {
+  const dialog = useDialog();
+  const alert = useCallback(
+    (message, options = {}) => {
+      const title = options.title || 'Mensaje';
+      const variant = options.variant || 'info';
+      return dialog.alert({ title, message: String(message ?? ''), variant });
+    },
+    [dialog]
+  );
   const [selectedRoutineKey, setSelectedRoutineKey] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
   const [isCreating, setIsCreating] = useState(false);
@@ -2565,8 +2580,15 @@ const RoutinesManager = ({ routines, setRoutines }) => {
       }));
   };
 
-  const removeVariant = () => {
-      if (confirm(`¿Eliminar variación para ${activeVariant}?`)) {
+  const removeVariant = async () => {
+      const ok = await dialog.confirm({
+        title: 'Confirmar eliminación',
+        message: `¿Eliminar variación para ${activeVariant}?`,
+        variant: 'warning',
+        confirmText: 'Eliminar',
+        cancelText: 'Cancelar'
+      });
+      if (ok) {
         setEditData(prev => {
             const newVariants = { ...prev.variants };
             delete newVariants[activeVariant];
@@ -2816,6 +2838,15 @@ const RoutinesManager = ({ routines, setRoutines }) => {
 };
 
 const AssetManager = ({ fleet, setFleet, routines = MAINTENANCE_ROUTINES }) => {
+  const dialog = useDialog();
+  const alert = useCallback(
+    (message, options = {}) => {
+      const title = options.title || 'Mensaje';
+      const variant = options.variant || 'info';
+      return dialog.alert({ title, message: String(message ?? ''), variant });
+    },
+    [dialog]
+  );
   const [filter, setFilter] = useState('');
   const [showAddModal, setShowAddModal] = useState(false);
   const [showImportModal, setShowImportModal] = useState(false);
@@ -2860,14 +2891,36 @@ const AssetManager = ({ fleet, setFleet, routines = MAINTENANCE_ROUTINES }) => {
     setShowAddModal(true);
   };
 
-  const handleDelete = (vehicleId) => {
-    if (!window.confirm('¿Está seguro de eliminar este activo? Esta acción no se puede deshacer.')) return;
+  const handleDelete = async (vehicleId) => {
+    const ok = await dialog.confirm({
+      title: 'Confirmar eliminación',
+      message: '¿Está seguro de eliminar este activo? Esta acción no se puede deshacer.',
+      variant: 'warning',
+      confirmText: 'Eliminar',
+      cancelText: 'Cancelar'
+    });
+    if (!ok) return;
     setFleet(prev => prev.filter(v => v.id !== vehicleId));
   };
 
   const handleClearAll = async () => {
-    if (!window.confirm('⚠️ ¿Está seguro de LIMPIAR TODA LA BASE DE DATOS? Esta acción eliminará todos los activos y NO se puede deshacer.')) return;
-    if (!window.confirm('⚠️⚠️ ÚLTIMA CONFIRMACIÓN: Se eliminarán todos los activos permanentemente.')) return;
+    const ok1 = await dialog.confirm({
+      title: 'Confirmación requerida',
+      message: '⚠️ ¿Está seguro de LIMPIAR TODA LA BASE DE DATOS? Esta acción eliminará todos los activos y NO se puede deshacer.',
+      variant: 'danger',
+      confirmText: 'Continuar',
+      cancelText: 'Cancelar'
+    });
+    if (!ok1) return;
+
+    const ok2 = await dialog.confirm({
+      title: 'Última confirmación',
+      message: '⚠️⚠️ ÚLTIMA CONFIRMACIÓN: Se eliminarán todos los activos permanentemente.',
+      variant: 'danger',
+      confirmText: 'Eliminar todo',
+      cancelText: 'Cancelar'
+    });
+    if (!ok2) return;
     
     try {
       // Delete all vehicles from API
@@ -2879,10 +2932,10 @@ const AssetManager = ({ fleet, setFleet, routines = MAINTENANCE_ROUTINES }) => {
       // Clear local state
       setFleet([]);
       localStorage.removeItem('fleet_data');
-      alert('✅ Base de datos limpiada exitosamente.');
+      await alert('✅ Base de datos limpiada exitosamente.', { title: 'Listo', variant: 'success' });
     } catch (error) {
       console.error('Error clearing database:', error);
-      alert('❌ Error al limpiar la base de datos. Limpiando estado local...');
+      await alert('❌ Error al limpiar la base de datos. Limpiando estado local...', { title: 'Error', variant: 'danger' });
       setFleet([]);
       localStorage.removeItem('fleet_data');
     }
@@ -2960,7 +3013,7 @@ const AssetManager = ({ fleet, setFleet, routines = MAINTENANCE_ROUTINES }) => {
     setImportPreview(parsed);
   };
 
-  const handleImportConfirm = () => {
+  const handleImportConfirm = async () => {
     if (importPreview.length === 0) {
       alert('No hay datos válidos para importar');
       return;
@@ -2970,7 +3023,14 @@ const AssetManager = ({ fleet, setFleet, routines = MAINTENANCE_ROUTINES }) => {
     
     if (importMode === 'replace') {
       // Reemplazar toda la BD
-      if (!window.confirm(`⚠️ Se reemplazará TODA la base de datos con ${importPreview.length} activos. ¿Continuar?`)) return;
+      const ok = await dialog.confirm({
+        title: 'Confirmar reemplazo',
+        message: `⚠️ Se reemplazará TODA la base de datos con ${importPreview.length} activos. ¿Continuar?`,
+        variant: 'danger',
+        confirmText: 'Reemplazar',
+        cancelText: 'Cancelar'
+      });
+      if (!ok) return;
       
       const vehiclesWithIds = importPreview.map((v, idx) => ({
         id: idx + 1,
@@ -3568,6 +3628,15 @@ const AssetManager = ({ fleet, setFleet, routines = MAINTENANCE_ROUTINES }) => {
 };
 
 const MaintenanceAdminView = ({ workOrders, setWorkOrders, fleet, setFleet, routines, setRoutines, variableHistory, setVariableHistory, currentUser }) => {
+  const dialog = useDialog();
+  const alert = useCallback(
+    (message, options = {}) => {
+      const title = options.title || 'Mensaje';
+      const variant = options.variant || 'info';
+      return dialog.alert({ title, message: String(message ?? ''), variant });
+    },
+    [dialog]
+  );
   const [filter, setFilter] = useState('');
   const [activeTab, setActiveTab] = useState('ots'); // 'ots', 'routines', or 'history'
   const [closingOT, setClosingOT] = useState(null);
@@ -3622,7 +3691,17 @@ const MaintenanceAdminView = ({ workOrders, setWorkOrders, fleet, setFleet, rout
   };
 
   const handleAnularOT = async (otId) => {
-    if (window.confirm(`¿Está seguro de ANULAR la OT #${otId}?`)) {
+    const ot = workOrders.find(o => o.id === otId);
+    const label = ot?.otNumber ?? otId;
+    const ok = await dialog.confirm({
+      title: 'Confirmar anulación',
+      message: `¿Está seguro de ANULAR la OT #${label}?`,
+      variant: 'warning',
+      confirmText: 'Anular',
+      cancelText: 'Cancelar'
+    });
+
+    if (ok) {
         const updates = { status: 'ANULADA' };
         try {
             await api.updateWorkOrder(otId, updates);
@@ -3718,7 +3797,7 @@ const MaintenanceAdminView = ({ workOrders, setWorkOrders, fleet, setFleet, rout
                 {filteredOTs.length > 0 ? (
                   filteredOTs.map(ot => (
                     <tr key={ot.id} className="hover:bg-slate-50">
-                      <td className="p-4 font-mono font-bold text-blue-600">#{ot.id}</td>
+                      <td className="p-4 font-mono font-bold text-blue-600">#{ot.otNumber ?? ot.id}</td>
                       <td className="p-4">
                         <span className={`px-2 py-1 rounded-full text-xs font-bold ${
                           ot.status === 'ABIERTA' ? 'bg-blue-100 text-blue-800' : 
@@ -3738,7 +3817,7 @@ const MaintenanceAdminView = ({ workOrders, setWorkOrders, fleet, setFleet, rout
                       <td className="p-4">
                         <div className="flex flex-wrap gap-2">
                           <button 
-                            onClick={() => generatePDF(ot)}
+                            onClick={() => generatePDF(ot, alert)}
                             className="px-2 py-1 bg-blue-50 text-blue-600 rounded hover:bg-blue-100 text-xs font-medium border border-blue-200"
                             title="Lanzar OT (PDF)"
                           >
@@ -3755,7 +3834,7 @@ const MaintenanceAdminView = ({ workOrders, setWorkOrders, fleet, setFleet, rout
                           )}
 
                           <button 
-                            onClick={() => alert('Funcionalidad de Editar OT en desarrollo')}
+                            onClick={() => alert('Funcionalidad de Editar OT en desarrollo', { title: 'En desarrollo', variant: 'info' })}
                             className="px-2 py-1 bg-amber-50 text-amber-600 rounded hover:bg-amber-100 text-xs font-medium border border-amber-200"
                           >
                             Editar OT
@@ -3800,6 +3879,15 @@ const MaintenanceAdminView = ({ workOrders, setWorkOrders, fleet, setFleet, rout
 };
 
 const WorkOrders = ({ fleet }) => {
+  const dialog = useDialog();
+  const alert = useCallback(
+    (message, options = {}) => {
+      const title = options.title || 'Mensaje';
+      const variant = options.variant || 'info';
+      return dialog.alert({ title, message: String(message ?? ''), variant });
+    },
+    [dialog]
+  );
   const [formData, setFormData] = useState({
     code: '',
     plate: '',
@@ -3879,7 +3967,7 @@ const WorkOrders = ({ fleet }) => {
       items: routine.items || [],
       supplies: routine.supplies || []
     };
-    generatePDF(workOrder);
+    generatePDF(workOrder, alert);
   };
 
   return (
@@ -4121,6 +4209,15 @@ const DriverAssignment = ({ fleet, setFleet }) => {
 };
 
 const DataLoad = ({ fleet, setFleet, setVariableHistory, onLogout }) => {
+  const dialog = useDialog();
+  const alert = useCallback(
+    (message, options = {}) => {
+      const title = options.title || 'Mensaje';
+      const variant = options.variant || 'info';
+      return dialog.alert({ title, message: String(message ?? ''), variant });
+    },
+    [dialog]
+  );
   const [loadMode, setLoadMode] = useState('masiva'); // 'individual' o 'masiva'
   const [pasteData, setPasteData] = useState('');
   const [preview, setPreview] = useState([]);
@@ -4422,7 +4519,7 @@ const DataLoad = ({ fleet, setFleet, setVariableHistory, onLogout }) => {
     setHasErrors(errorFound);
   };
 
-  const applyChanges = () => {
+  const applyChanges = async () => {
     // Always filter out records marked to skip or with ERROR status
     let recordsToProcess = preview.filter(p => p.status !== 'ERROR' && !p.shouldSkip);
     
@@ -4436,15 +4533,19 @@ const DataLoad = ({ fleet, setFleet, setVariableHistory, onLogout }) => {
     const excludedRecords = totalRecords - recordsToProcess.length;
     
     if (excludedRecords > 0) {
-      if (!window.confirm(
-        `📊 Resumen:\n` +
-        `• Total registros: ${totalRecords}\n` +
-        `• A cargar: ${recordsToProcess.length}\n` +
-        `• A omitir: ${excludedRecords}\n\n` +
-        `¿Desea continuar?`
-      )) {
-        return;
-      }
+      const ok = await dialog.confirm({
+        title: 'Confirmar carga',
+        message:
+          `📊 Resumen:\n` +
+          `• Total registros: ${totalRecords}\n` +
+          `• A cargar: ${recordsToProcess.length}\n` +
+          `• A omitir: ${excludedRecords}\n\n` +
+          `¿Desea continuar?`,
+        variant: 'warning',
+        confirmText: 'Continuar',
+        cancelText: 'Cancelar'
+      });
+      if (!ok) return;
     }
 
     setIsProcessing(true);
@@ -5254,6 +5355,18 @@ const DatabaseView = ({ fleet, setFleet }) => {
 // --- Main App Component ---
 
 function App() {
+  const dialog = useDialog();
+
+  // Local helper to replace browser alert() with centered in-app dialog
+  const alert = useCallback(
+    (message, options = {}) => {
+      const title = options.title || 'Mensaje';
+      const variant = options.variant || 'info';
+      return dialog.alert({ title, message: String(message ?? ''), variant });
+    },
+    [dialog]
+  );
+
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
   const [currentView, setCurrentView] = useState('dashboard');
@@ -5510,14 +5623,41 @@ function App() {
   const handleCreateOT = async (newOT) => {
     try {
       // Guardar en API primero
-      const savedOT = await api.createWorkOrder(newOT);
+      const savedOTRaw = await api.createWorkOrder(newOT);
+      const safeParse = (value, fallback) => {
+        if (value == null) return fallback;
+        if (Array.isArray(value)) return value;
+        if (typeof value === 'string') {
+          try {
+            const parsed = JSON.parse(value);
+            return Array.isArray(parsed) ? parsed : fallback;
+          } catch {
+            return fallback;
+          }
+        }
+        return fallback;
+      };
+
+      const savedOT = {
+        ...savedOTRaw,
+        items: safeParse(savedOTRaw?.items, newOT?.items || []),
+        supplies: safeParse(savedOTRaw?.supplies, newOT?.supplies || [])
+      };
+
       setWorkOrders(prev => [savedOT, ...prev]);
       console.log('✅ OT guardada en BD:', savedOT.id);
+      return savedOT;
     } catch (error) {
       console.error('Error guardando OT en BD:', error);
       // Fallback: guardar solo en estado local
-      setWorkOrders(prev => [newOT, ...prev]);
-      localStorage.setItem('work_orders', JSON.stringify([newOT, ...workOrders]));
+      const offlineOT = {
+        ...newOT,
+        // Ensure we always have a stable identifier in offline mode
+        id: newOT?.id || `offline-${Date.now()}`
+      };
+      setWorkOrders(prev => [offlineOT, ...prev]);
+      localStorage.setItem('work_orders', JSON.stringify([offlineOT, ...workOrders]));
+      return offlineOT;
     }
   };
 

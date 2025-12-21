@@ -404,10 +404,9 @@ router.post('/workorders', async (req, res) => {
         creationDate: creationDate || new Date().toISOString().split('T')[0]
       }
     });
-    
-    // Devolver con el ID original si se proporcionó
-    const response = { ...workOrder, id: id || workOrder.id };
-    res.json(response);
+
+    // Always return the persisted record (id/otNumber) to keep updates consistent.
+    res.json(workOrder);
   } catch (error) {
     console.error('Error creating work order:', error);
     res.status(500).json({ error: error.message });

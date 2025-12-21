@@ -1,8 +1,10 @@
 import { useState } from 'react';
 import { X, CheckCircle, FileCheck, Calendar, Gauge } from 'lucide-react';
 import SignatureCanvas from './SignatureCanvas';
+import { useDialog } from './DialogProvider.jsx';
 
 export default function CloseOTModal({ workOrder, currentUser, onClose, onSave }) {
+  const dialog = useDialog();
   const [responsibleSignature, setResponsibleSignature] = useState(null);
   const [receivedSignature, setReceivedSignature] = useState(null);
   const [showResponsibleCanvas, setShowResponsibleCanvas] = useState(false);
@@ -12,22 +14,22 @@ export default function CloseOTModal({ workOrder, currentUser, onClose, onSave }
   const [executionDate, setExecutionDate] = useState(new Date().toISOString().split('T')[0]);
   const [executionKm, setExecutionKm] = useState('');
 
-  const handleSaveClose = () => {
+  const handleSaveClose = async () => {
     // Validar campos obligatorios
     if (!executionDate) {
-      alert('⚠️ Debe ingresar la FECHA DE EJECUCIÓN');
+      await dialog.alert({ title: 'Campo requerido', message: 'Debe ingresar la FECHA DE EJECUCIÓN', variant: 'warning' });
       return;
     }
     if (!executionKm || executionKm.trim() === '' || parseInt(executionKm) <= 0) {
-      alert('⚠️ Debe ingresar el KILOMETRAJE DE EJECUCIÓN válido');
+      await dialog.alert({ title: 'Campo requerido', message: 'Debe ingresar el KILOMETRAJE DE EJECUCIÓN válido', variant: 'warning' });
       return;
     }
     if (!responsibleSignature) {
-      alert('⚠️ Falta la firma del RESPONSABLE');
+      await dialog.alert({ title: 'Firma requerida', message: 'Falta la firma del RESPONSABLE', variant: 'warning' });
       return;
     }
     if (!receivedSignature) {
-      alert('⚠️ Falta la firma de RECIBE A SATISFACCIÓN');
+      await dialog.alert({ title: 'Firma requerida', message: 'Falta la firma de RECIBE A SATISFACCIÓN', variant: 'warning' });
       return;
     }
 
@@ -59,7 +61,7 @@ export default function CloseOTModal({ workOrder, currentUser, onClose, onSave }
                 Cerrar Orden de Trabajo
               </h2>
               <p className="text-sm text-slate-600 mt-1">
-                OT #{workOrder.id} - {workOrder.plate} - {workOrder.vehicleCode || workOrder.code}
+                OT #{workOrder.otNumber ?? workOrder.id} - {workOrder.plate} - {workOrder.vehicleCode || workOrder.code}
               </p>
             </div>
             <button
