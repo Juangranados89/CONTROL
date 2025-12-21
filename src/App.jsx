@@ -1722,6 +1722,7 @@ const PlanningView = ({ fleet, setFleet, onCreateOT, workOrders = [], setWorkOrd
           workOrder={closingOT}
           currentUser={currentUser}
           currentMileage={closingVehicle?.mileage}
+          currentMileageDate={getLastVariableDate(closingVehicle)}
           maintenanceCycle={closingVehicle?.maintenanceCycle}
           onClose={() => setClosingOT(null)}
           onSave={handleCloseOT}
@@ -4349,6 +4350,7 @@ const MaintenanceAdminView = ({ workOrders, setWorkOrders, fleet, setFleet, rout
           workOrder={closingOT}
           currentUser={currentUser}
           currentMileage={closingVehicle?.mileage}
+          currentMileageDate={getLastVariableDate(closingVehicle)}
           maintenanceCycle={closingVehicle?.maintenanceCycle}
           onClose={() => setClosingOT(null)}
           onSave={handleSaveClosedOT}

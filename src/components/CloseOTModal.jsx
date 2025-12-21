@@ -3,7 +3,7 @@ import { X, CheckCircle, FileCheck, Calendar, Gauge } from 'lucide-react';
 import SignatureCanvas from './SignatureCanvas';
 import { useDialog } from './DialogProvider.jsx';
 
-export default function CloseOTModal({ workOrder, currentUser, onClose, onSave, currentMileage, maintenanceCycle }) {
+export default function CloseOTModal({ workOrder, currentUser, onClose, onSave, currentMileage, currentMileageDate, maintenanceCycle }) {
   const dialog = useDialog();
   const [responsibleSignature, setResponsibleSignature] = useState(null);
   const [receivedSignature, setReceivedSignature] = useState(null);
@@ -18,10 +18,42 @@ export default function CloseOTModal({ workOrder, currentUser, onClose, onSave, 
     const km = Number.parseInt(executionKm, 10);
     const kmValue = Number.isFinite(km) ? km : 0;
 
+    const parseFlexibleDate = (value) => {
+      if (!value) return null;
+      const raw = String(value).trim();
+      if (!raw) return null;
+
+      // DD/MM/YYYY [HH:mm[:ss]]
+      const m = raw.match(/^([0-3]?\d)\/([01]?\d)\/(\d{4})(?:\s+(\d{1,2}):(\d{2})(?::(\d{2}))?)?$/);
+      if (m) {
+        const day = Number(m[1]);
+        const month = Number(m[2]) - 1;
+        const year = Number(m[3]);
+        const hh = Number(m[4] ?? 0);
+        const mm = Number(m[5] ?? 0);
+        const ss = Number(m[6] ?? 0);
+        const d = new Date(year, month, day, hh, mm, ss);
+        return Number.isNaN(d.getTime()) ? null : d;
+      }
+
+      // YYYY-MM-DD or ISO-ish
+      const isoLike = raw.length === 10 && /^\d{4}-\d{2}-\d{2}$/.test(raw) ? `${raw}T00:00:00` : raw;
+      const d = new Date(isoLike);
+      return Number.isNaN(d.getTime()) ? null : d;
+    };
+
     const baseCandidate = Number(currentMileage);
     const baseFromProp = Number.isFinite(baseCandidate) ? baseCandidate : null;
     const baseFromOT = Number.isFinite(Number(workOrder?.mileage)) ? Number(workOrder.mileage) : null;
-    const base = baseFromProp ?? baseFromOT ?? 0;
+
+    // Si la variable fue actualizada DESPUÉS de la fecha de ejecución,
+    // no debe bloquear por estar por debajo del KM actual.
+    const executedAt = parseFlexibleDate(executionDate);
+    const variableAt = parseFlexibleDate(currentMileageDate);
+    const useCurrentAsBase = !executedAt || !variableAt ? true : variableAt.getTime() <= executedAt.getTime();
+
+    let base = baseFromProp ?? baseFromOT ?? 0;
+    if (!useCurrentAsBase && baseFromOT != null) base = baseFromOT;
 
     const cycleCandidate = Number(maintenanceCycle ?? workOrder?.maintenanceCycle);
     const cycle = Number.isFinite(cycleCandidate) && cycleCandidate > 0 ? cycleCandidate : 5000;
@@ -30,14 +62,7 @@ export default function CloseOTModal({ workOrder, currentUser, onClose, onSave, 
     const delta = kmValue > 0 ? kmValue - base : null;
     const isLower = delta != null && delta < 0;
 
-    const parseIso = (s) => {
-      if (!s) return null;
-      const d = new Date(String(s));
-      return Number.isNaN(d.getTime()) ? null : d;
-    };
-
-    const createdAt = parseIso(workOrder?.creationDate);
-    const executedAt = parseIso(executionDate);
+    const createdAt = parseFlexibleDate(workOrder?.creationDate);
     let kmPerDay = null;
     if (delta != null && delta >= 0 && createdAt && executedAt) {
       const ms = executedAt.getTime() - createdAt.getTime();
