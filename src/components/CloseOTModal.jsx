@@ -71,12 +71,14 @@ export default function CloseOTModal({ workOrder, currentUser, onClose, onSave, 
     }
 
     if (kmAnalysis.isLower) {
-      await dialog.alert({
-        title: 'Kilometraje inválido',
-        message: `El KM ingresado (${kmAnalysis.kmValue.toLocaleString()}) es inferior al KM actual (${kmAnalysis.base.toLocaleString()}).`,
-        variant: 'danger'
+      const ok = await dialog.confirm({
+        title: 'Kilometraje menor al actual',
+        message: `El KM ingresado (${kmAnalysis.kmValue.toLocaleString()}) es inferior al KM actual (${kmAnalysis.base.toLocaleString()}).\n\nEsto puede ocurrir si el KM del activo se actualizó después de abrir la OT.\n\n¿Desea continuar y cerrar la OT?`,
+        variant: 'warning',
+        confirmText: 'Continuar',
+        cancelText: 'Cancelar'
       });
-      return;
+      if (!ok) return;
     }
 
     if (kmAnalysis.isIncongruent) {
@@ -350,9 +352,9 @@ export default function CloseOTModal({ workOrder, currentUser, onClose, onSave, 
                   <div className="mt-5 flex flex-col gap-2">
                     <button
                       onClick={handleSaveClose}
-                      disabled={!executionDate || !executionKm || kmAnalysis.isLower || !responsibleSignature || !receivedSignature}
+                      disabled={!executionDate || !executionKm || !responsibleSignature || !receivedSignature}
                       className={`w-full py-2.5 px-4 rounded-lg font-bold transition-colors ${
-                        !executionDate || !executionKm || kmAnalysis.isLower || !responsibleSignature || !receivedSignature
+                        !executionDate || !executionKm || !responsibleSignature || !receivedSignature
                           ? 'bg-slate-300 text-slate-500 cursor-not-allowed'
                           : 'bg-blue-900 text-white hover:bg-blue-800'
                       }`}
@@ -391,9 +393,9 @@ export default function CloseOTModal({ workOrder, currentUser, onClose, onSave, 
               </button>
               <button
                 onClick={handleSaveClose}
-                disabled={!executionDate || !executionKm || kmAnalysis.isLower || !responsibleSignature || !receivedSignature}
+                disabled={!executionDate || !executionKm || !responsibleSignature || !receivedSignature}
                 className={`w-full sm:w-auto sm:min-w-40 py-2.5 px-5 rounded-lg font-bold transition-colors ${
-                  !executionDate || !executionKm || kmAnalysis.isLower || !responsibleSignature || !receivedSignature
+                  !executionDate || !executionKm || !responsibleSignature || !receivedSignature
                     ? 'bg-slate-300 text-slate-500 cursor-not-allowed'
                     : 'bg-blue-900 text-white hover:bg-blue-800'
                 }`}

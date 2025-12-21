@@ -68,8 +68,6 @@ const detectRoutineVariant = (vehicleModel = '') => {
   // Direct brand/model hints
   if (modelUpper.includes('RAM')) return 'RAM';
   if (modelUpper.includes('JMC')) return 'JMC';
-  if (modelUpper.includes('HILUX')) return 'HILUX';
-  if (modelUpper.includes('DUSTER') || modelUpper.includes('RENAULT')) return 'DUSTER';
 
   // Common internal descriptors: "700" tends to be RAM 700
   if (/\b700\b/.test(modelUpper) || modelUpper.includes('RAM 700')) return 'RAM';
@@ -176,11 +174,19 @@ const getNextRoutine = (mileage, vehicleModel = '') => {
   if (vehicleModel) {
       const variantKey = detectRoutineVariant(vehicleModel);
       if (variantKey) {
-        intervals = intervals.filter(interval => {
+        const filtered = intervals.filter(interval => {
           const r = MAINTENANCE_ROUTINES[interval];
           return r?.variants && r.variants[variantKey];
         });
+
+        // If no routines exist for this variant, keep the full set.
+        if (filtered.length > 0) intervals = filtered;
       }
+  }
+
+  // Safety fallback
+  if (intervals.length === 0) {
+    return { km: 5000, name: 'Mantenimiento Estándar', items: [], supplies: [] };
   }
 
   // Find the first interval greater than current mileage
@@ -1349,12 +1355,17 @@ const PlanningView = ({ fleet, setFleet, onCreateOT, workOrders = [], setWorkOrd
     // Actualizar fleet + historial inmediatamente (UI)
     if (closedOT.executionKm) {
       const newMileage = parseInt(closedOT.executionKm);
+
+      const matchingVehicle = fleet.find(v => v.code === vehicleCode || v.plate === closedOT.plate);
+      const previousMileage = Number(matchingVehicle?.mileage) || 0;
+      const appliedMileage = Math.max(previousMileage, newMileage);
+
       setFleet(prevFleet => {
         const updatedFleet = prevFleet.map(vehicle => {
           if (vehicle.code === vehicleCode || vehicle.plate === closedOT.plate) {
             return {
               ...vehicle,
-              mileage: newMileage,
+              mileage: appliedMileage,
               lastMaintenance: newMileage,
               lastMaintenanceDate: closedOT.closedDate
             };
@@ -1365,7 +1376,8 @@ const PlanningView = ({ fleet, setFleet, onCreateOT, workOrders = [], setWorkOrd
         return updatedFleet;
       });
 
-      if (setVariableHistory) {
+      // Registrar en historial de variables SOLO si la variable (mileage) aumenta.
+      if (setVariableHistory && appliedMileage > previousMileage) {
         const now = new Date();
         const timeStr = closedOT.closedTime || `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}:${now.getSeconds().toString().padStart(2, '0')}`;
         const newRecord = {
@@ -1373,9 +1385,9 @@ const PlanningView = ({ fleet, setFleet, onCreateOT, workOrders = [], setWorkOrd
           code: vehicleCode,
           plate: closedOT.plate,
           date: `${closedOT.closedDate} ${timeStr}`,
-          km: newMileage,
-          mileage: newMileage,
-          change: 0,
+          km: appliedMileage,
+          mileage: appliedMileage,
+          change: appliedMileage - previousMileage,
           updatedBy: currentUser?.name || currentUser?.username || 'Sistema',
           source: 'OT_CLOSE'
         };
@@ -1403,10 +1415,13 @@ const PlanningView = ({ fleet, setFleet, onCreateOT, workOrders = [], setWorkOrd
     if (vehicleModel) {
         const variantKey = detectRoutineVariant(vehicleModel);
         if (variantKey) {
-          intervals = intervals.filter(interval => {
+          const filtered = intervals.filter(interval => {
             const r = routines[interval];
             return r?.variants && r.variants[variantKey];
           });
+
+          // If no routines exist for this variant, keep the full set.
+          if (filtered.length > 0) intervals = filtered;
         }
     }
 
