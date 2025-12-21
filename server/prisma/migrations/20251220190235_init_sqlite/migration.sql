@@ -1,64 +1,75 @@
 -- CreateTable
 CREATE TABLE "User" (
-    "id" TEXT NOT NULL,
+    "id" TEXT NOT NULL PRIMARY KEY,
     "email" TEXT NOT NULL,
     "passwordHash" TEXT NOT NULL,
     "role" TEXT NOT NULL DEFAULT 'user',
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-
-    CONSTRAINT "User_pkey" PRIMARY KEY ("id")
+    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
 -- CreateTable
 CREATE TABLE "Vehicle" (
-    "id" TEXT NOT NULL,
+    "id" TEXT NOT NULL PRIMARY KEY,
     "code" TEXT NOT NULL,
     "plate" TEXT NOT NULL,
     "model" TEXT NOT NULL,
     "brand" TEXT,
     "owner" TEXT,
+    "familiaTipologia" TEXT,
+    "descripcion" TEXT,
+    "serieChasis" TEXT,
+    "serieMotor" TEXT,
+    "anioModelo" TEXT,
+    "estadoActual" TEXT,
+    "ubicacionFrente" TEXT,
     "mileage" INTEGER NOT NULL DEFAULT 0,
+    "maintenanceCycle" INTEGER NOT NULL DEFAULT 5000,
     "lastMaintenance" INTEGER,
     "lastMaintenanceDate" TEXT,
     "vin" TEXT,
     "area" TEXT,
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" TIMESTAMP(3) NOT NULL,
-
-    CONSTRAINT "Vehicle_pkey" PRIMARY KEY ("id")
+    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" DATETIME NOT NULL
 );
 
 -- CreateTable
 CREATE TABLE "WorkOrder" (
-    "id" TEXT NOT NULL,
+    "id" TEXT NOT NULL PRIMARY KEY,
     "vehicleId" TEXT NOT NULL,
     "vehicleCode" TEXT NOT NULL,
     "plate" TEXT NOT NULL,
     "vehicleModel" TEXT NOT NULL,
     "mileage" INTEGER NOT NULL,
     "routine" TEXT NOT NULL,
-    "status" TEXT NOT NULL DEFAULT 'PENDIENTE',
+    "routineName" TEXT,
+    "items" TEXT,
+    "supplies" TEXT,
+    "status" TEXT NOT NULL DEFAULT 'ABIERTA',
     "createdBy" TEXT,
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "closingDate" TEXT,
+    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "creationDate" TEXT,
+    "closedDate" TEXT,
+    "closedTime" TEXT,
     "workshop" TEXT,
     "area" TEXT,
     "vin" TEXT,
-
-    CONSTRAINT "WorkOrder_pkey" PRIMARY KEY ("id")
+    "signatureResponsible" TEXT,
+    "signatureApprover" TEXT,
+    "signatureReceived" TEXT,
+    CONSTRAINT "WorkOrder_vehicleId_fkey" FOREIGN KEY ("vehicleId") REFERENCES "Vehicle" ("id") ON DELETE RESTRICT ON UPDATE CASCADE,
+    CONSTRAINT "WorkOrder_createdBy_fkey" FOREIGN KEY ("createdBy") REFERENCES "User" ("id") ON DELETE SET NULL ON UPDATE CASCADE
 );
 
 -- CreateTable
 CREATE TABLE "VariableHistory" (
-    "id" TEXT NOT NULL,
+    "id" TEXT NOT NULL PRIMARY KEY,
     "vehicleId" TEXT NOT NULL,
     "plate" TEXT NOT NULL,
     "code" TEXT NOT NULL,
     "km" INTEGER NOT NULL,
     "date" TEXT NOT NULL,
-    "uploadDate" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-
-    CONSTRAINT "VariableHistory_pkey" PRIMARY KEY ("id")
+    "uploadDate" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT "VariableHistory_vehicleId_fkey" FOREIGN KEY ("vehicleId") REFERENCES "Vehicle" ("id") ON DELETE RESTRICT ON UPDATE CASCADE
 );
 
 -- CreateIndex
@@ -77,6 +88,12 @@ CREATE INDEX "Vehicle_plate_idx" ON "Vehicle"("plate");
 CREATE INDEX "Vehicle_code_idx" ON "Vehicle"("code");
 
 -- CreateIndex
+CREATE INDEX "Vehicle_familiaTipologia_idx" ON "Vehicle"("familiaTipologia");
+
+-- CreateIndex
+CREATE INDEX "Vehicle_owner_idx" ON "Vehicle"("owner");
+
+-- CreateIndex
 CREATE INDEX "WorkOrder_vehicleId_idx" ON "WorkOrder"("vehicleId");
 
 -- CreateIndex
@@ -93,12 +110,3 @@ CREATE INDEX "VariableHistory_plate_idx" ON "VariableHistory"("plate");
 
 -- CreateIndex
 CREATE INDEX "VariableHistory_date_idx" ON "VariableHistory"("date");
-
--- AddForeignKey
-ALTER TABLE "WorkOrder" ADD CONSTRAINT "WorkOrder_vehicleId_fkey" FOREIGN KEY ("vehicleId") REFERENCES "Vehicle"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "WorkOrder" ADD CONSTRAINT "WorkOrder_createdBy_fkey" FOREIGN KEY ("createdBy") REFERENCES "User"("id") ON DELETE SET NULL ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "VariableHistory" ADD CONSTRAINT "VariableHistory_vehicleId_fkey" FOREIGN KEY ("vehicleId") REFERENCES "Vehicle"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

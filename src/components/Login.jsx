@@ -14,6 +14,8 @@ export default function Login({ onLogin }) {
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
+  const isDev = import.meta.env.DEV;
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
@@ -37,6 +39,24 @@ export default function Login({ onLogin }) {
       });
     } catch (err) {
       setError('Usuario o contraseña incorrectos');
+      setIsLoading(false);
+    }
+  };
+
+  const handleDevLogin = async () => {
+    setError('');
+    setIsLoading(true);
+    try {
+      const result = await api.login('dev@control.local', 'dev');
+      onLogin({
+        username: 'dev',
+        name: 'Desarrollador',
+        role: result?.user?.role,
+        token: result?.token
+      });
+    } catch (err) {
+      console.error(err);
+      setError('Error en login de desarrollo');
       setIsLoading(false);
     }
   };
@@ -134,6 +154,18 @@ export default function Login({ onLogin }) {
                   'Iniciar Sesión'
                 )}
               </button>
+
+              {/* Dev Login Button */}
+              {isDev && (
+                <button
+                  type="button"
+                  onClick={handleDevLogin}
+                  disabled={isLoading}
+                  className="w-full mt-4 bg-slate-200 hover:bg-slate-300 text-slate-700 font-semibold py-2 px-4 rounded-lg transition-colors text-sm"
+                >
+                  ⚡ Modo Desarrollo (Sin contraseña)
+                </button>
+              )}
             </form>
           </div>
 

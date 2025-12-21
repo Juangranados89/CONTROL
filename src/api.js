@@ -1,5 +1,7 @@
 // API Client for backend communication
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:4000';
+// Dev: always use same-origin + Vite proxy (/api -> http://localhost:4000)
+// This prevents accidental usage of production API URLs inside Codespaces/dev.
+const API_URL = import.meta.env.DEV ? '' : (import.meta.env.VITE_API_URL || 'http://localhost:4000');
 
 class ApiClient {
   constructor(baseURL) {

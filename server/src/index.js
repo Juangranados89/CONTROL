@@ -18,7 +18,8 @@ app.use(express.json({ limit: '10mb' }));
 app.get('/health', (req, res) => res.json({ ok: true, timestamp: new Date().toISOString() }));
 
 app.post('/api/login', async (req, res) => {
-  const identifierRaw = String(req.body?.username ?? req.body?.email ?? '').trim();
+  // Accept both 'email' and 'username' fields for flexibility
+  const identifierRaw = String(req.body?.identifier ?? req.body?.username ?? req.body?.email ?? '').trim();
   const password = String(req.body?.password || '');
   if (!identifierRaw || !password) return res.status(400).json({ error: 'Username/email and password required' });
 
@@ -28,10 +29,7 @@ app.post('/api/login', async (req, res) => {
   // Case-insensitive lookup to avoid surprises with capitalization in UI/seed.
   const user = await prisma.user.findFirst({
     where: {
-      email: {
-        equals: email,
-        mode: 'insensitive'
-      }
+      email: email
     }
   });
   if (!user) return res.status(401).json({ error: 'Invalid credentials' });
@@ -73,11 +71,11 @@ const ensureOptionalAdminUsers = async () => {
   ];
 
   for (const u of optionalUsers) {
-    const pwd = process.env[u.env];
+    const pwd = (process.env[u.env] || '').trim();
     if (!pwd) continue;
 
     const existing = await prisma.user.findFirst({
-      where: { email: { equals: u.email, mode: 'insensitive' } }
+      where: { email: u.email }
     });
 
     // Always enforce the desired credentials/role when env vars are set.

@@ -351,11 +351,12 @@ const generatePDF = async (workOrder) => {
 
   // Signatures
   let sigY = doc.lastAutoTable.finalY + 15;
-  if (sigY > 250) { doc.addPage(); sigY = 20; }
+  const boxHeight = 35; // Increased height to fit name, position and signature
+  if (sigY + boxHeight > 280) { doc.addPage(); sigY = 20; }
 
-  doc.rect(10, sigY, 60, 20); 
-  doc.rect(70, sigY, 60, 20); 
-  doc.rect(130, sigY, 70, 20); 
+  doc.rect(10, sigY, 60, boxHeight); 
+  doc.rect(70, sigY, 60, boxHeight); 
+  doc.rect(130, sigY, 70, boxHeight); 
   
   doc.setFontSize(6);
   doc.text("RESPONSABLE", 12, sigY + 4);
@@ -366,19 +367,49 @@ const generatePDF = async (workOrder) => {
   if (workOrder.signatures) {
     // Firma RESPONSABLE
     if (workOrder.signatures.responsible) {
-      doc.addImage(workOrder.signatures.responsible, 'PNG', 12, sigY + 6, 56, 12);
+      const sig = workOrder.signatures.responsible;
+      if (typeof sig === 'object') {
+        doc.setFontSize(7);
+        doc.setFont("helvetica", "bold");
+        doc.text(sig.name || '', 12, sigY + 8);
+        
+        doc.setFontSize(6);
+        doc.setFont("helvetica", "normal");
+        doc.text(sig.position || '', 12, sigY + 11);
+        
+        if (sig.image) {
+          doc.addImage(sig.image, 'PNG', 12, sigY + 13, 56, 20);
+        }
+      } else {
+        doc.addImage(sig, 'PNG', 12, sigY + 6, 56, 12);
+      }
     }
     
     // APROBADOR (nombre en texto)
     if (workOrder.signatures.approver) {
       doc.setFontSize(9);
       doc.setFont("helvetica", "bold");
-      doc.text(workOrder.signatures.approver, 100, sigY + 12, { align: 'center' });
+      doc.text(workOrder.signatures.approver, 100, sigY + (boxHeight / 2), { align: 'center' });
     }
     
     // Firma RECIBE A SATISFACCIÓN
     if (workOrder.signatures.received) {
-      doc.addImage(workOrder.signatures.received, 'PNG', 132, sigY + 6, 66, 12);
+      const sig = workOrder.signatures.received;
+      if (typeof sig === 'object') {
+        doc.setFontSize(7);
+        doc.setFont("helvetica", "bold");
+        doc.text(sig.name || '', 132, sigY + 8);
+        
+        doc.setFontSize(6);
+        doc.setFont("helvetica", "normal");
+        doc.text(sig.position || '', 132, sigY + 11);
+        
+        if (sig.image) {
+          doc.addImage(sig.image, 'PNG', 132, sigY + 13, 66, 20);
+        }
+      } else {
+        doc.addImage(sig, 'PNG', 132, sigY + 6, 66, 12);
+      }
     }
   }
 
@@ -3536,35 +3567,47 @@ const AssetManager = ({ fleet, setFleet, routines = MAINTENANCE_ROUTINES }) => {
   );
 };
 
-const MaintenanceAdminView = ({ workOrders, setWorkOrders, fleet, setFleet, routines, setRoutines, variableHistory, setVariableHistory }) => {
+const MaintenanceAdminView = ({ workOrders, setWorkOrders, fleet, setFleet, routines, setRoutines, variableHistory, setVariableHistory, currentUser }) => {
   const [filter, setFilter] = useState('');
   const [activeTab, setActiveTab] = useState('ots'); // 'ots', 'routines', or 'history'
   const [closingOT, setClosingOT] = useState(null);
-  const [closingData, setClosingData] = useState({
-    realDate: new Date().toISOString().split('T')[0],
-    realMileage: '',
-    observations: ''
-  });
 
-  const handleCloseOT = () => {
-    if (!closingOT) return;
+  const handleSaveClosedOT = async (closedOT) => {
+    // 1. Try to save to API/LocalStorage
+    try {
+        await api.updateWorkOrder(closedOT.id, closedOT);
+        console.log('✅ OT cerrada en BD:', closedOT.id);
+    } catch (error) {
+        console.error('Error cerrando OT en BD (Offline Mode):', error);
+        // Fallback: update localStorage
+        const currentOrders = JSON.parse(localStorage.getItem('work_orders') || '[]');
+        const updatedOrders = currentOrders.map(ot => ot.id === closedOT.id ? closedOT : ot);
+        localStorage.setItem('work_orders', JSON.stringify(updatedOrders));
+        
+        // Also update fleet in localStorage if needed
+        if (closedOT.executionKm) {
+             const currentFleet = JSON.parse(localStorage.getItem('fleet_data') || '[]');
+             const newMileage = parseInt(closedOT.executionKm);
+             const updatedFleet = currentFleet.map(v => {
+                 if (v.code === closedOT.vehicleCode || v.plate === closedOT.plate) {
+                     return { ...v, mileage: newMileage, lastMaintenance: newMileage };
+                 }
+                 return v;
+             });
+             localStorage.setItem('fleet_data', JSON.stringify(updatedFleet));
+        }
+    }
 
-    // 1. Update Work Order Status
+    // 2. Update Local State (UI)
     setWorkOrders(prev => prev.map(ot => 
-      ot.id === closingOT.id ? {
-        ...ot,
-        status: 'CERRADA',
-        closingDate: closingData.realDate,
-        realMileage: closingData.realMileage,
-        observations: closingData.observations
-      } : ot
+      ot.id === closedOT.id ? closedOT : ot
     ));
 
-    // 2. Reprogram Maintenance Cycle (Update Fleet Data)
-    if (closingData.realMileage) {
-      const newMileage = parseInt(closingData.realMileage);
+    // 3. Reprogram Maintenance Cycle (Update Fleet Data)
+    if (closedOT.executionKm) {
+      const newMileage = parseInt(closedOT.executionKm);
       setFleet(prevFleet => prevFleet.map(vehicle => {
-        if (vehicle.code === closingOT.vehicleCode || vehicle.plate === closingOT.plate) {
+        if (vehicle.code === closedOT.vehicleCode || vehicle.plate === closedOT.plate) {
           return {
             ...vehicle,
             mileage: newMileage, // Update current mileage to the one reported in OT
@@ -3576,7 +3619,24 @@ const MaintenanceAdminView = ({ workOrders, setWorkOrders, fleet, setFleet, rout
     }
 
     setClosingOT(null);
-    setClosingData({ realDate: new Date().toISOString().split('T')[0], realMileage: '', observations: '' });
+  };
+
+  const handleAnularOT = async (otId) => {
+    if (window.confirm(`¿Está seguro de ANULAR la OT #${otId}?`)) {
+        const updates = { status: 'ANULADA' };
+        try {
+            await api.updateWorkOrder(otId, updates);
+        } catch (error) {
+            console.error('Error anulando OT en BD (Offline Mode):', error);
+            const currentOrders = JSON.parse(localStorage.getItem('work_orders') || '[]');
+            const updatedOrders = currentOrders.map(ot => ot.id === otId ? { ...ot, ...updates } : ot);
+            localStorage.setItem('work_orders', JSON.stringify(updatedOrders));
+        }
+
+        setWorkOrders(prev => prev.map(ot => 
+            ot.id === otId ? { ...ot, status: 'ANULADA' } : ot
+        ));
+    }
   };
 
   const filteredOTs = workOrders.filter(ot => 
@@ -3661,7 +3721,9 @@ const MaintenanceAdminView = ({ workOrders, setWorkOrders, fleet, setFleet, rout
                       <td className="p-4 font-mono font-bold text-blue-600">#{ot.id}</td>
                       <td className="p-4">
                         <span className={`px-2 py-1 rounded-full text-xs font-bold ${
-                          ot.status === 'ABIERTA' ? 'bg-blue-100 text-blue-800' : 'bg-green-100 text-green-800'
+                          ot.status === 'ABIERTA' ? 'bg-blue-100 text-blue-800' : 
+                          ot.status === 'CERRADA' ? 'bg-green-100 text-green-800' :
+                          'bg-red-100 text-red-800'
                         }`}>
                           {ot.status}
                         </span>
@@ -3674,36 +3736,39 @@ const MaintenanceAdminView = ({ workOrders, setWorkOrders, fleet, setFleet, rout
                       <td className="p-4 text-slate-600">{ot.workshop}</td>
                       <td className="p-4">{ot.creationDate}</td>
                       <td className="p-4">
-                        <div className="flex items-center gap-2">
+                        <div className="flex flex-wrap gap-2">
+                          <button 
+                            onClick={() => generatePDF(ot)}
+                            className="px-2 py-1 bg-blue-50 text-blue-600 rounded hover:bg-blue-100 text-xs font-medium border border-blue-200"
+                            title="Lanzar OT (PDF)"
+                          >
+                            Lanzar OT
+                          </button>
+                          
                           {ot.status === 'ABIERTA' && (
                             <button 
                               onClick={() => setClosingOT(ot)}
-                              className="text-green-600 hover:underline font-medium"
+                              className="px-2 py-1 bg-green-50 text-green-600 rounded hover:bg-green-100 text-xs font-medium border border-green-200"
                             >
                               Cerrar OT
                             </button>
                           )}
-                          {ot.status === 'CERRADA' && (
-                            <span className="text-slate-400 italic text-xs">Cerrada el {ot.closingDate}</span>
+
+                          <button 
+                            onClick={() => alert('Funcionalidad de Editar OT en desarrollo')}
+                            className="px-2 py-1 bg-amber-50 text-amber-600 rounded hover:bg-amber-100 text-xs font-medium border border-amber-200"
+                          >
+                            Editar OT
+                          </button>
+
+                          {ot.status !== 'ANULADA' && (
+                            <button 
+                                onClick={() => handleAnularOT(ot.id)}
+                                className="px-2 py-1 bg-red-50 text-red-600 rounded hover:bg-red-100 text-xs font-medium border border-red-200"
+                            >
+                                Anular OT
+                            </button>
                           )}
-                          <button 
-                            onClick={() => generatePDF(ot)}
-                            className="text-slate-600 hover:text-blue-600"
-                            title="Descargar PDF"
-                          >
-                            <FileText size={18} />
-                          </button>
-                          <button 
-                            onClick={() => {
-                              if (window.confirm(`¿Está seguro de eliminar la OT #${ot.id}?`)) {
-                                setWorkOrders(prev => prev.filter(o => o.id !== ot.id));
-                              }
-                            }}
-                            className="text-red-600 hover:text-red-800"
-                            title="Eliminar OT"
-                          >
-                            <X size={18} />
-                          </button>
                         </div>
                       </td>
                     </tr>
@@ -3723,61 +3788,12 @@ const MaintenanceAdminView = ({ workOrders, setWorkOrders, fleet, setFleet, rout
 
       {/* Modal for Closing OT */}
       {closingOT && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-white p-6 rounded-lg shadow-xl w-96">
-            <h3 className="text-lg font-bold mb-4">Cerrar Orden de Trabajo #{closingOT.id}</h3>
-            <p className="text-sm text-slate-600 mb-4">
-              Vehículo: <strong>{closingOT.plate}</strong> - {closingOT.routineName}
-            </p>
-            
-            <div className="space-y-4 mb-6">
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Fecha Real Ejecución</label>
-                <input 
-                  type="date" 
-                  className="w-full p-2 border rounded"
-                  value={closingData.realDate}
-                  onChange={(e) => setClosingData({...closingData, realDate: e.target.value})}
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Kilometraje Real</label>
-                <input 
-                  type="number" 
-                  className="w-full p-2 border rounded"
-                  value={closingData.realMileage}
-                  onChange={(e) => setClosingData({...closingData, realMileage: e.target.value})}
-                  placeholder="Ej: 15200"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Observaciones</label>
-                <textarea 
-                  className="w-full p-2 border rounded"
-                  rows="3"
-                  value={closingData.observations}
-                  onChange={(e) => setClosingData({...closingData, observations: e.target.value})}
-                  placeholder="Detalles de la ejecución..."
-                />
-              </div>
-            </div>
-
-            <div className="flex justify-end gap-2">
-              <button 
-                onClick={() => setClosingOT(null)}
-                className="px-4 py-2 text-slate-600 hover:bg-slate-100 rounded"
-              >
-                Cancelar
-              </button>
-              <button 
-                onClick={handleCloseOT}
-                className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 font-bold"
-              >
-                Cerrar OT
-              </button>
-            </div>
-          </div>
-        </div>
+        <CloseOTModal 
+          workOrder={closingOT}
+          currentUser={currentUser}
+          onClose={() => setClosingOT(null)}
+          onSave={handleSaveClosedOT}
+        />
       )}
     </div>
   );
@@ -5387,6 +5403,30 @@ function App() {
           if (allowLocalFallback) {
             console.warn('⚠️ API devolvió 0 vehículos. Usando INITIAL_FLEET (solo dev/flag).');
             vehicles = INITIAL_FLEET;
+            
+            // Generar OT de ejemplo si no hay OTs
+            if (orders.length === 0) {
+              const exampleOT = {
+                id: 1001,
+                vehicleCode: vehicles[0]?.code || 'V-001',
+                plate: vehicles[0]?.plate || 'ABC-123',
+                vehicleModel: vehicles[0]?.model || 'Toyota Hilux',
+                routineName: 'Mantenimiento 5,000 KM',
+                workshop: 'TALLER EL HATO',
+                status: 'ABIERTA',
+                creationDate: new Date().toISOString().split('T')[0],
+                mileage: vehicles[0]?.mileage || 5000,
+                items: [
+                  { description: 'Cambio de Aceite Motor', type: 'Preventivo' },
+                  { description: 'Revisión de Frenos', type: 'Inspección' }
+                ],
+                supplies: [
+                  { reference: 'FIL-001', name: 'Filtro de Aceite', quantity: 1 }
+                ]
+              };
+              orders = [exampleOT];
+              console.log('📝 Generada OT de ejemplo:', exampleOT.id);
+            }
           } else {
             setApiError('La base de datos no tiene vehículos cargados. Contacte al administrador para ejecutar el seed.');
           }
@@ -5424,8 +5464,33 @@ function App() {
           console.log('💾 Datos iniciales guardados para próxima sesión');
         }
 
+        let finalOrdersFallback = asArray(ordersFallback);
+        // Generar OT de ejemplo si no hay OTs en fallback
+        if (finalOrdersFallback.length === 0 && fleetFallback.length > 0) {
+            const exampleOT = {
+              id: 1001,
+              vehicleCode: fleetFallback[0]?.code || 'V-001',
+              plate: fleetFallback[0]?.plate || 'ABC-123',
+              vehicleModel: fleetFallback[0]?.model || 'Toyota Hilux',
+              routineName: 'Mantenimiento 5,000 KM',
+              workshop: 'TALLER EL HATO',
+              status: 'ABIERTA',
+              creationDate: new Date().toISOString().split('T')[0],
+              mileage: fleetFallback[0]?.mileage || 5000,
+              items: [
+                { description: 'Cambio de Aceite Motor', type: 'Preventivo' },
+                { description: 'Revisión de Frenos', type: 'Inspección' }
+              ],
+              supplies: [
+                { reference: 'FIL-001', name: 'Filtro de Aceite', quantity: 1 }
+              ]
+            };
+            finalOrdersFallback = [exampleOT];
+            console.log('📝 Generada OT de ejemplo (Offline Mode):', exampleOT.id);
+        }
+
         setFleet(asArray(fleetFallback).map(normalizeVehicle));
-        setWorkOrders(asArray(ordersFallback));
+        setWorkOrders(finalOrdersFallback);
         setVariableHistory(asArray(historyFallback));
       } finally {
         setIsLoading(false);
@@ -5453,7 +5518,7 @@ function App() {
     switch(currentView) {
       case 'dashboard': return <Dashboard fleet={fleet} workOrders={workOrders} variableHistory={variableHistory} />;
       case 'planning': return <PlanningView fleet={fleet} setFleet={setFleet} onCreateOT={handleCreateOT} workOrders={workOrders} setWorkOrders={setWorkOrders} variableHistory={variableHistory} setVariableHistory={setVariableHistory} routines={routines} currentUser={currentUser} />;
-      case 'maintenance-admin': return <MaintenanceAdminView workOrders={workOrders} setWorkOrders={setWorkOrders} fleet={fleet} setFleet={setFleet} routines={routines} setRoutines={setRoutines} variableHistory={variableHistory} setVariableHistory={setVariableHistory} />;
+      case 'maintenance-admin': return <MaintenanceAdminView workOrders={workOrders} setWorkOrders={setWorkOrders} fleet={fleet} setFleet={setFleet} routines={routines} setRoutines={setRoutines} variableHistory={variableHistory} setVariableHistory={setVariableHistory} currentUser={currentUser} />;
       case 'work-orders': return <WorkOrders fleet={fleet} />;
       case 'drivers': return <DriverAssignment fleet={fleet} setFleet={setFleet} />;
       case 'dataload': return <DataLoad fleet={fleet} setFleet={setFleet} setVariableHistory={setVariableHistory} />;

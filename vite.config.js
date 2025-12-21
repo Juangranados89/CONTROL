@@ -6,5 +6,13 @@ export default defineConfig({
   plugins: [react()],
   optimizeDeps: {
     exclude: ['xlsx']
+  },
+  server: {
+    proxy: {
+      '/api': {
+        target: 'http://localhost:4000',
+        changeOrigin: true
+      }
+    }
   }
 })

@@ -1,11 +1,12 @@
 import { useState, useRef, useEffect } from 'react';
-import { X, Eraser, Check, Edit3 } from 'lucide-react';
+import { X } from 'lucide-react';
 
 export default function SignatureCanvas({ label, onSave, onCancel, initialSignature = null }) {
   const canvasRef = useRef(null);
   const [isDrawing, setIsDrawing] = useState(false);
-  const [signatureMode, setSignatureMode] = useState('draw'); // 'draw' or 'type'
-  const [typedText, setTypedText] = useState('');
+  
+  const [name, setName] = useState('');
+  const [position, setPosition] = useState('');
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -19,11 +20,23 @@ export default function SignatureCanvas({ label, onSave, onCancel, initialSignat
 
     // Si hay firma inicial, cargarla
     if (initialSignature) {
-      const img = new Image();
-      img.onload = () => {
-        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-      };
-      img.src = initialSignature;
+      if (typeof initialSignature === 'object') {
+        setName(initialSignature.name || '');
+        setPosition(initialSignature.position || '');
+        if (initialSignature.image) {
+          const img = new Image();
+          img.onload = () => {
+            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+          };
+          img.src = initialSignature.image;
+        }
+      } else if (typeof initialSignature === 'string') {
+        const img = new Image();
+        img.onload = () => {
+          ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+        };
+        img.src = initialSignature;
+      }
     }
   }, [initialSignature]);
 
@@ -66,32 +79,26 @@ export default function SignatureCanvas({ label, onSave, onCancel, initialSignat
     const canvas = canvasRef.current;
     const ctx = canvas.getContext('2d');
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    setTypedText('');
-  };
-
-  const handleTypedSignature = () => {
-    if (!typedText.trim()) return;
-    
-    const canvas = canvasRef.current;
-    const ctx = canvas.getContext('2d');
-    
-    // Limpiar canvas
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    
-    // Configurar estilo de texto
-    ctx.font = 'italic 32px "Brush Script MT", cursive';
-    ctx.fillStyle = '#000';
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    
-    // Dibujar texto centrado
-    ctx.fillText(typedText, canvas.width / 2, canvas.height / 2);
   };
 
   const handleSave = () => {
+    if (!name.trim()) {
+      alert('Por favor ingrese el nombre');
+      return;
+    }
+    if (!position.trim()) {
+      alert('Por favor ingrese el cargo');
+      return;
+    }
+
     const canvas = canvasRef.current;
     const dataURL = canvas.toDataURL('image/png');
-    onSave(dataURL);
+    
+    onSave({
+      name,
+      position,
+      image: dataURL
+    });
   };
 
   return (
@@ -109,56 +116,67 @@ export default function SignatureCanvas({ label, onSave, onCancel, initialSignat
         <div className="p-4 space-y-3">
           {/* Input nombre */}
           <div>
-            <label className="block text-xs text-slate-600 mb-1">Escribir nombre:</label>
+            <label className="block text-xs text-slate-600 mb-1">Nombre:</label>
             <input
               type="text"
-              value={typedText}
-              onChange={(e) => {
-                setTypedText(e.target.value);
-                if (e.target.value.trim()) {
-                  setTimeout(() => handleTypedSignature(), 100);
-                }
-              }}
+              value={name}
+              onChange={(e) => setName(e.target.value)}
               placeholder="Ej: Juan Granados"
               className="w-full px-3 py-1.5 text-sm border border-slate-300 rounded focus:border-blue-900 focus:outline-none focus:ring-1 focus:ring-blue-900"
             />
           </div>
 
-          {/* Canvas */}
-          <div className="border border-slate-300 rounded bg-white">
-            <canvas
-              ref={canvasRef}
-              width={600}
-              height={150}
-              className="w-full cursor-crosshair"
-              onMouseDown={startDrawing}
-              onMouseMove={draw}
-              onMouseUp={stopDrawing}
-              onMouseLeave={stopDrawing}
-              onTouchStart={(e) => {
-                e.preventDefault();
-                const touch = e.touches[0];
-                const mouseEvent = new MouseEvent('mousedown', {
-                  clientX: touch.clientX,
-                  clientY: touch.clientY
-                });
-                canvasRef.current.dispatchEvent(mouseEvent);
-              }}
-              onTouchMove={(e) => {
-                e.preventDefault();
-                const touch = e.touches[0];
-                const mouseEvent = new MouseEvent('mousemove', {
-                  clientX: touch.clientX,
-                  clientY: touch.clientY
-                });
-                canvasRef.current.dispatchEvent(mouseEvent);
-              }}
-              onTouchEnd={(e) => {
-                e.preventDefault();
-                const mouseEvent = new MouseEvent('mouseup', {});
-                canvasRef.current.dispatchEvent(mouseEvent);
-              }}
+          {/* Input cargo */}
+          <div>
+            <label className="block text-xs text-slate-600 mb-1">Cargo:</label>
+            <input
+              type="text"
+              value={position}
+              onChange={(e) => setPosition(e.target.value)}
+              placeholder="Ej: Supervisor de Mantenimiento"
+              className="w-full px-3 py-1.5 text-sm border border-slate-300 rounded focus:border-blue-900 focus:outline-none focus:ring-1 focus:ring-blue-900"
             />
+          </div>
+
+          {/* Canvas */}
+          <div>
+            <label className="block text-xs text-slate-600 mb-1">Firma (dibujar):</label>
+            <div className="border border-slate-300 rounded bg-white">
+              <canvas
+                ref={canvasRef}
+                width={600}
+                height={150}
+                className="w-full cursor-crosshair touch-none"
+                onMouseDown={startDrawing}
+                onMouseMove={draw}
+                onMouseUp={stopDrawing}
+                onMouseLeave={stopDrawing}
+                onTouchStart={(e) => {
+                  e.preventDefault();
+                  const touch = e.touches[0];
+                  const rect = canvasRef.current.getBoundingClientRect();
+                  const mouseEvent = new MouseEvent('mousedown', {
+                    clientX: touch.clientX,
+                    clientY: touch.clientY
+                  });
+                  canvasRef.current.dispatchEvent(mouseEvent);
+                }}
+                onTouchMove={(e) => {
+                  e.preventDefault();
+                  const touch = e.touches[0];
+                  const mouseEvent = new MouseEvent('mousemove', {
+                    clientX: touch.clientX,
+                    clientY: touch.clientY
+                  });
+                  canvasRef.current.dispatchEvent(mouseEvent);
+                }}
+                onTouchEnd={(e) => {
+                  e.preventDefault();
+                  const mouseEvent = new MouseEvent('mouseup', {});
+                  canvasRef.current.dispatchEvent(mouseEvent);
+                }}
+              />
+            </div>
           </div>
 
           {/* Buttons */}
@@ -167,7 +185,7 @@ export default function SignatureCanvas({ label, onSave, onCancel, initialSignat
               onClick={clearCanvas}
               className="px-3 py-1.5 text-sm bg-white border border-slate-300 text-slate-700 rounded hover:bg-slate-100"
             >
-              Limpiar
+              Limpiar Firma
             </button>
             <button
               onClick={onCancel}
