@@ -4120,7 +4120,7 @@ const DriverAssignment = ({ fleet, setFleet }) => {
   );
 };
 
-const DataLoad = ({ fleet, setFleet, setVariableHistory }) => {
+const DataLoad = ({ fleet, setFleet, setVariableHistory, onLogout }) => {
   const [loadMode, setLoadMode] = useState('masiva'); // 'individual' o 'masiva'
   const [pasteData, setPasteData] = useState('');
   const [preview, setPreview] = useState([]);
@@ -4479,6 +4479,13 @@ const DataLoad = ({ fleet, setFleet, setVariableHistory }) => {
         
       } catch (error) {
         console.error('Error saving to API:', error);
+
+        if (error.message.includes('401')) {
+            alert('⚠️ Su sesión ha expirado o no tiene permisos. Por favor, inicie sesión nuevamente.');
+            if (onLogout) onLogout();
+            return;
+        }
+
         const errorDetails = `
 Error guardando en servidor:
 ${error.message}
@@ -5521,7 +5528,7 @@ function App() {
       case 'maintenance-admin': return <MaintenanceAdminView workOrders={workOrders} setWorkOrders={setWorkOrders} fleet={fleet} setFleet={setFleet} routines={routines} setRoutines={setRoutines} variableHistory={variableHistory} setVariableHistory={setVariableHistory} currentUser={currentUser} />;
       case 'work-orders': return <WorkOrders fleet={fleet} />;
       case 'drivers': return <DriverAssignment fleet={fleet} setFleet={setFleet} />;
-      case 'dataload': return <DataLoad fleet={fleet} setFleet={setFleet} setVariableHistory={setVariableHistory} />;
+      case 'dataload': return <DataLoad fleet={fleet} setFleet={setFleet} setVariableHistory={setVariableHistory} onLogout={handleLogout} />;
       case 'gps': return (
         <div className="p-8 flex flex-col items-center justify-center h-full">
           <MapPin size={64} className="text-blue-500 mb-4" />
