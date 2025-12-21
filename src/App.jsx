@@ -93,6 +93,64 @@ const pickVariantRoutine = (baseRoutine, variantKey) => {
   return baseRoutine;
 };
 
+const normalizeSupplyUnit = (supply) => {
+  if (supply == null) return null;
+
+  const asObject = typeof supply === 'object' && !Array.isArray(supply);
+  const rawName = asObject ? (supply.name || supply.description || supply.descripcion || '') : String(supply);
+  const nameUpper = String(rawName || '').toUpperCase();
+
+  const rawUnit = asObject ? (supply.unit || supply.unidad) : null;
+  const unitUpper = rawUnit != null ? String(rawUnit).toUpperCase().trim() : '';
+
+  // Priority rules
+  if (nameUpper.includes('FILTRO')) {
+    return asObject ? { ...supply, unit: 'UND' } : { name: rawName, unit: 'UND', quantity: 1 };
+  }
+
+  const isFluid =
+    nameUpper.includes('ACEITE') ||
+    nameUpper.includes('REFRIGERANTE') ||
+    nameUpper.includes('LIQUIDO') ||
+    nameUpper.includes('LÍQUIDO') ||
+    nameUpper.includes('ANTICONGELANTE') ||
+    nameUpper.includes('ATF') ||
+    nameUpper.includes('HIDRAUL');
+
+  if (isFluid) {
+    return asObject ? { ...supply, unit: 'GAL' } : { name: rawName, unit: 'GAL', quantity: 1 };
+  }
+
+  if (unitUpper) {
+    return asObject ? { ...supply, unit: unitUpper } : { name: rawName, unit: unitUpper, quantity: 1 };
+  }
+
+  return asObject ? { ...supply, unit: 'UND' } : { name: rawName, unit: 'UND', quantity: 1 };
+};
+
+const normalizeSuppliesUnits = (supplies) => {
+  if (!Array.isArray(supplies)) return [];
+  return supplies
+    .map(normalizeSupplyUnit)
+    .filter(Boolean);
+};
+
+const taskSystemFromDescription = (description) => {
+  const upper = String(description || '').toUpperCase();
+  if (!upper.trim()) return 'INSPECCION';
+
+  if (upper.includes('MOTOR')) return 'SISTEMA MOTOR';
+  if (upper.includes('TRANSMISI') || upper.includes('CAJA')) return 'SISTEMA TRANSMISION';
+  if (upper.includes('FRENO')) return 'SISTEMA FRENOS';
+  if (upper.includes('DIRECCION') || upper.includes('DIRECCIÓN')) return 'SISTEMA DIRECCION';
+  if (upper.includes('REFRIGERANTE') || upper.includes('RADIADOR') || upper.includes('ENFRIAM')) return 'SISTEMA REFRIGERACION';
+  if (upper.includes('SUSPENS') || upper.includes('AMORTIGUADOR')) return 'SISTEMA SUSPENSION';
+  if (upper.includes('LLANTA') || upper.includes('NEUMATIC')) return 'SISTEMA LLANTAS';
+  if (upper.includes('BATERIA') || upper.includes('BATERÍA') || upper.includes('LUCES') || upper.includes('ELECTRIC')) return 'SISTEMA ELECTRICO';
+
+  return 'INSPECCION';
+};
+
 const getBase64ImageFromURL = (url) => {
   return new Promise((resolve, reject) => {
     const img = new Image();
@@ -367,6 +425,8 @@ const generatePDF = async (workOrder, notify) => {
     const fallbackSupplies = ensureArray(fallbackRoutine?.supplies);
     return fallbackSupplies;
   })();
+
+  const normalizedSuppliesToRender = normalizeSuppliesUnits(suppliesToRender);
   
   doc.autoTable({
     startY: finalY + 2,
@@ -374,7 +434,7 @@ const generatePDF = async (workOrder, notify) => {
     body: itemsToRender.map(item => [
       generateTaskCode(item.description), 
       item.description, 
-      item.type === 'Preventivo' ? 'SISTEMA MOTOR' : 'INSPECCION',
+      taskSystemFromDescription(item.description),
       '[ ] OK   [ ] NO'
     ]),
     theme: 'grid',
@@ -396,7 +456,7 @@ const generatePDF = async (workOrder, notify) => {
   doc.autoTable({
     startY: repuestosY + 3,
     head: [['FECHA', 'BODEGA', 'REPUESTO', 'DESCRIPCION', 'UND', 'CANT', 'VL. TOTAL']],
-    body: suppliesToRender.map(s => [
+    body: normalizedSuppliesToRender.map(s => [
       new Date().toLocaleDateString(),
       'BODEGA',
       (s && typeof s === 'object' ? (s.reference || s.codigo || s.ref) : '') || '---',
@@ -1435,7 +1495,7 @@ const PlanningView = ({ fleet, setFleet, onCreateOT, workOrders = [], setWorkOrd
       routineName: `MANTENIMIENTO PREVENTIVO ${routine.km} KM`,
       mileage: selectedVehicle.mileage,
       items: routine.items || [],
-      supplies: routine.supplies || [],
+      supplies: normalizeSuppliesUnits(routine.supplies || []),
       workshop: workshop,
       status: 'ABIERTA',
       creationDate: new Date().toISOString().split('T')[0]
@@ -1527,7 +1587,7 @@ const PlanningView = ({ fleet, setFleet, onCreateOT, workOrders = [], setWorkOrd
       routineName: `MANTENIMIENTO PREVENTIVO ${routineKm} KM`,
       mileage: targetKm,
       items: routine?.items || [],
-      supplies: routine?.supplies || [],
+      supplies: normalizeSuppliesUnits(routine?.supplies || []),
       workshop: workshop,
       status: 'ABIERTA',
       creationDate: new Date().toISOString().split('T')[0]
@@ -4320,9 +4380,8 @@ const WorkOrders = ({ fleet }) => {
 
   const selectVehicle = (vehicle) => {
     // Auto-detect brand variant if possible
-    let detectedBrand = 'AUTO';
-    if (vehicle.model.toUpperCase().includes('RAM')) detectedBrand = 'RAM';
-    if (vehicle.model.toUpperCase().includes('JMC')) detectedBrand = 'JMC';
+    const detected = detectRoutineVariant(vehicle?.model);
+    const detectedBrand = detected ? detected : 'AUTO';
 
     setFormData(prev => ({
       ...prev,
@@ -4363,7 +4422,7 @@ const WorkOrders = ({ fleet }) => {
       routineName: routine.name || formData.maintenanceDescription,
       mileage: formData.mileage,
       items: routine.items || [],
-      supplies: routine.supplies || []
+      supplies: normalizeSuppliesUnits(routine.supplies || [])
     };
     generatePDF(workOrder, alert);
   };
@@ -6121,8 +6180,12 @@ function App() {
 
   const handleCreateOT = async (newOT) => {
     try {
+      const normalizedNewOT = {
+        ...newOT,
+        supplies: normalizeSuppliesUnits(newOT?.supplies || [])
+      };
       // Guardar en API primero
-      const savedOTRaw = await api.createWorkOrder(newOT);
+      const savedOTRaw = await api.createWorkOrder(normalizedNewOT);
       const safeParse = (value, fallback) => {
         if (value == null) return fallback;
         if (Array.isArray(value)) return value;
@@ -6140,7 +6203,7 @@ function App() {
       const savedOT = {
         ...savedOTRaw,
         items: safeParse(savedOTRaw?.items, newOT?.items || []),
-        supplies: safeParse(savedOTRaw?.supplies, newOT?.supplies || [])
+        supplies: normalizeSuppliesUnits(safeParse(savedOTRaw?.supplies, normalizedNewOT?.supplies || []))
       };
 
       setWorkOrders(prev => [savedOT, ...prev]);
@@ -6151,6 +6214,7 @@ function App() {
       // Fallback: guardar solo en estado local
       const offlineOT = {
         ...newOT,
+        supplies: normalizeSuppliesUnits(newOT?.supplies || []),
         // Ensure we always have a stable identifier in offline mode
         id: newOT?.id || `offline-${Date.now()}`
       };
