@@ -5576,6 +5576,60 @@ function App() {
           };
         };
 
+        const applyLegacyOtNumbers = (workOrders) => {
+          const list = asArray(workOrders);
+          const mapKey = 'ot_number_legacy_map';
+          let map = {};
+          try {
+            map = JSON.parse(localStorage.getItem(mapKey) || '{}') || {};
+          } catch {
+            map = {};
+          }
+
+          let max = 0;
+          for (const wo of list) {
+            const n = Number(wo?.otNumber);
+            if (Number.isFinite(n)) max = Math.max(max, n);
+          }
+          for (const v of Object.values(map)) {
+            const n = Number(v);
+            if (Number.isFinite(n)) max = Math.max(max, n);
+          }
+
+          const sortKey = (wo) => {
+            const createdAt = wo?.createdAt ? new Date(wo.createdAt) : null;
+            if (createdAt && !Number.isNaN(createdAt.getTime())) return createdAt.getTime();
+            const creationDate = wo?.creationDate ? new Date(String(wo.creationDate)) : null;
+            if (creationDate && !Number.isNaN(creationDate.getTime())) return creationDate.getTime();
+            return 0;
+          };
+
+          const missing = list
+            .filter(wo => !Number.isFinite(Number(wo?.otNumber)) && wo?.id != null)
+            .sort((a, b) => sortKey(a) - sortKey(b));
+
+          for (const wo of missing) {
+            const id = String(wo.id);
+            if (!Number.isFinite(Number(map[id]))) {
+              max += 1;
+              map[id] = max;
+            }
+          }
+
+          try {
+            localStorage.setItem(mapKey, JSON.stringify(map));
+          } catch {
+            // ignore storage errors (quota/private mode)
+          }
+
+          return list.map(wo => {
+            const n = Number(wo?.otNumber);
+            if (Number.isFinite(n)) return wo;
+            const legacy = Number(map[String(wo?.id)]);
+            return Number.isFinite(legacy) ? { ...wo, otNumber: legacy } : wo;
+          });
+        };
+
         const toNumberOr = (value, fallback = 0) => {
           const n = typeof value === 'string' ? Number(value.replace(/,/g, '')) : Number(value);
           return Number.isFinite(n) ? n : fallback;
@@ -5693,7 +5747,7 @@ function App() {
 
         // Normalize fleet shape to avoid runtime crashes in PlanningView
         vehicles = asArray(vehicles).map(normalizeVehicle);
-        orders = asArray(orders).map(normalizeWorkOrder);
+        orders = applyLegacyOtNumbers(asArray(orders).map(normalizeWorkOrder));
         history = asArray(history);
         
         // Set state
@@ -5748,7 +5802,7 @@ function App() {
         }
 
         setFleet(asArray(fleetFallback).map(normalizeVehicle));
-        setWorkOrders(finalOrdersFallback);
+        setWorkOrders(applyLegacyOtNumbers(asArray(finalOrdersFallback).map(normalizeWorkOrder)));
         setVariableHistory(asArray(historyFallback));
       } finally {
         setIsLoading(false);
