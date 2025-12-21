@@ -16,7 +16,7 @@ services:
     repo: https://github.com/Juangranados89/CONTROL
     branch: main
     rootDir: server
-    buildCommand: npm install && npx prisma generate && npx prisma migrate deploy
+    buildCommand: ./render-build.sh
     startCommand: npm start
     healthCheckPath: /health
     autoDeploy: true
