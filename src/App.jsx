@@ -59,6 +59,9 @@ import BulkImportGrid from './components/BulkImportGrid';
 import MaintenanceDataLoader from './components/MaintenanceDataLoader';
 import CloseOTModal from './components/CloseOTModal';
 import { useDialog } from './components/DialogProvider.jsx';
+import useDashboardFilters from './dashboard/useDashboardFilters';
+import BIFleetStatusDonut from './components/BIFleetStatusDonut';
+import BIFleetTable from './components/BIFleetTable';
 
 // --- Helper Functions ---
 
@@ -581,26 +584,85 @@ const generatePDF = async (workOrder, notify) => {
 // --- Components ---
 
 const Dashboard = ({ fleet, workOrders, variableHistory }) => {
+  const selectedVehicle = useDashboardFilters((s) => s.selectedVehicle);
+  const vehicleStatus = useDashboardFilters((s) => s.vehicleStatus);
+  const search = useDashboardFilters((s) => s.search);
+  const setSelectedVehicle = useDashboardFilters((s) => s.setSelectedVehicle);
+  const clearSelectedVehicle = useDashboardFilters((s) => s.clearSelectedVehicle);
+  const toggleVehicleStatus = useDashboardFilters((s) => s.toggleVehicleStatus);
+  const clearVehicleStatus = useDashboardFilters((s) => s.clearVehicleStatus);
+  const setSearch = useDashboardFilters((s) => s.setSearch);
+  const clearAll = useDashboardFilters((s) => s.clearAll);
+
+  const filteredFleet = useMemo(() => {
+    let result = Array.isArray(fleet) ? fleet : [];
+
+    if (vehicleStatus) {
+      result = result.filter((v) => String(v?.status || '').toUpperCase() === vehicleStatus);
+    }
+
+    if (selectedVehicle?.code || selectedVehicle?.plate) {
+      const code = selectedVehicle.code;
+      const plate = selectedVehicle.plate;
+      result = result.filter((v) => {
+        if (code && v?.code === code) return true;
+        if (plate && v?.plate === plate) return true;
+        return false;
+      });
+    }
+
+    const q = String(search || '').trim().toUpperCase();
+    if (q) {
+      result = result.filter((v) => {
+        const haystack = [v?.code, v?.plate, v?.model, v?.driver, v?.status]
+          .filter(Boolean)
+          .map((x) => String(x).toUpperCase())
+          .join(' | ');
+        return haystack.includes(q);
+      });
+    }
+
+    return result;
+  }, [fleet, vehicleStatus, selectedVehicle, search]);
+
+  const filteredWorkOrders = useMemo(() => {
+    let result = Array.isArray(workOrders) ? workOrders : [];
+
+    if (selectedVehicle?.code || selectedVehicle?.plate) {
+      const code = selectedVehicle.code;
+      const plate = selectedVehicle.plate;
+      result = result.filter((ot) => {
+        const otCode = ot?.vehicleCode || ot?.code;
+        const otPlate = ot?.plate;
+        if (code && otCode === code) return true;
+        if (plate && otPlate === plate) return true;
+        return false;
+      });
+    }
+
+    return result;
+  }, [workOrders, selectedVehicle]);
+
   // Calcular métricas
   const metrics = useMemo(() => {
-    const totalVehicles = fleet.length;
-    const operative = fleet.filter(v => v.status === 'OPERATIVO').length;
-    const inMaintenance = fleet.filter(v => v.status === 'MANTENIMIENTO').length;
-    const outOfService = fleet.filter(v => v.status === 'FUERA DE SERVICIO').length;
+    const totalVehicles = filteredFleet.length;
+    const operative = filteredFleet.filter(v => v.status === 'OPERATIVO').length;
+    const inMaintenance = filteredFleet.filter(v => v.status === 'MANTENIMIENTO').length;
+    const outOfService = filteredFleet.filter(v => v.status === 'FUERA DE SERVICIO').length;
     
-    const openOTs = workOrders.filter(ot => ot.status === 'ABIERTA').length;
-    const closedOTs = workOrders.filter(ot => ot.status === 'CERRADA').length;
-    const totalOTs = workOrders.length;
+    const openOTs = filteredWorkOrders.filter(ot => ot.status === 'ABIERTA').length;
+    const closedOTs = filteredWorkOrders.filter(ot => ot.status === 'CERRADA').length;
+    const totalOTs = filteredWorkOrders.length;
     
     // Calcular vehículos por estado de mantenimiento
-    const needsMaintenance = fleet.filter(v => {
+    const needsMaintenance = filteredFleet.filter(v => {
       const nextRoutine = getNextRoutine(v.mileage, v.model);
       const kmSinceLastMtto = v.mileage - (v.lastMaintenance || 0);
       const kmRemaining = nextRoutine.km - kmSinceLastMtto;
       return kmRemaining < 0; // Vencido
     }).length;
     
-    const soonMaintenance = fleet.filter(v => {
+    const soonMaintenance = filteredFleet.filter(v => {
       const nextRoutine = getNextRoutine(v.mileage, v.model);
       const kmSinceLastMtto = v.mileage - (v.lastMaintenance || 0);
       const kmRemaining = nextRoutine.km - kmSinceLastMtto;
@@ -608,7 +670,7 @@ const Dashboard = ({ fleet, workOrders, variableHistory }) => {
     }).length;
     
     // Calcular vehículos en rango de ejecución (±10% de la rutina)
-    const inExecutionRange = fleet.filter(v => {
+    const inExecutionRange = filteredFleet.filter(v => {
       const nextRoutine = getNextRoutine(v.mileage, v.model);
       const kmSinceLastMtto = v.mileage - (v.lastMaintenance || 0);
       const targetKm = nextRoutine.km;
@@ -636,7 +698,7 @@ const Dashboard = ({ fleet, workOrders, variableHistory }) => {
       operativePercentage: totalVehicles > 0 ? ((operative / totalVehicles) * 100).toFixed(1) : 0,
       completionRate: totalOTs > 0 ? ((closedOTs / totalOTs) * 100).toFixed(1) : 0
     };
-  }, [fleet, workOrders]);
+  }, [filteredFleet, filteredWorkOrders]);
   
   // Datos para gráfico de estado de flota
   const fleetStatusData = [
@@ -655,7 +717,7 @@ const Dashboard = ({ fleet, workOrders, variableHistory }) => {
   // Datos para gráfico de OTs por mes
   const otsByMonth = useMemo(() => {
     const monthCounts = {};
-    workOrders.forEach(ot => {
+    filteredWorkOrders.forEach(ot => {
       if (ot.creationDate) {
         const month = ot.creationDate.substring(0, 7); // YYYY-MM
         monthCounts[month] = (monthCounts[month] || 0) + 1;
@@ -668,28 +730,28 @@ const Dashboard = ({ fleet, workOrders, variableHistory }) => {
       .map(([month, count]) => ({
         month: new Date(month + '-01').toLocaleDateString('es-ES', { month: 'short', year: 'numeric' }),
         total: count,
-        abiertas: workOrders.filter(ot => ot.creationDate?.startsWith(month) && ot.status === 'ABIERTA').length,
-        cerradas: workOrders.filter(ot => ot.creationDate?.startsWith(month) && ot.status === 'CERRADA').length
+        abiertas: filteredWorkOrders.filter(ot => ot.creationDate?.startsWith(month) && ot.status === 'ABIERTA').length,
+        cerradas: filteredWorkOrders.filter(ot => ot.creationDate?.startsWith(month) && ot.status === 'CERRADA').length
       }));
-  }, [workOrders]);
+  }, [filteredWorkOrders]);
   
   // Top 5 vehículos con más kilometraje
   const topMileageVehicles = useMemo(() => {
-    return [...fleet]
+    return [...filteredFleet]
       .sort((a, b) => b.mileage - a.mileage)
       .slice(0, 5)
       .map(v => ({
         name: v.code,
         km: v.mileage
       }));
-  }, [fleet]);
+  }, [filteredFleet]);
 
   // Efectividad por taller
   const workshopEffectiveness = useMemo(() => {
     const workshops = ['TALLER EL HATO', 'TALLER PR 33', 'TALLER EL BURRO', 'TALLER EXTERNO'];
     
     return workshops.map(workshop => {
-      const workshopOTs = workOrders.filter(ot => ot.workshop === workshop);
+      const workshopOTs = filteredWorkOrders.filter(ot => ot.workshop === workshop);
       const total = workshopOTs.length;
       const closed = workshopOTs.filter(ot => ot.status === 'CERRADA').length;
       const open = workshopOTs.filter(ot => ot.status === 'ABIERTA').length;
@@ -703,7 +765,7 @@ const Dashboard = ({ fleet, workOrders, variableHistory }) => {
         efectividad: parseFloat(effectiveness)
       };
     }).filter(w => w.total > 0); // Solo mostrar talleres con OTs
-  }, [workOrders]);
+  }, [filteredWorkOrders]);
 
   // Datos para gráfico de rango de ejecución
   const executionRangeData = [
@@ -876,31 +938,20 @@ const Dashboard = ({ fleet, workOrders, variableHistory }) => {
 
       {/* Charts Row 1 */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Estado de Flota - Pie Chart */}
+        {/* Estado de Flota - Donut (BI) */}
         <div className="bg-white rounded-xl shadow-lg p-6">
           <h3 className="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
             <PieChart className="text-blue-600" />
             Estado de la Flota
           </h3>
-          <ResponsiveContainer width="100%" height={300}>
-            <RechartsPieChart>
-              <Pie
-                data={fleetStatusData}
-                cx="50%"
-                cy="50%"
-                labelLine={false}
-                label={({ name, value, percent }) => `${name}: ${value} (${(percent * 100).toFixed(0)}%)`}
-                outerRadius={100}
-                fill="#8884d8"
-                dataKey="value"
-              >
-                {fleetStatusData.map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={entry.color} />
-                ))}
-              </Pie>
-              <Tooltip />
-            </RechartsPieChart>
-          </ResponsiveContainer>
+          <BIFleetStatusDonut
+            metrics={metrics}
+            activeStatus={vehicleStatus}
+            onToggleStatus={toggleVehicleStatus}
+          />
+          <div className="mt-3 text-xs text-slate-500">
+            Clic en un segmento para filtrar (clic de nuevo para limpiar)
+          </div>
         </div>
 
         {/* Estado de Mantenimiento - Donut */}
@@ -1128,6 +1179,83 @@ const Dashboard = ({ fleet, workOrders, variableHistory }) => {
             <Wrench className="text-amber-500" size={32} />
           </div>
         </div>
+      </div>
+
+      {/* Filtros + Tabla Principal */}
+      <div className="bg-white rounded-xl shadow-lg p-6 space-y-4">
+        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3">
+          <div>
+            <h3 className="text-lg font-bold text-slate-800 flex items-center gap-2">
+              <Filter className="text-blue-600" />
+              Tabla principal (interconectada)
+            </h3>
+            <p className="text-sm text-slate-600">
+              Clic en una fila para filtrar todo el dashboard por vehículo
+            </p>
+          </div>
+
+          <div className="flex flex-col sm:flex-row gap-2 sm:items-center">
+            <input
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Buscar por código, placa, modelo, conductor o estado..."
+              className="w-full sm:w-[420px] px-4 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+            <button
+              type="button"
+              onClick={clearAll}
+              className="px-4 py-2 font-bold rounded-lg bg-slate-100 text-slate-700 hover:bg-slate-200"
+            >
+              Limpiar filtros
+            </button>
+          </div>
+        </div>
+
+        {(selectedVehicle || vehicleStatus || (search && search.trim())) && (
+          <div className="flex flex-wrap items-center gap-2 text-sm">
+            <span className="text-slate-500">Filtros activos:</span>
+
+            {vehicleStatus && (
+              <button
+                type="button"
+                onClick={clearVehicleStatus}
+                className="px-3 py-1 rounded-full bg-blue-50 text-blue-700 border border-blue-100 font-semibold"
+                title="Clic para quitar filtro de estado"
+              >
+                Estado: {vehicleStatus} ×
+              </button>
+            )}
+
+            {selectedVehicle && (
+              <button
+                type="button"
+                onClick={clearSelectedVehicle}
+                className="px-3 py-1 rounded-full bg-blue-50 text-blue-700 border border-blue-100 font-semibold"
+                title="Clic para quitar filtro de vehículo"
+              >
+                Vehículo: {selectedVehicle.plate || selectedVehicle.code} ×
+              </button>
+            )}
+
+            {search && search.trim() && (
+              <button
+                type="button"
+                onClick={() => setSearch('')}
+                className="px-3 py-1 rounded-full bg-slate-50 text-slate-700 border border-slate-200 font-semibold"
+                title="Clic para limpiar búsqueda"
+              >
+                Búsqueda: “{search.trim()}” ×
+              </button>
+            )}
+          </div>
+        )}
+
+        <BIFleetTable
+          data={filteredFleet}
+          selectedVehicle={selectedVehicle}
+          onRowClick={setSelectedVehicle}
+          pageSize={50}
+        />
       </div>
     </div>
   );
