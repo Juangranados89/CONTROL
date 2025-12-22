@@ -4317,10 +4317,68 @@ const MaintenanceAdminView = ({ workOrders, setWorkOrders, fleet, setFleet, rout
     });
   };
 
-  const filteredOTs = workOrders.filter(ot => 
-    ot.vehicleCode.toLowerCase().includes(filter.toLowerCase()) ||
-    ot.plate.toLowerCase().includes(filter.toLowerCase())
-  );
+  const getOtTimestamp = (ot) => {
+    const raw = ot?.creationDate || ot?.createdAt || ot?.date || ot?.closedDate || null;
+    if (!raw) return 0;
+    if (raw instanceof Date) return raw.getTime();
+
+    const str = String(raw).trim();
+    if (!str) return 0;
+
+    // ISO-like: YYYY-MM or YYYY-MM-DD or full timestamp
+    const iso = Date.parse(str);
+    if (Number.isFinite(iso)) return iso;
+
+    // DD/MM/YYYY
+    const m = str.match(/^(\d{2})\/(\d{2})\/(\d{4})(?:\s+\d{2}:\d{2}(?::\d{2})?)?$/);
+    if (m) {
+      const d = Number(m[1]);
+      const mo = Number(m[2]);
+      const y = Number(m[3]);
+      const t = new Date(y, mo - 1, d);
+      return t.getTime();
+    }
+
+    return 0;
+  };
+
+  const filteredOTs = useMemo(() => {
+    const list = Array.isArray(workOrders) ? workOrders : [];
+    const q = String(filter || '').trim().toLowerCase();
+    if (!q) return list;
+
+    return list.filter((ot) => {
+      const code = String(ot?.vehicleCode || ot?.code || '').toLowerCase();
+      const plate = String(ot?.plate || '').toLowerCase();
+      return code.includes(q) || plate.includes(q);
+    });
+  }, [workOrders, filter]);
+
+  const groupedOTs = useMemo(() => {
+    const map = new Map();
+    for (const ot of filteredOTs) {
+      const vehicleCode = String(ot?.vehicleCode || ot?.code || '').trim();
+      const plate = String(ot?.plate || '').trim();
+      const key = `${vehicleCode}||${plate}`;
+      if (!map.has(key)) {
+        map.set(key, { vehicleCode, plate, ots: [] });
+      }
+      map.get(key).ots.push(ot);
+    }
+
+    const groups = Array.from(map.values());
+    for (const g of groups) {
+      g.ots.sort((a, b) => getOtTimestamp(b) - getOtTimestamp(a));
+    }
+
+    groups.sort((a, b) => {
+      const c = a.vehicleCode.localeCompare(b.vehicleCode);
+      if (c !== 0) return c;
+      return a.plate.localeCompare(b.plate);
+    });
+
+    return groups;
+  }, [filteredOTs]);
 
   return (
     <div className="p-6 space-y-6 relative">
@@ -4379,96 +4437,112 @@ const MaintenanceAdminView = ({ workOrders, setWorkOrders, fleet, setFleet, rout
             </div>
           </div>
 
-          <div className="bg-white rounded-lg shadow overflow-hidden">
-            <table className="w-full text-sm text-left">
-              <thead className="bg-slate-100 text-slate-700 uppercase font-bold">
-                <tr>
-                  <th className="p-4">OT #</th>
-                  <th className="p-4">Estado</th>
-                  <th className="p-4">Vehículo</th>
-                  <th className="p-4">Rutina</th>
-                  <th className="p-4">Taller</th>
-                  <th className="p-4">Fecha Creación</th>
-                  <th className="p-4">Acciones</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-200">
-                {filteredOTs.length > 0 ? (
-                  filteredOTs.map(ot => (
-                    <tr key={ot.id} className="hover:bg-slate-50">
-                      <td className="p-4 font-mono font-bold text-blue-600">#{ot.otNumber ?? ot.id}</td>
-                      <td className="p-4">
-                        <span className={`px-2 py-1 rounded-full text-xs font-bold ${
-                          ot.status === 'ABIERTA' ? 'bg-blue-100 text-blue-800' : 
-                          ot.status === 'CERRADA' ? 'bg-green-100 text-green-800' :
-                          'bg-red-100 text-red-800'
-                        }`}>
-                          {ot.status}
-                        </span>
-                      </td>
-                      <td className="p-4">
-                        <div className="font-bold">{ot.plate}</div>
-                        <div className="text-xs text-slate-500">{ot.vehicleCode}</div>
-                      </td>
-                      <td className="p-4">{ot.routineName}</td>
-                      <td className="p-4 text-slate-600">{ot.workshop}</td>
-                      <td className="p-4">{ot.creationDate}</td>
-                      <td className="p-4">
-                        <div className="flex flex-wrap gap-2">
-                          <button 
-                            onClick={() => generatePDF(ot, alert)}
-                            className="px-2 py-1 bg-blue-50 text-blue-600 rounded hover:bg-blue-100 text-xs font-medium border border-blue-200"
-                            title="Lanzar OT (PDF)"
-                          >
-                            Lanzar OT
-                          </button>
-                          
-                          {ot.status === 'ABIERTA' && (
-                            <button 
-                              onClick={() => setClosingOT(ot)}
-                              className="px-2 py-1 bg-green-50 text-green-600 rounded hover:bg-green-100 text-xs font-medium border border-green-200"
-                            >
-                              Cerrar OT
-                            </button>
-                          )}
+          {groupedOTs.length > 0 ? (
+            <div className="space-y-4">
+              {groupedOTs.map((group) => (
+                <div key={`${group.vehicleCode}||${group.plate}`} className="bg-white rounded-lg shadow overflow-hidden">
+                  <div className="px-4 py-3 bg-slate-100 border-b border-slate-200 flex items-center justify-between">
+                    <div>
+                      <div className="font-bold text-slate-800">
+                        {group.vehicleCode || 'SIN CÓDIGO'} <span className="text-slate-500">—</span> {group.plate || 'SIN PLACA'}
+                      </div>
+                      <div className="text-xs text-slate-600">
+                        {group.ots.length} OT{group.ots.length === 1 ? '' : 's'} (ordenadas por fecha)
+                      </div>
+                    </div>
+                  </div>
 
-                          <button 
-                            onClick={() => alert('Funcionalidad de Editar OT en desarrollo', { title: 'En desarrollo', variant: 'info' })}
-                            className="px-2 py-1 bg-amber-50 text-amber-600 rounded hover:bg-amber-100 text-xs font-medium border border-amber-200"
-                          >
-                            Editar OT
-                          </button>
+                  <div className="overflow-auto">
+                    <table className="w-full text-sm text-left">
+                      <thead className="bg-white text-slate-700 uppercase font-bold border-b border-slate-200">
+                        <tr>
+                          <th className="p-4">OT #</th>
+                          <th className="p-4">Estado</th>
+                          <th className="p-4">Rutina</th>
+                          <th className="p-4">Taller</th>
+                          <th className="p-4">Fecha</th>
+                          <th className="p-4">Acciones</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-slate-200">
+                        {group.ots.map((ot) => (
+                          <tr key={ot.id} className="hover:bg-slate-50">
+                            <td className="p-4 font-mono font-bold text-blue-600">#{ot.otNumber ?? ot.id}</td>
+                            <td className="p-4">
+                              <span
+                                className={`px-2 py-1 rounded-full text-xs font-bold ${
+                                  ot.status === 'ABIERTA'
+                                    ? 'bg-blue-100 text-blue-800'
+                                    : ot.status === 'CERRADA'
+                                      ? 'bg-green-100 text-green-800'
+                                      : 'bg-red-100 text-red-800'
+                                }`}
+                              >
+                                {ot.status}
+                              </span>
+                            </td>
+                            <td className="p-4">{ot.routineName}</td>
+                            <td className="p-4 text-slate-600">{ot.workshop}</td>
+                            <td className="p-4">{ot.creationDate || ot.createdAt || '—'}</td>
+                            <td className="p-4">
+                              <div className="flex flex-wrap gap-2">
+                                <button
+                                  onClick={() => generatePDF(ot, alert)}
+                                  className="px-2 py-1 bg-blue-50 text-blue-600 rounded hover:bg-blue-100 text-xs font-medium border border-blue-200"
+                                  title="Lanzar OT (PDF)"
+                                >
+                                  Lanzar OT
+                                </button>
 
-                          {ot.status !== 'ANULADA' && (
-                            <button 
-                                onClick={() => handleAnularOT(ot.id)}
-                                className="px-2 py-1 bg-red-50 text-red-600 rounded hover:bg-red-100 text-xs font-medium border border-red-200"
-                            >
-                                Anular OT
-                            </button>
-                          )}
+                                {ot.status === 'ABIERTA' && (
+                                  <button
+                                    onClick={() => setClosingOT(ot)}
+                                    className="px-2 py-1 bg-green-50 text-green-600 rounded hover:bg-green-100 text-xs font-medium border border-green-200"
+                                  >
+                                    Cerrar OT
+                                  </button>
+                                )}
 
-                          <button
-                            onClick={() => handleEliminarOT(ot.id)}
-                            className="px-2 py-1 bg-red-600 text-white rounded hover:bg-red-700 text-xs font-medium"
-                            title="Eliminar definitivamente"
-                          >
-                            Eliminar OT
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))
-                ) : (
-                  <tr>
-                    <td colSpan="7" className="p-8 text-center text-slate-400 italic">
-                      No hay órdenes de trabajo registradas.
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
-          </div>
+                                <button
+                                  onClick={() => alert('Funcionalidad de Editar OT en desarrollo', { title: 'En desarrollo', variant: 'info' })}
+                                  className="px-2 py-1 bg-amber-50 text-amber-600 rounded hover:bg-amber-100 text-xs font-medium border border-amber-200"
+                                >
+                                  Editar OT
+                                </button>
+
+                                {ot.status !== 'ANULADA' && (
+                                  <button
+                                    onClick={() => handleAnularOT(ot.id)}
+                                    className="px-2 py-1 bg-red-50 text-red-600 rounded hover:bg-red-100 text-xs font-medium border border-red-200"
+                                  >
+                                    Anular OT
+                                  </button>
+                                )}
+
+                                <button
+                                  onClick={() => handleEliminarOT(ot.id)}
+                                  className="px-2 py-1 bg-red-600 text-white rounded hover:bg-red-700 text-xs font-medium"
+                                  title="Eliminar definitivamente"
+                                >
+                                  Eliminar OT
+                                </button>
+                              </div>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="bg-white rounded-lg shadow overflow-hidden">
+              <div className="p-8 text-center text-slate-400 italic">
+                No hay órdenes de trabajo registradas.
+              </div>
+            </div>
+          )}
         </>
       )}
 
