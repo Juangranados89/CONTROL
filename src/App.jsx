@@ -68,6 +68,8 @@ import { useDialog } from './components/DialogProvider.jsx';
 import useDashboardFilters from './dashboard/useDashboardFilters';
 import BIFleetStatusDonut from './components/BIFleetStatusDonut';
 import BIFleetTable from './components/BIFleetTable';
+import useFleetMetrics from './hooks/useFleetMetrics';
+import { generatePDF as generatePDFService } from './services/pdfService';
 
 // --- Helper Functions ---
 
@@ -310,342 +312,6 @@ const generateTaskCode = (description) => {
   const action = words[0].substring(0, 4); // CAMB, REV, LIMP
   const object = words.slice(1).map(w => w[0]).join('').substring(0, 5);
   return `${action}-${object}`;
-};
-
-const generatePDF = async (workOrder, notify) => {
-  const notifyFn = typeof notify === 'function' ? notify : null;
-  if (!window.jspdf) {
-    if (notifyFn) {
-      await notifyFn('La librería jsPDF no está cargada.', { title: 'Error', variant: 'danger' });
-    }
-    return;
-  }
-
-  const formatMonthYear = (value) => {
-    const months = ['ENE', 'FEB', 'MAR', 'ABR', 'MAY', 'JUN', 'JUL', 'AGO', 'SEP', 'OCT', 'NOV', 'DIC'];
-
-    let dateObj = null;
-    if (value instanceof Date) {
-      dateObj = value;
-    } else if (typeof value === 'string' && value.trim()) {
-      const v = value.trim();
-      // DD/MM/YYYY
-      const m1 = v.match(/^([0-3]?\d)\/(\d{1,2})\/(\d{4})$/);
-      if (m1) {
-        const day = Number(m1[1]);
-        const month = Number(m1[2]) - 1;
-        const year = Number(m1[3]);
-        dateObj = new Date(year, month, day);
-      } else {
-        // ISO or anything Date can parse
-        const parsed = new Date(v);
-        if (!Number.isNaN(parsed.getTime())) dateObj = parsed;
-      }
-    }
-
-    if (!dateObj || Number.isNaN(dateObj.getTime())) return '';
-    const mon = months[dateObj.getMonth()] || '';
-    const yy = String(dateObj.getFullYear()).slice(-2);
-    return mon && yy ? `${mon}-${yy}` : '';
-  };
-
-  const { jsPDF } = window.jspdf;
-  const doc = new jsPDF();
-
-  // --- HEADER (Boxed Layout) ---
-  const startX = 10;
-  const startY = 10;
-  const headerHeight = 30;
-  const fullWidth = 190;
-  
-  // Main Header Box
-  doc.setDrawColor(0);
-  doc.setLineWidth(0.1);
-  doc.rect(startX, startY, fullWidth, headerHeight); // Outer border
-
-  // Vertical Dividers
-  doc.line(startX + 60, startY, startX + 60, startY + headerHeight); // Logo separator (Widened to 60)
-  doc.line(startX + 140, startY, startX + 140, startY + headerHeight); // Title separator
-
-  // Logo
-  try {
-    const logoBase64 = await getBase64ImageFromURL('/logo.png');
-    // Centering logo: Box width 60, Image width 40 -> Margin X = 10
-    // Box height 30, Image height 27 -> Margin Y = 1.5
-    doc.addImage(logoBase64, 'PNG', startX + 10, startY + 1.5, 40, 27); 
-  } catch (e) {
-    console.error("Error loading logo:", e);
-    doc.setFontSize(12);
-    doc.setTextColor(0, 0, 0); // Ensure black
-    doc.text("GRUPORTIZ", startX + 30, startY + 15, { align: 'center' });
-  }
-
-  // Title Text
-  doc.setFont("helvetica", "bold"); // Helvetica is standard sans-serif (like Arial)
-  doc.setTextColor(0, 0, 0); // Ensure black
-  doc.setFontSize(10);
-  const titleCenterX = startX + 60 + (80 / 2); // Adjusted center for new width
-  doc.text("FORMATO EJECUCION", titleCenterX, startY + 10, { align: 'center' });
-  doc.text("MANTENIMIENTO PREVENTIVOS", titleCenterX, startY + 15, { align: 'center' });
-  doc.text("VEHICULOS LIVIANOS (CAMIONETAS)", titleCenterX, startY + 20, { align: 'center' });
-
-  // OT Info (Right Box)
-  // Horizontal Divider for OT Box
-  doc.line(startX + 140, startY + 15, startX + fullWidth, startY + 15);
-
-  // Top part: OT Consecutivo
-  doc.setFontSize(8);
-  doc.text("OT CONSECUTIVO", startX + 140 + 25, startY + 5, { align: 'center' });
-  doc.setFontSize(12);
-  doc.setTextColor(0, 0, 0); // Black color for number (was red)
-  doc.text(String(workOrder.otNumber ?? workOrder.id), startX + 140 + 25, startY + 12, { align: 'center' });
-  
-  // Bottom part: solo código + fecha (MES-YY)
-  const headerCode = 'FEYM936.00.CO';
-  const headerDate = formatMonthYear(workOrder.creationDate) || formatMonthYear(workOrder.createdAt) || formatMonthYear(new Date());
-  doc.setFontSize(10);
-  doc.text(headerCode, startX + 140 + 25, startY + 24, { align: 'center' });
-  doc.setFontSize(8);
-  doc.text(headerDate, startX + 140 + 25, startY + 29, { align: 'center' });
-
-
-  // --- GENERAL INFO (Grid Layout) ---
-  const infoStartY = startY + headerHeight + 5; // Spacing after header
-
-  const serialNumber =
-    workOrder?.vin ||
-    workOrder?.serieChasis ||
-    workOrder?.vehicle?.vin ||
-    workOrder?.vehicle?.serieChasis ||
-    '';
-
-  // Get area operativa from vehicle, default to 40BU-TM1-TM2
-  const areaOperativa = workOrder.area || '40BU-TM1-TM2';
-  
-  const infoData = [
-    ['CENTRO OPERACION', '40BU-TRONCALES', 'AREA OPERATIVA', areaOperativa],
-    ['PROCESO', 'MTTO-PREVENTIVO', 'UBICACION', workOrder.workshop || 'TALLER EL HATO'],
-    ['ACTIVO', workOrder.vehicleCode || workOrder.vehicleModel, 'PLACA', workOrder.plate],
-    ['FUNCION', 'TRANSPORTE DE PERSONAL', 'TIPO OT', 'S'],
-    ['DESCRIPCION CORTA', workOrder.vehicleModel, 'NO. SERIE', serialNumber], 
-    ['TRABAJO A REALIZAR', workOrder.routineName, 'APROBADA', ''],
-    ['FECHA SOLICITUD', new Date().toLocaleDateString(), 'HORA SOLICITUD', '02:00 p.m.'], 
-    ['FECHA REAL EJECUCION', '', 'HORA REAL EJECUCION', ''],
-    ['VARIABLE PROGRAMADA', `${workOrder.mileage}`, 'VARIABLE EJECUTADA', ''],
-    ['GENERADA POR', 'CDMT', 'PLANEADOR', 'PLANEADOR:'],
-    ['TIPO DE PARO', 'PRO', 'REPORTO', '']
-  ];
-
-  doc.autoTable({
-    startY: infoStartY,
-    head: [],
-    body: infoData,
-    theme: 'grid', // Grid theme gives borders
-    styles: { 
-      font: "helvetica", // Ensure font is Helvetica (Arial-like)
-      fontSize: 7, 
-      cellPadding: 1.5, 
-      lineColor: 0, 
-      lineWidth: 0.1,
-      textColor: 0 // Black text
-    },
-    columnStyles: {
-      0: { fontStyle: 'bold', cellWidth: 35, fillColor: [240, 240, 240] }, // Label col 1
-      1: { cellWidth: 60 }, // Value col 1
-      2: { fontStyle: 'bold', cellWidth: 35, fillColor: [240, 240, 240] }, // Label col 2
-      3: { cellWidth: 60 }  // Value col 2
-    },
-    margin: { left: 10, right: 10 }
-  });
-
-  // --- TAREAS REALIZADAS ---
-  // Get the Y position where the previous table ended
-  const finalY = doc.lastAutoTable.finalY + 5;
-
-  doc.setFont("helvetica", "bold");
-  doc.setFontSize(10);
-  doc.text("TAREAS REALIZADAS", 10, finalY);
-
-  const parseRoutineKm = (routineName) => {
-    const str = String(routineName || '');
-    const m = str.match(/(\d{1,6})\s*KM/i);
-    return m ? Number(m[1]) : null;
-  };
-
-  const ensureArray = (value) => {
-    if (Array.isArray(value)) return value;
-    if (typeof value === 'string' && value.trim()) {
-      try {
-        const parsed = JSON.parse(value);
-        return Array.isArray(parsed) ? parsed : [];
-      } catch {
-        return [];
-      }
-    }
-    return [];
-  };
-
-  const routineKm =
-    typeof workOrder?.routine === 'number'
-      ? workOrder.routine
-      : parseRoutineKm(workOrder?.routineName);
-
-  const fallbackRoutine =
-    typeof routineKm === 'number' && MAINTENANCE_ROUTINES?.[routineKm]
-      ? pickVariantRoutine(MAINTENANCE_ROUTINES[routineKm], detectRoutineVariant(workOrder?.vehicleModel))
-      : null;
-
-  const itemsToRender = (() => {
-    const items = ensureArray(workOrder?.items);
-    if (items.length) return items;
-    const fallbackItems = ensureArray(fallbackRoutine?.items);
-    return fallbackItems;
-  })();
-
-  const suppliesToRender = (() => {
-    const supplies = ensureArray(workOrder?.supplies);
-    if (supplies.length) return supplies;
-    const fallbackSupplies = ensureArray(fallbackRoutine?.supplies);
-    return fallbackSupplies;
-  })();
-
-  const normalizedSuppliesToRender = normalizeSuppliesUnits(suppliesToRender);
-  
-  doc.autoTable({
-    startY: finalY + 2,
-    head: [['CODIGO', 'DESCRIPCION', 'SISTEMA', 'EJECUCION']],
-    body: itemsToRender.map(item => [
-      generateTaskCode(item.description), 
-      item.description, 
-      taskSystemFromDescription(item.description),
-      '[ ] OK   [ ] NO'
-    ]),
-    theme: 'grid',
-    styles: { font: "helvetica", fontSize: 8, cellPadding: 1.5, lineColor: 0, lineWidth: 0.1, textColor: 0 },
-    headStyles: { fillColor: [220, 220, 220], textColor: 0, fontStyle: 'bold', halign: 'center' },
-    columnStyles: {
-      0: { cellWidth: 25 },
-      1: { cellWidth: 95 },
-      2: { cellWidth: 40 },
-      3: { cellWidth: 30, halign: 'center' }
-    },
-    margin: { left: 10, right: 10 }
-  });
-
-  // REPUESTOS Table
-  const repuestosY = doc.lastAutoTable.finalY + 10;
-  doc.text("REPUESTOS / MATERIALES UTILIZADOS", 14, repuestosY);
-  
-  doc.autoTable({
-    startY: repuestosY + 3,
-    head: [['FECHA', 'BODEGA', 'REPUESTO', 'DESCRIPCION', 'UND', 'CANT', 'VL. TOTAL']],
-    body: normalizedSuppliesToRender.map(s => [
-      new Date().toLocaleDateString(),
-      'BODEGA',
-      (s && typeof s === 'object' ? (s.reference || s.codigo || s.ref) : '') || '---',
-      (s && typeof s === 'object' ? (s.name || s.description || s.descripcion) : s) || '---',
-      String((s && typeof s === 'object' ? (s.unit || s.unidad) : null) || 'UND').toUpperCase(),
-      (s && typeof s === 'object' ? (s.quantity ?? s.cantidad) : null) || '1',
-      ''
-    ]),
-    theme: 'grid',
-    styles: { font: "helvetica", fontSize: 7, cellPadding: 1.5, lineColor: 0, lineWidth: 0.1, textColor: 0 },
-    headStyles: { fillColor: [220, 220, 220], textColor: 0, fontStyle: 'bold', halign: 'center' },
-    columnStyles: { 
-      0: {halign: 'center'}, 
-      1: {halign: 'center'}, 
-      2: {halign: 'left'}, 
-      3: {halign: 'left'}, 
-      4: {halign: 'center'}, 
-      5: {halign: 'center'}, 
-      6: {halign: 'center'} 
-    },
-    margin: { left: 10, right: 10 }
-  });
-
-  // Signatures
-  let sigY = doc.lastAutoTable.finalY + 15;
-  const boxHeight = 35; // Increased height to fit name, position and signature
-  if (sigY + boxHeight > 280) { doc.addPage(); sigY = 20; }
-
-  doc.rect(10, sigY, 60, boxHeight); 
-  doc.rect(70, sigY, 60, boxHeight); 
-  doc.rect(130, sigY, 70, boxHeight); 
-  
-  doc.setFontSize(6);
-  doc.text("RESPONSABLE", 12, sigY + 4);
-  doc.text("APROBADOR", 72, sigY + 4);
-  doc.text("RECIBE A SATISFACCION", 132, sigY + 4);
-
-  // Si la OT está cerrada, incluir firmas electrónicas
-  if (workOrder.signatures) {
-    // Firma RESPONSABLE
-    if (workOrder.signatures.responsible) {
-      const sig = workOrder.signatures.responsible;
-      if (typeof sig === 'object') {
-        doc.setFontSize(7);
-        doc.setFont("helvetica", "bold");
-        doc.text(sig.name || '', 12, sigY + 8);
-        
-        doc.setFontSize(6);
-        doc.setFont("helvetica", "normal");
-        doc.text(sig.position || '', 12, sigY + 11);
-        
-        if (sig.image) {
-          doc.addImage(sig.image, 'PNG', 12, sigY + 13, 56, 20);
-        }
-      } else {
-        doc.addImage(sig, 'PNG', 12, sigY + 6, 56, 12);
-      }
-    }
-    
-    // APROBADOR (nombre en texto)
-    if (workOrder.signatures.approver) {
-      doc.setFontSize(9);
-      doc.setFont("helvetica", "bold");
-      doc.text(workOrder.signatures.approver, 100, sigY + (boxHeight / 2), { align: 'center' });
-    }
-    
-    // Firma RECIBE A SATISFACCIÓN
-    if (workOrder.signatures.received) {
-      const sig = workOrder.signatures.received;
-      if (typeof sig === 'object') {
-        doc.setFontSize(7);
-        doc.setFont("helvetica", "bold");
-        doc.text(sig.name || '', 132, sigY + 8);
-        
-        doc.setFontSize(6);
-        doc.setFont("helvetica", "normal");
-        doc.text(sig.position || '', 132, sigY + 11);
-        
-        if (sig.image) {
-          doc.addImage(sig.image, 'PNG', 132, sigY + 13, 66, 20);
-        }
-      } else {
-        doc.addImage(sig, 'PNG', 132, sigY + 6, 66, 12);
-      }
-    }
-  }
-
-  const sanitizeFilenamePart = (value) => {
-    const text = String(value ?? '').trim();
-    if (!text) return 'NA';
-    return text
-      .replace(/[\\/:*?"<>|]/g, '-')
-      .replace(/\s+/g, '_')
-      .replace(/_+/g, '_')
-      .slice(0, 60);
-  };
-
-  const otConsecutive = sanitizeFilenamePart(workOrder.otNumber ?? workOrder.id);
-  const otCode = sanitizeFilenamePart(workOrder.vehicleCode || workOrder.code);
-  const otPlate = sanitizeFilenamePart(workOrder.plate);
-  const otLocation = sanitizeFilenamePart(workOrder.workshop || workOrder.location);
-
-  const rawDate = workOrder.creationDate || (workOrder.createdAt ? new Date(workOrder.createdAt).toISOString().slice(0, 10) : new Date().toISOString().slice(0, 10));
-  const otDate = sanitizeFilenamePart(String(rawDate).replace(/\//g, '-'));
-
-  doc.save(`OT_${otConsecutive}_${otCode}_${otPlate}_${otLocation}_${otDate}.pdf`);
 };
 
 const exportDashboardToPDF = async (dashboardRef) => {
@@ -1818,7 +1484,7 @@ const PlanningView = ({ fleet, setFleet, onCreateOT, workOrders = [], setWorkOrd
     toast.success(`OT #${closedOT.otNumber ?? closedOT.id} cerrada exitosamente`);
     
     // Generar PDF con firmas
-    generatePDF(closedOT, alert);
+    generatePDFService(closedOT, alert);
   };
 
   // Helper to get next routine using the passed routines prop
@@ -1941,7 +1607,7 @@ const PlanningView = ({ fleet, setFleet, onCreateOT, workOrders = [], setWorkOrd
     const savedOT = await onCreateOT(workOrder);
     
     // 2. Generate PDF (use persisted record to include correct id/otNumber)
-    generatePDF(savedOT || workOrder, alert);
+    generatePDFService(savedOT || workOrder, alert);
 
     // 3. Reset
     setSelectedVehicle(null);
@@ -2030,7 +1696,7 @@ const PlanningView = ({ fleet, setFleet, onCreateOT, workOrders = [], setWorkOrd
     };
 
     const savedOT = await onCreateOT(workOrder);
-    generatePDF(savedOT || workOrder, alert);
+    generatePDFService(savedOT || workOrder, alert);
 
     setSelectedVehicle(null);
     setWorkshop('');
@@ -2067,6 +1733,13 @@ const PlanningView = ({ fleet, setFleet, onCreateOT, workOrders = [], setWorkOrd
     // If no history, return null to indicate no data available
     return null;
   };
+
+  const metrics = useFleetMetrics({
+    pickups,
+    getNextRoutineLocal,
+    getLastVariableDate,
+    parseDateDDMMYYYY,
+  });
 
   const getLastMaintenanceDate = (vehicle) => {
     // First check if we have it from bulk load
@@ -2679,7 +2352,7 @@ const PlanningView = ({ fleet, setFleet, onCreateOT, workOrders = [], setWorkOrd
                         <td className="p-2">
                           <div className="flex items-center gap-2">
                             <button 
-                              onClick={() => generatePDF(ot, alert)}
+                              onClick={() => generatePDFService(ot, alert)}
                               className="text-slate-600 hover:text-blue-600"
                               title="Descargar PDF"
                             >
@@ -2856,57 +2529,23 @@ const PlanningView = ({ fleet, setFleet, onCreateOT, workOrders = [], setWorkOrd
         </div>
 
         {/* Mini Metrics Cards */}
-        {(() => {
-          // Calculate metrics
-          const today = new Date();
-          const fiveDaysAgo = new Date(today);
-          fiveDaysAgo.setDate(today.getDate() - 5);
-          
-          const metrics = pickups.reduce((acc, v) => {
-            const nextRoutine = getNextRoutineLocal(v.mileage, v.model, v.lastMaintenance, v.maintenanceCycle);
-            const kmRemaining = nextRoutine.km - v.mileage;
-            
-            // Check if variable is outdated (more than 5 days old or no data)
-            const lastVarDate = getLastVariableDate(v);
-            let isOutdated = !lastVarDate || v.mileage === 0;
-            if (lastVarDate && !isOutdated) {
-              // Parse date correctly (DD/MM/YYYY format)
-              const varDateObj = parseDateDDMMYYYY(lastVarDate);
-              if (varDateObj) {
-                varDateObj.setHours(0, 0, 0, 0);
-                const fiveDaysAgoDate = new Date(fiveDaysAgo);
-                fiveDaysAgoDate.setHours(0, 0, 0, 0);
-                isOutdated = varDateObj < fiveDaysAgoDate;
-              }
-            }
-            
-            if (isOutdated) acc.outdated++;
-            if (kmRemaining < 0) acc.overdue++;
-            else if (kmRemaining < 1000) acc.upcoming++;
-            else if (kmRemaining < 3000) acc.inRange++;
-            else acc.ok++;
-            
-            return acc;
-          }, { outdated: 0, overdue: 0, upcoming: 0, inRange: 0, ok: 0 });
-
-          return (
-            <div className="grid grid-cols-5 gap-3">
-              {/* Sin Actualizar */}
-              <div 
-                onClick={() => setStatusFilter('OUTDATED')}
-                className={`bg-white rounded-xl p-4 shadow-sm border-2 cursor-pointer transition-all hover:shadow-md ${statusFilter === 'OUTDATED' ? 'border-purple-500 ring-2 ring-purple-200' : 'border-slate-200 hover:border-purple-300'}`}
-              >
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-xs text-slate-500 font-medium">Sin Actualizar</p>
-                    <p className="text-2xl font-black text-purple-600">{metrics.outdated}</p>
-                  </div>
-                  <div className="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center">
-                    <AlertTriangle size={20} className="text-purple-600" />
-                  </div>
-                </div>
-                <p className="text-[10px] text-slate-400 mt-1">Variable &gt;5 días o sin datos</p>
+        <div className="grid grid-cols-5 gap-3">
+          {/* Sin Actualizar */}
+          <div 
+            onClick={() => setStatusFilter('OUTDATED')}
+            className={`bg-white rounded-xl p-4 shadow-sm border-2 cursor-pointer transition-all hover:shadow-md ${statusFilter === 'OUTDATED' ? 'border-purple-500 ring-2 ring-purple-200' : 'border-slate-200 hover:border-purple-300'}`}
+          >
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-xs text-slate-500 font-medium">Sin Actualizar</p>
+                <p className="text-2xl font-black text-purple-600">{metrics.outdated}</p>
               </div>
+              <div className="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center">
+                <AlertTriangle size={20} className="text-purple-600" />
+              </div>
+            </div>
+            <p className="text-[10px] text-slate-400 mt-1">Variable &gt;5 días o sin datos</p>
+          </div>
 
               {/* Vencidos */}
               <div 
@@ -2976,8 +2615,6 @@ const PlanningView = ({ fleet, setFleet, onCreateOT, workOrders = [], setWorkOrd
                 <p className="text-[10px] text-slate-400 mt-1">&gt;3,000 KM restantes</p>
               </div>
             </div>
-          );
-        })()}
 
         {/* Filter Buttons Row */}
         <div className="flex items-center gap-4">
@@ -5002,7 +4639,7 @@ const MaintenanceAdminView = ({ workOrders, setWorkOrders, fleet, setFleet, rout
                             <td className="p-4">
                               <div className="flex flex-wrap gap-2">
                                 <button
-                                  onClick={() => generatePDF(ot, alert)}
+                                  onClick={() => generatePDFService(ot, alert)}
                                   className="px-2 py-1 bg-blue-50 text-blue-600 rounded hover:bg-blue-100 text-xs font-medium border border-blue-200"
                                   title="Lanzar OT (PDF)"
                                 >
@@ -5166,7 +4803,7 @@ const WorkOrders = ({ fleet }) => {
       items: routine.items || [],
       supplies: normalizeSuppliesUnits(routine.supplies || [])
     };
-    generatePDF(workOrder, alert);
+    generatePDFService(workOrder, alert);
   };
 
   return (
