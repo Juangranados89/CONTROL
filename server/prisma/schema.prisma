@@ -48,8 +48,8 @@ model Vehicle {
 }
 
 model WorkOrder {
-  id                    String   @id @default(cuid())
-  otNumber              Int      @unique @default(autoincrement())
+  otNumber              Int      @id @default(autoincrement())
+  id                    String   @unique @default(cuid())
   vehicleId             String
   vehicle               Vehicle  @relation(fields: [vehicleId], references: [id])
   vehicleCode           String
@@ -92,4 +92,18 @@ model VariableHistory {
   @@index([vehicleId])
   @@index([plate])
   @@index([date])
+}
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  action    String   // e.g., "VEHICLE_UPDATE", "OT_CANCEL", "OT_CLOSE"
+  entity    String   // e.g., "Vehicle", "WorkOrder"
+  entityId  String
+  details   String?  // JSON string with changes
+  userId    String?
+  userEmail String?
+  createdAt DateTime @default(now())
+
+  @@index([entity, entityId])
+  @@index([userId])
 }

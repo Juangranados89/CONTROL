@@ -24,7 +24,7 @@ app.post('/api/login', async (req, res) => {
   if (!identifierRaw || !password) return res.status(400).json({ error: 'Username/email and password required' });
 
   // Allow login with just a username (no domain) to match the UX requirement.
-  const email = identifierRaw.includes('@') ? identifierRaw : `${identifierRaw}@control.local`;
+  const email = (identifierRaw.includes('@') ? identifierRaw : `${identifierRaw}@control.local`).toLowerCase();
 
   // Case-insensitive lookup to avoid surprises with capitalization in UI/seed.
   const user = await prisma.user.findFirst({
@@ -74,8 +74,10 @@ const ensureOptionalAdminUsers = async () => {
     const pwd = (process.env[u.env] || '').trim();
     if (!pwd) continue;
 
+    const normalizedEmail = u.email.toLowerCase();
+
     const existing = await prisma.user.findFirst({
-      where: { email: u.email }
+      where: { email: normalizedEmail }
     });
 
     // Always enforce the desired credentials/role when env vars are set.
@@ -87,12 +89,12 @@ const ensureOptionalAdminUsers = async () => {
         where: { id: existing.id },
         data: { passwordHash: hash, role: u.role }
       });
-      console.log('Updated optional user', u.email);
+      console.log('Updated optional user', normalizedEmail);
       continue;
     }
 
-    await prisma.user.create({ data: { email: u.email, passwordHash: hash, role: u.role } });
-    console.log('Created optional user', u.email);
+    await prisma.user.create({ data: { email: normalizedEmail, passwordHash: hash, role: u.role } });
+    console.log('Created optional user', normalizedEmail);
   }
 };
 

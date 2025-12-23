@@ -7,6 +7,22 @@ import xlsx from 'xlsx';
 const router = express.Router();
 const prisma = new PrismaClient();
 
+const logAction = async (userId, action, entityType, entityId, details) => {
+  try {
+    await prisma.auditLog.create({
+      data: {
+        userId,
+        action,
+        entityType,
+        entityId: String(entityId),
+        details: details ? JSON.stringify(details) : null
+      }
+    });
+  } catch (e) {
+    console.error('Failed to log action:', e);
+  }
+};
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
@@ -164,6 +180,14 @@ router.post('/vehicles', async (req, res) => {
       ? await prisma.vehicle.update({ where: { id: vehicle.id }, data: { maintenanceCycle } })
       : vehicle;
     
+    await logAction(
+      req.user.id,
+      'UPDATE_VEHICLE',
+      'VEHICLE',
+      vehicle.id,
+      { code: vehicle.code, plate: vehicle.plate, status: vehicle.estadoActual }
+    );
+
     res.json(vehicleWithCycle);
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -273,6 +297,16 @@ router.post('/vehicles/bulk', async (req, res) => {
       }
     }
     
+    if (results.length > 0) {
+      await logAction(
+        req.user.id,
+        'BULK_UPDATE_VEHICLES',
+        'VEHICLE',
+        'MULTIPLE',
+        { count: results.length }
+      );
+    }
+
     res.json({ 
       success: true,
       imported: results.length, 
@@ -521,6 +555,14 @@ router.post('/workorders', async (req, res) => {
       }
     });
 
+    await logAction(
+      req.user.id,
+      'CREATE_WORK_ORDER',
+      'WORK_ORDER',
+      workOrder.id,
+      { otNumber: workOrder.otNumber, plate: workOrder.plate, routine: workOrder.routine }
+    );
+
     // Always return the persisted record (id/otNumber) to keep updates consistent.
     res.json(workOrder);
   } catch (error) {
@@ -652,6 +694,14 @@ router.patch('/workorders/:id', async (req, res) => {
       });
     }
     
+    await logAction(
+      req.user.id,
+      'UPDATE_WORK_ORDER',
+      'WORK_ORDER',
+      workOrder.id,
+      { status: workOrder.status, otNumber: workOrder.otNumber }
+    );
+
     res.json(workOrder);
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -703,6 +753,14 @@ router.delete('/workorders/:id', async (req, res) => {
     const deleted = await prisma.workOrder.delete({
       where: { id: req.params.id }
     });
+
+    await logAction(
+      req.user.id,
+      'DELETE_WORK_ORDER',
+      'WORK_ORDER',
+      deleted.id,
+      { otNumber: deleted.otNumber, plate: deleted.plate }
+    );
 
     // If this OT affected the vehicle lastMaintenance, recompute from remaining closed OTs
     let updatedVehicle = null;

@@ -41,14 +41,15 @@ async function main() {
   }
 
   for (const u of users) {
-    const exists = await prisma.user.findUnique({ where: { email: u.email } });
+    const normalizedEmail = u.email.toLowerCase();
+    const exists = await prisma.user.findUnique({ where: { email: normalizedEmail } });
     if (exists) {
-      console.log('Skipping existing user', u.email);
+      console.log('Skipping existing user', normalizedEmail);
       continue;
     }
     const hash = await bcrypt.hash(u.password, 10);
-    await prisma.user.create({ data: { email: u.email, passwordHash: hash, role: u.role } });
-    console.log('Created user', u.email);
+    await prisma.user.create({ data: { email: normalizedEmail, passwordHash: hash, role: u.role } });
+    console.log('Created user', normalizedEmail);
   }
 }
 

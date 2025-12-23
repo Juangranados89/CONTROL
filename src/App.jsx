@@ -1,4 +1,6 @@
-import React, { useState, useMemo, useEffect, useCallback } from 'react';
+import React, { useState, useMemo, useEffect, useCallback, useRef } from 'react';
+import html2canvas from 'html2canvas';
+import { Toaster, toast } from 'sonner';
 import { 
   LayoutDashboard, 
   Car, 
@@ -29,7 +31,8 @@ import {
   AlertCircle,
   MapPin,
   CircleDot,
-  Fuel
+  Fuel,
+  Printer
 } from 'lucide-react';
 import { 
   LineChart, 
@@ -581,24 +584,90 @@ const generatePDF = async (workOrder, notify) => {
   doc.save(`OT_${otConsecutive}_${otCode}_${otPlate}_${otLocation}_${otDate}.pdf`);
 };
 
+const exportDashboardToPDF = async (dashboardRef) => {
+  if (!dashboardRef.current) return;
+  
+  try {
+    const canvas = await html2canvas(dashboardRef.current, {
+      scale: 2,
+      useCORS: true,
+      logging: false,
+      backgroundColor: '#f8fafc'
+    });
+    
+    const imgData = canvas.toDataURL('image/png');
+    const { jsPDF } = window.jspdf;
+    const pdf = new jsPDF('p', 'mm', 'a4');
+    
+    const imgProps = pdf.getImageProperties(imgData);
+    const pdfWidth = pdf.internal.pageSize.getWidth();
+    const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+    
+    // Handle multi-page if dashboard is very long
+    let heightLeft = pdfHeight;
+    let position = 0;
+    const pageHeight = pdf.internal.pageSize.getHeight();
+
+    pdf.addImage(imgData, 'PNG', 0, position, pdfWidth, pdfHeight);
+    heightLeft -= pageHeight;
+
+    while (heightLeft >= 0) {
+      position = heightLeft - pdfHeight;
+      pdf.addPage();
+      pdf.addImage(imgData, 'PNG', 0, position, pdfWidth, pdfHeight);
+      heightLeft -= pageHeight;
+    }
+    
+    pdf.save(`Dashboard_Mantenimiento_${new Date().toISOString().slice(0, 10)}.pdf`);
+    toast.success('Dashboard exportado correctamente');
+  } catch (error) {
+    console.error('Error exporting dashboard:', error);
+    toast.error('Error al exportar el dashboard a PDF');
+  }
+};
+
 // --- Components ---
 
 const Dashboard = ({ fleet, workOrders, variableHistory }) => {
+  const dashboardRef = useRef(null);
   const selectedVehicle = useDashboardFilters((s) => s.selectedVehicle);
   const vehicleStatus = useDashboardFilters((s) => s.vehicleStatus);
+  const maintenanceStatus = useDashboardFilters((s) => s.maintenanceStatus);
   const search = useDashboardFilters((s) => s.search);
   const setSelectedVehicle = useDashboardFilters((s) => s.setSelectedVehicle);
   const clearSelectedVehicle = useDashboardFilters((s) => s.clearSelectedVehicle);
   const toggleVehicleStatus = useDashboardFilters((s) => s.toggleVehicleStatus);
+  const toggleMaintenanceStatus = useDashboardFilters((s) => s.toggleMaintenanceStatus);
   const clearVehicleStatus = useDashboardFilters((s) => s.clearVehicleStatus);
   const setSearch = useDashboardFilters((s) => s.setSearch);
   const clearAll = useDashboardFilters((s) => s.clearAll);
+
+  const [isExporting, setIsExporting] = useState(false);
+
+  const handleExport = async () => {
+    setIsExporting(true);
+    await exportDashboardToPDF(dashboardRef);
+    setIsExporting(false);
+  };
 
   const filteredFleet = useMemo(() => {
     let result = Array.isArray(fleet) ? fleet : [];
 
     if (vehicleStatus) {
       result = result.filter((v) => String(v?.status || '').toUpperCase() === vehicleStatus);
+    }
+
+    if (maintenanceStatus) {
+      result = result.filter((v) => {
+        const nextRoutine = getNextRoutine(v.mileage, v.model);
+        const kmSinceLastMtto = v.mileage - (v.lastMaintenance || 0);
+        const kmRemaining = nextRoutine.km - kmSinceLastMtto;
+        
+        if (maintenanceStatus === 'VENCIDO') return kmRemaining < 0;
+        if (maintenanceStatus === 'PROXIMO') return kmRemaining >= 0 && kmRemaining < 3000;
+        if (maintenanceStatus === 'OK') return kmRemaining >= 3000;
+        return true;
+      });
     }
 
     if (selectedVehicle?.code || selectedVehicle?.plate) {
@@ -774,7 +843,7 @@ const Dashboard = ({ fleet, workOrders, variableHistory }) => {
   ];
 
   return (
-    <div className="p-6 space-y-6 bg-slate-50 min-h-screen">
+    <div ref={dashboardRef} className="p-6 space-y-6 bg-slate-50 min-h-screen">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
@@ -782,12 +851,37 @@ const Dashboard = ({ fleet, workOrders, variableHistory }) => {
             <LayoutDashboard className="text-blue-600" size={32} />
             Dashboard de Gestión de Mantenimiento
           </h1>
-          <p className="text-slate-600 mt-1">Vista general de métricas y tendencias</p>
+          <div className="flex items-center gap-4 mt-1">
+            <p className="text-slate-600">Vista general de métricas y tendencias</p>
+            {(vehicleStatus || maintenanceStatus || selectedVehicle || search) && (
+              <button 
+                onClick={clearAll}
+                className="flex items-center gap-1 text-xs font-bold text-blue-600 hover:text-blue-800 bg-blue-50 px-2 py-1 rounded-full transition-colors"
+              >
+                <X size={14} />
+                Limpiar Filtros
+              </button>
+            )}
+          </div>
         </div>
-        <div className="text-right">
-          <div className="text-sm text-slate-500">Última actualización</div>
-          <div className="text-lg font-bold text-slate-700">
-            {new Date().toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' })}
+        <div className="flex items-center gap-4">
+          <button
+            onClick={handleExport}
+            disabled={isExporting}
+            className="flex items-center gap-2 bg-white border border-slate-200 text-slate-700 px-4 py-2 rounded-lg shadow-sm hover:bg-slate-50 transition-colors disabled:opacity-50"
+          >
+            {isExporting ? (
+              <Clock className="animate-spin" size={20} />
+            ) : (
+              <Printer size={20} />
+            )}
+            {isExporting ? 'Exportando...' : 'Exportar PDF'}
+          </button>
+          <div className="text-right">
+            <div className="text-sm text-slate-500">Última actualización</div>
+            <div className="text-lg font-bold text-slate-700">
+              {new Date().toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' })}
+            </div>
           </div>
         </div>
       </div>
@@ -972,14 +1066,29 @@ const Dashboard = ({ fleet, workOrders, variableHistory }) => {
                 outerRadius={100}
                 fill="#8884d8"
                 dataKey="value"
+                onClick={(data) => {
+                  if (data && data.name) {
+                    const status = data.name.toUpperCase().replace('Ó', 'O');
+                    toggleMaintenanceStatus(status);
+                  }
+                }}
+                style={{ cursor: 'pointer' }}
               >
                 {maintenanceStatusData.map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={entry.color} />
+                  <Cell 
+                    key={`cell-${index}`} 
+                    fill={entry.color} 
+                    stroke={maintenanceStatus === entry.name.toUpperCase().replace('Ó', 'O') ? '#000' : 'none'}
+                    strokeWidth={2}
+                  />
                 ))}
               </Pie>
               <Tooltip />
             </RechartsPieChart>
           </ResponsiveContainer>
+          <div className="mt-3 text-xs text-slate-500">
+            Clic en un segmento para filtrar por estado de mantenimiento
+          </div>
         </div>
       </div>
 
@@ -1032,7 +1141,17 @@ const Dashboard = ({ fleet, workOrders, variableHistory }) => {
             Top 5 - Mayor Kilometraje
           </h3>
           <ResponsiveContainer width="100%" height={300}>
-            <BarChart data={topMileageVehicles} layout="vertical">
+            <BarChart 
+              data={topMileageVehicles} 
+              layout="vertical"
+              onClick={(data) => {
+                if (data && data.activePayload && data.activePayload[0]) {
+                  const vehicleCode = data.activePayload[0].payload.name;
+                  setSelectedVehicle({ code: vehicleCode });
+                }
+              }}
+              style={{ cursor: 'pointer' }}
+            >
               <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
               <XAxis type="number" stroke="#64748b" style={{ fontSize: '12px' }} />
               <YAxis dataKey="name" type="category" stroke="#64748b" style={{ fontSize: '12px' }} width={80} />
@@ -1047,11 +1166,17 @@ const Dashboard = ({ fleet, workOrders, variableHistory }) => {
               />
               <Bar dataKey="km" fill="#3b82f6" radius={[0, 8, 8, 0]}>
                 {topMileageVehicles.map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={`hsl(${220 - index * 10}, 80%, ${50 + index * 5}%)`} />
+                  <Cell 
+                    key={`cell-${index}`} 
+                    fill={selectedVehicle?.code === entry.name ? '#1e40af' : `hsl(${220 - index * 10}, 80%, ${50 + index * 5}%)`} 
+                  />
                 ))}
               </Bar>
             </BarChart>
           </ResponsiveContainer>
+          <div className="mt-3 text-xs text-slate-500">
+            Clic en una barra para seleccionar el vehículo
+          </div>
         </div>
       </div>
 
@@ -1442,7 +1567,7 @@ const PlanningView = ({ fleet, setFleet, onCreateOT, workOrders = [], setWorkOrd
       });
     }
 
-    alert(`✅ Datos actualizados correctamente\n${newFleet[vehicleIndex].plate} - ${newFleet[vehicleIndex].code}`);
+    toast.success(`Datos actualizados correctamente: ${newFleet[vehicleIndex].plate}`);
     setEditingVehicle(null);
     setVehicleEditData({});
   };
@@ -1529,7 +1654,7 @@ const PlanningView = ({ fleet, setFleet, onCreateOT, workOrders = [], setWorkOrd
     }
     
     setClosingOT(null);
-    alert(`✅ OT #${closedOT.otNumber ?? closedOT.id} cerrada exitosamente\n${closedOT.plate} - ${closedOT.vehicleCode || closedOT.code}`);
+    toast.success(`OT #${closedOT.otNumber ?? closedOT.id} cerrada exitosamente`);
     
     // Generar PDF con firmas
     generatePDF(closedOT, alert);
@@ -1859,44 +1984,82 @@ const PlanningView = ({ fleet, setFleet, onCreateOT, workOrders = [], setWorkOrd
 
       {/* Modal for Workshop Selection */}
       {selectedVehicle && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-white p-6 rounded-lg shadow-xl w-96">
-            <h3 className="text-lg font-bold mb-4">Confirmar Generación de OT</h3>
-            <p className="text-sm text-slate-600 mb-4">
-              Vas a generar una OT para el vehículo <strong>{selectedVehicle.plate}</strong>.
-            </p>
-            
-            <div className="mb-4">
-              <label className="block text-sm font-medium text-slate-700 mb-1">Taller de Ejecución</label>
-              <select 
-                className="w-full p-2 border rounded"
-                value={workshop}
-                onChange={(e) => setWorkshop(e.target.value)}
-              >
-                <option value="TALLER EL HATO">TALLER EL HATO</option>
-                <option value="TALLER PR 33">TALLER PR 33</option>
-                <option value="TALLER EL BURRO">TALLER EL BURRO</option>
-                <option value="TALLER EXTERNO">TALLER EXTERNO</option>
-              </select>
-            </div>
-
-            <div className="flex justify-end gap-2">
+        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden border border-slate-100 animate-in fade-in zoom-in duration-200">
+            {/* Header con gradiente sutil */}
+            <div className="bg-slate-50 px-6 py-4 border-b border-slate-100 flex justify-between items-center">
+              <h3 className="text-xl font-bold text-slate-800 flex items-center gap-2">
+                <Wrench className="text-blue-600" size={24} />
+                Generar Orden de Trabajo
+              </h3>
               <button 
                 onClick={() => setSelectedVehicle(null)}
-                className="px-4 py-2 text-slate-600 hover:bg-slate-100 rounded"
+                className="text-slate-400 hover:text-slate-600 hover:bg-slate-100 p-1 rounded-full transition-colors"
+              >
+                <X size={20} />
+              </button>
+            </div>
+
+            <div className="p-6">
+              {/* Info del Vehículo */}
+              <div className="bg-blue-50 border border-blue-100 rounded-xl p-4 mb-6 flex items-center gap-4">
+                <div className="bg-blue-600 p-3 rounded-lg text-white shadow-md shadow-blue-200">
+                  <Car size={24} />
+                </div>
+                <div>
+                  <p className="text-xs font-semibold text-blue-600 uppercase tracking-wider">Vehículo Seleccionado</p>
+                  <p className="text-lg font-bold text-slate-800">{selectedVehicle.plate} <span className="text-slate-400 font-normal text-sm ml-1">({selectedVehicle.code})</span></p>
+                </div>
+              </div>
+              
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-bold text-slate-700 mb-2 flex items-center gap-2">
+                    <MapPin size={16} className="text-slate-400" />
+                    Taller de Ejecución
+                  </label>
+                  <div className="relative">
+                    <select 
+                      className="w-full appearance-none bg-slate-50 border border-slate-200 text-slate-700 py-3 px-4 pr-8 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all font-medium"
+                      value={workshop}
+                      onChange={(e) => setWorkshop(e.target.value)}
+                    >
+                      <option value="TALLER EL HATO">TALLER EL HATO</option>
+                      <option value="TALLER PR 33">TALLER PR 33</option>
+                      <option value="TALLER EL BURRO">TALLER EL BURRO</option>
+                      <option value="TALLER EXTERNO">TALLER EXTERNO</option>
+                    </select>
+                    <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-slate-400">
+                      <Menu size={16} />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Footer con acciones */}
+            <div className="bg-slate-50 px-6 py-4 border-t border-slate-100 flex flex-col sm:flex-row justify-end gap-3">
+              <button 
+                onClick={() => setSelectedVehicle(null)}
+                className="order-3 sm:order-1 px-4 py-2.5 text-slate-600 font-semibold hover:bg-slate-200 rounded-xl transition-colors"
               >
                 Cancelar
               </button>
+              
               <button
                 onClick={confirmForceLastMaintenanceGeneration}
-                className="px-4 py-2 bg-amber-600 text-white rounded hover:bg-amber-700 font-bold"
+                className="order-2 sm:order-2 px-4 py-2.5 bg-amber-100 text-amber-700 font-bold rounded-xl hover:bg-amber-200 transition-colors flex items-center justify-center gap-2"
+                title="Generar usando la última rutina realizada"
               >
-                Forzar (Últ. mtto)
+                <History size={18} />
+                Forzar Últ. Mtto
               </button>
+              
               <button 
                 onClick={confirmGeneration}
-                className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 font-bold"
+                className="order-1 sm:order-3 px-6 py-2.5 bg-blue-600 text-white font-bold rounded-xl hover:bg-blue-700 shadow-lg shadow-blue-200 transition-all flex items-center justify-center gap-2"
               >
+                <CheckCircle size={18} />
                 Confirmar y Generar
               </button>
             </div>
@@ -6524,6 +6687,7 @@ function App() {
 
   return (
     <div className="flex h-screen bg-slate-100">
+      <Toaster position="top-right" richColors closeButton />
       {/* Sidebar */}
       <aside className={`${isSidebarOpen ? 'w-64' : 'w-20'} bg-white shadow-lg transition-all duration-300 flex flex-col border-r border-gray-200`}>
         {/* Logo Section */}

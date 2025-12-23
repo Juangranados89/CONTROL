@@ -24,7 +24,7 @@ export default function Login({ onLogin }) {
     try {
       // Acepta email directo o construye uno interno desde el usuario
       const trimmed = username.trim();
-      const email = trimmed.includes('@') ? trimmed : `${trimmed}@control.local`;
+      const email = (trimmed.includes('@') ? trimmed : `${trimmed}@control.local`).toLowerCase();
 
       const result = await api.login(email, password);
 
