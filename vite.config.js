@@ -13,13 +13,15 @@ export default defineConfig({
         manualChunks(id) {
           if (!id.includes('node_modules')) return;
 
-          if (id.includes('/react/') || id.includes('/react-dom/')) return 'react-vendor';
-          if (id.includes('/recharts/') || id.includes('/d3-')) return 'charts';
+          // Split only the heaviest libraries to reduce initial payload,
+          // but avoid forcing a global vendor/react split (can create circular chunk deps).
           if (id.includes('/echarts/') || id.includes('echarts-for-react')) return 'echarts';
           if (id.includes('/xlsx/')) return 'xlsx';
           if (id.includes('/html2canvas/')) return 'html2canvas';
+          if (id.includes('/recharts/') || id.includes('/d3-')) return 'charts';
 
-          return 'vendor';
+          // Let Rollup decide the rest.
+          return;
         }
       }
     }
