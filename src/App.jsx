@@ -56,6 +56,7 @@ import {
 } from 'recharts';
 import { INITIAL_FLEET, MAINTENANCE_ROUTINES } from './data';
 import api from './api';
+import safeLocalStorage from './utils/safeStorage';
 import UserInfoHeader from './components/UserInfoHeader';
 import Login from './components/Login';
 import NotificationBadge from './components/NotificationBadge';
@@ -1228,7 +1229,7 @@ const PlanningView = ({ fleet, setFleet, onCreateOT, workOrders = [], setWorkOrd
     }
 
     setFleet(newFleet);
-    localStorage.setItem('fleet_data', JSON.stringify(newFleet));
+    safeLocalStorage.setItem('fleet_data', JSON.stringify(newFleet));
     setEditingCell(null);
     setEditValue('');
   };
@@ -1394,7 +1395,7 @@ const PlanningView = ({ fleet, setFleet, onCreateOT, workOrders = [], setWorkOrd
     };
 
     setFleet(newFleet);
-    localStorage.setItem('fleet_data', JSON.stringify(newFleet));
+    safeLocalStorage.setItem('fleet_data', JSON.stringify(newFleet));
 
     // Si cambió el kilometraje, registrar en historial de variables
     if (mileageChanged && setVariableHistory) {
@@ -1422,7 +1423,7 @@ const PlanningView = ({ fleet, setFleet, onCreateOT, workOrders = [], setWorkOrd
       
       setVariableHistory(prev => {
         const updated = [...prev, newRecord];
-        localStorage.setItem('variable_history', JSON.stringify(updated));
+        safeLocalStorage.setItem('variable_history', JSON.stringify(updated));
         return updated;
       });
     }
@@ -1460,7 +1461,7 @@ const PlanningView = ({ fleet, setFleet, onCreateOT, workOrders = [], setWorkOrd
         const updated = prev.map(ot => 
           ot.id === closedOT.id ? closedOT : ot
         );
-        localStorage.setItem('work_orders', JSON.stringify(updated));
+        safeLocalStorage.setItem('work_orders', JSON.stringify(updated));
         return updated;
       });
     }
@@ -1485,7 +1486,7 @@ const PlanningView = ({ fleet, setFleet, onCreateOT, workOrders = [], setWorkOrd
           }
           return vehicle;
         });
-        localStorage.setItem('fleet_data', JSON.stringify(updatedFleet));
+        safeLocalStorage.setItem('fleet_data', JSON.stringify(updatedFleet));
         return updatedFleet;
       });
 
@@ -1507,7 +1508,7 @@ const PlanningView = ({ fleet, setFleet, onCreateOT, workOrders = [], setWorkOrd
 
         setVariableHistory(prev => {
           const updated = [...prev, newRecord];
-          localStorage.setItem('variable_history', JSON.stringify(updated));
+          safeLocalStorage.setItem('variable_history', JSON.stringify(updated));
           return updated;
         });
       }
@@ -1705,9 +1706,9 @@ const PlanningView = ({ fleet, setFleet, onCreateOT, workOrders = [], setWorkOrd
         await api.updateWorkOrder(lastOpen.id, { status: 'ANULADA' });
       } catch (error) {
         console.error('Error anulando OT anterior (fallback local):', error);
-        const currentOrders = JSON.parse(localStorage.getItem('work_orders') || '[]');
+        const currentOrders = JSON.parse(safeLocalStorage.getItem('work_orders') || '[]');
         const updatedOrders = currentOrders.map(ot => ot.id === lastOpen.id ? { ...ot, status: 'ANULADA' } : ot);
-        localStorage.setItem('work_orders', JSON.stringify(updatedOrders));
+        safeLocalStorage.setItem('work_orders', JSON.stringify(updatedOrders));
       }
 
       setWorkOrders(prev => prev.map(ot => ot.id === lastOpen.id ? { ...ot, status: 'ANULADA' } : ot));
@@ -3583,13 +3584,13 @@ const AssetManager = ({ fleet, setFleet, routines = MAINTENANCE_ROUTINES }) => {
       
       // Clear local state
       setFleet([]);
-      localStorage.removeItem('fleet_data');
+      safeLocalStorage.removeItem('fleet_data');
       await alert('✅ Base de datos limpiada exitosamente.', { title: 'Listo', variant: 'success' });
     } catch (error) {
       console.error('Error clearing database:', error);
       await alert('❌ Error al limpiar la base de datos. Limpiando estado local...', { title: 'Error', variant: 'danger' });
       setFleet([]);
-      localStorage.removeItem('fleet_data');
+      safeLocalStorage.removeItem('fleet_data');
     }
   };
 
@@ -3723,7 +3724,7 @@ const AssetManager = ({ fleet, setFleet, routines = MAINTENANCE_ROUTINES }) => {
     }
 
     // Guardar inmediatamente en localStorage
-    localStorage.setItem('fleet_data', JSON.stringify(finalFleet));
+    safeLocalStorage.setItem('fleet_data', JSON.stringify(finalFleet));
     
     // Reset
     setShowImportModal(false);
@@ -4256,7 +4257,7 @@ const AssetManager = ({ fleet, setFleet, routines = MAINTENANCE_ROUTINES }) => {
               setFleet(updatedFleet);
               
               // Guardar en localStorage inmediatamente
-              localStorage.setItem('fleet_data', JSON.stringify(updatedFleet));
+              safeLocalStorage.setItem('fleet_data', JSON.stringify(updatedFleet));
               
               // Intentar guardar en API en segundo plano
               for (const vehicle of newVehicles) {
@@ -4365,14 +4366,14 @@ const MaintenanceAdminView = ({ workOrders, setWorkOrders, fleet, setFleet, rout
       const rows = await api.getWorkOrderAudit(ot.id);
       setHistoryEntries(Array.isArray(rows) ? rows : []);
       try {
-        localStorage.setItem(historyStorageKey(ot.id), JSON.stringify(Array.isArray(rows) ? rows : []));
+        safeLocalStorage.setItem(historyStorageKey(ot.id), JSON.stringify(Array.isArray(rows) ? rows : []));
       } catch {
         // ignore
       }
     } catch (error) {
       console.warn('Audit API no disponible, usando cache local:', error);
       try {
-        const cached = JSON.parse(localStorage.getItem(historyStorageKey(ot.id)) || '[]');
+        const cached = JSON.parse(safeLocalStorage.getItem(historyStorageKey(ot.id)) || '[]');
         setHistoryEntries(Array.isArray(cached) ? cached : []);
       } catch {
         setHistoryEntries([]);
@@ -4424,7 +4425,7 @@ const MaintenanceAdminView = ({ workOrders, setWorkOrders, fleet, setFleet, rout
     setHistoryEntries(prev => {
       const next = [localEntry, ...(Array.isArray(prev) ? prev : [])];
       try {
-        localStorage.setItem(historyStorageKey(otId), JSON.stringify(next));
+        safeLocalStorage.setItem(historyStorageKey(otId), JSON.stringify(next));
       } catch {
         // ignore
       }
@@ -4474,13 +4475,13 @@ const MaintenanceAdminView = ({ workOrders, setWorkOrders, fleet, setFleet, rout
         }
 
         // Fallback: update localStorage
-        const currentOrders = JSON.parse(localStorage.getItem('work_orders') || '[]');
+        const currentOrders = JSON.parse(safeLocalStorage.getItem('work_orders') || '[]');
         const updatedOrders = currentOrders.map(ot => ot.id === closedOT.id ? closedOT : ot);
-        localStorage.setItem('work_orders', JSON.stringify(updatedOrders));
+        safeLocalStorage.setItem('work_orders', JSON.stringify(updatedOrders));
         
         // Also update fleet in localStorage if needed
         if (closedOT.executionKm) {
-             const currentFleet = JSON.parse(localStorage.getItem('fleet_data') || '[]');
+             const currentFleet = JSON.parse(safeLocalStorage.getItem('fleet_data') || '[]');
              const newMileage = parseInt(closedOT.executionKm);
              const updatedFleet = currentFleet.map(v => {
            if (v.code === vehicleCode || v.plate === closedOT.plate) {
@@ -4488,7 +4489,7 @@ const MaintenanceAdminView = ({ workOrders, setWorkOrders, fleet, setFleet, rout
                  }
                  return v;
              });
-             localStorage.setItem('fleet_data', JSON.stringify(updatedFleet));
+             safeLocalStorage.setItem('fleet_data', JSON.stringify(updatedFleet));
         }
     }
 
@@ -4529,7 +4530,7 @@ const MaintenanceAdminView = ({ workOrders, setWorkOrders, fleet, setFleet, rout
 
       setVariableHistory(prev => {
         const updated = [...prev, newRecord];
-        localStorage.setItem('variable_history', JSON.stringify(updated));
+        safeLocalStorage.setItem('variable_history', JSON.stringify(updated));
         return updated;
       });
     }
@@ -4568,9 +4569,9 @@ const MaintenanceAdminView = ({ workOrders, setWorkOrders, fleet, setFleet, rout
           refreshOutboxCount();
         }
 
-        const currentOrders = JSON.parse(localStorage.getItem('work_orders') || '[]');
+        const currentOrders = JSON.parse(safeLocalStorage.getItem('work_orders') || '[]');
         const updatedOrders = currentOrders.map(ot => ot.id === otId ? { ...ot, ...updates } : ot);
-        localStorage.setItem('work_orders', JSON.stringify(updatedOrders));
+        safeLocalStorage.setItem('work_orders', JSON.stringify(updatedOrders));
       }
 
       setWorkOrders(prev => prev.map(ot =>
@@ -4618,9 +4619,9 @@ const MaintenanceAdminView = ({ workOrders, setWorkOrders, fleet, setFleet, rout
 
     // localStorage removal (offline cache)
     try {
-      const currentOrders = JSON.parse(localStorage.getItem('work_orders') || '[]');
+      const currentOrders = JSON.parse(safeLocalStorage.getItem('work_orders') || '[]');
       const updatedOrders = Array.isArray(currentOrders) ? currentOrders.filter(w => w?.id !== otId) : [];
-      localStorage.setItem('work_orders', JSON.stringify(updatedOrders));
+      safeLocalStorage.setItem('work_orders', JSON.stringify(updatedOrders));
     } catch {
       // ignore
     }
@@ -4628,9 +4629,9 @@ const MaintenanceAdminView = ({ workOrders, setWorkOrders, fleet, setFleet, rout
     // Remove legacy ot number mapping if present
     try {
       const mapKey = 'ot_number_legacy_map';
-      const map = JSON.parse(localStorage.getItem(mapKey) || '{}') || {};
+      const map = JSON.parse(safeLocalStorage.getItem(mapKey) || '{}') || {};
       delete map[String(otId)];
-      localStorage.setItem(mapKey, JSON.stringify(map));
+      safeLocalStorage.setItem(mapKey, JSON.stringify(map));
     } catch {
       // ignore
     }
@@ -4663,7 +4664,7 @@ const MaintenanceAdminView = ({ workOrders, setWorkOrders, fleet, setFleet, rout
         });
 
         try {
-          localStorage.setItem('variable_history', JSON.stringify(updated));
+          safeLocalStorage.setItem('variable_history', JSON.stringify(updated));
         } catch {
           // ignore
         }
@@ -4689,7 +4690,7 @@ const MaintenanceAdminView = ({ workOrders, setWorkOrders, fleet, setFleet, rout
         }) : prev;
 
         try {
-          localStorage.setItem('fleet_data', JSON.stringify(next));
+          safeLocalStorage.setItem('fleet_data', JSON.stringify(next));
         } catch {
           // ignore
         }
@@ -5382,7 +5383,7 @@ const DataLoad = ({ fleet, setFleet, setVariableHistory, onLogout }) => {
 
   // Helper: Get last known variable from history
   const getLastKnownVariable = (plate, code, beforeDate) => {
-    const history = JSON.parse(localStorage.getItem('variable_history') || '[]');
+    const history = JSON.parse(safeLocalStorage.getItem('variable_history') || '[]');
     const vehicleHistory = history
       .filter(h => (h.plate === plate || h.code === code))
       .map(h => {
@@ -5450,7 +5451,7 @@ const DataLoad = ({ fleet, setFleet, setVariableHistory, onLogout }) => {
     };
 
     setFleet(updatedFleet);
-    localStorage.setItem('fleet_data', JSON.stringify(updatedFleet));
+    safeLocalStorage.setItem('fleet_data', JSON.stringify(updatedFleet));
 
     // Registrar en historial
     const newHistory = {
@@ -5467,7 +5468,7 @@ const DataLoad = ({ fleet, setFleet, setVariableHistory, onLogout }) => {
 
     setVariableHistory(prev => {
       const updated = [...prev, newHistory];
-      localStorage.setItem('variable_history', JSON.stringify(updated));
+      safeLocalStorage.setItem('variable_history', JSON.stringify(updated));
       return updated;
     });
 
@@ -5758,13 +5759,13 @@ Guardando localmente como respaldo...
               newFleet[index] = { ...newFleet[index], mileage: update.km };
             }
           });
-          localStorage.setItem('fleet_data', JSON.stringify(newFleet));
+          safeLocalStorage.setItem('fleet_data', JSON.stringify(newFleet));
           return newFleet;
         });
         
         setVariableHistory(prev => {
           const updated = [...prev, ...recordsToProcess];
-          localStorage.setItem('variable_history', JSON.stringify(updated));
+          safeLocalStorage.setItem('variable_history', JSON.stringify(updated));
           return updated;
         });
       } finally {
@@ -6596,7 +6597,7 @@ function App() {
                   : [normalizedSaved, ...list];
 
                 try {
-                  localStorage.setItem('work_orders', JSON.stringify(next));
+                  safeLocalStorage.setItem('work_orders', JSON.stringify(next));
                 } catch {
                   // ignore
                 }
@@ -6648,8 +6649,8 @@ function App() {
 
   // Check for existing session on mount
   useEffect(() => {
-    const savedUser = localStorage.getItem('authenticated_user');
-    const savedToken = localStorage.getItem('auth_token');
+    const savedUser = safeLocalStorage.getItem('authenticated_user');
+    const savedToken = safeLocalStorage.getItem('auth_token');
     if (savedUser) {
       const userData = JSON.parse(savedUser);
       setCurrentUser(userData);
@@ -6665,8 +6666,8 @@ function App() {
       role: user.role,
       loginTime: new Date().toISOString()
     };
-    localStorage.setItem('authenticated_user', JSON.stringify(sessionUser));
-    if (user.token) localStorage.setItem('auth_token', user.token);
+    safeLocalStorage.setItem('authenticated_user', JSON.stringify(sessionUser));
+    if (user.token) safeLocalStorage.setItem('auth_token', user.token);
     setCurrentUser(sessionUser);
     setIsAuthenticated(Boolean(user.token));
     setSyncStatus('unknown');
@@ -6674,8 +6675,8 @@ function App() {
   };
 
   const handleLogout = () => {
-    localStorage.removeItem('authenticated_user');
-    localStorage.removeItem('auth_token');
+    safeLocalStorage.removeItem('authenticated_user');
+    safeLocalStorage.removeItem('auth_token');
     setCurrentUser(null);
     setIsAuthenticated(false);
     setFleet([]);
@@ -6810,7 +6811,7 @@ function App() {
           const mapKey = 'ot_number_legacy_map';
           let map = {};
           try {
-            map = JSON.parse(localStorage.getItem(mapKey) || '{}') || {};
+            map = JSON.parse(safeLocalStorage.getItem(mapKey) || '{}') || {};
           } catch {
             map = {};
           }
@@ -6846,7 +6847,7 @@ function App() {
           }
 
           try {
-            localStorage.setItem(mapKey, JSON.stringify(map));
+            safeLocalStorage.setItem(mapKey, JSON.stringify(map));
           } catch {
             // ignore storage errors (quota/private mode)
           }
@@ -6920,9 +6921,9 @@ function App() {
         orders = asArray(orders);
         history = asArray(history);
         
-        const savedFleet = localStorage.getItem('fleet_data');
-        const savedOrders = localStorage.getItem('work_orders');
-        const savedHistory = localStorage.getItem('variable_history');
+        const savedFleet = safeLocalStorage.getItem('fleet_data');
+        const savedOrders = safeLocalStorage.getItem('work_orders');
+        const savedHistory = safeLocalStorage.getItem('variable_history');
 
         // Only use localStorage when the API is unavailable (offline mode).
         // If the API is reachable but returns empty, we should NOT fall back to cached/local data,
@@ -7003,9 +7004,9 @@ function App() {
         setApiError(error.message);
         
         // Fallback to localStorage if everything fails
-        const savedFleet = localStorage.getItem('fleet_data');
-        const savedOrders = localStorage.getItem('work_orders');
-        const savedHistory = localStorage.getItem('variable_history');
+        const savedFleet = safeLocalStorage.getItem('fleet_data');
+        const savedOrders = safeLocalStorage.getItem('work_orders');
+        const savedHistory = safeLocalStorage.getItem('variable_history');
         
         const fleetFallback = savedFleet ? safeJsonParse(savedFleet, INITIAL_FLEET) : INITIAL_FLEET;
         const ordersFallback = savedOrders ? safeJsonParse(savedOrders, []) : [];
@@ -7015,7 +7016,7 @@ function App() {
         
         // Auto-save INITIAL_FLEET to localStorage if not present
         if (!savedFleet && fleetFallback === INITIAL_FLEET) {
-          localStorage.setItem('fleet_data', JSON.stringify(INITIAL_FLEET));
+          safeLocalStorage.setItem('fleet_data', JSON.stringify(INITIAL_FLEET));
           console.log('💾 Datos iniciales guardados para próxima sesión');
         }
 
@@ -7112,7 +7113,7 @@ function App() {
       setWorkOrders(prev => {
         const next = [offlineOT, ...(Array.isArray(prev) ? prev : [])];
         try {
-          localStorage.setItem('work_orders', JSON.stringify(next));
+          safeLocalStorage.setItem('work_orders', JSON.stringify(next));
         } catch {
           // ignore
         }

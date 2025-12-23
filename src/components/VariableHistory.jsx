@@ -1,6 +1,7 @@
 import { useState, useMemo } from 'react';
 import { Calendar, Filter, Download, Search, Trash2 } from 'lucide-react';
 import { useDialog } from './DialogProvider.jsx';
+import safeLocalStorage from '../utils/safeStorage';
 
 export default function VariableHistory({ variableHistory, fleet, setVariableHistory, setFleet }) {
   const dialog = useDialog();
@@ -22,7 +23,7 @@ export default function VariableHistory({ variableHistory, fleet, setVariableHis
       const deletedRecord = variableHistory.find(h => h.id === recordId);
       const updatedHistory = variableHistory.filter(h => h.id !== recordId);
       setVariableHistory(updatedHistory);
-      localStorage.setItem('variable_history', JSON.stringify(updatedHistory));
+      safeLocalStorage.setItem('variable_history', JSON.stringify(updatedHistory));
       
       // Recalcular última variable del vehículo desde historial restante
       if (deletedRecord && setFleet && fleet) {
@@ -45,7 +46,7 @@ export default function VariableHistory({ variableHistory, fleet, setVariableHis
             lastVariableDate: lastRecord ? lastRecord.date : ''
           };
           setFleet(updatedFleet);
-          localStorage.setItem('fleet_data', JSON.stringify(updatedFleet));
+          safeLocalStorage.setItem('fleet_data', JSON.stringify(updatedFleet));
         }
       }
       

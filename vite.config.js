@@ -8,22 +8,9 @@ export default defineConfig({
     exclude: ['xlsx']
   },
   build: {
-    rollupOptions: {
-      output: {
-        manualChunks(id) {
-          if (!id.includes('node_modules')) return;
-
-          // Split only the heaviest libraries to reduce initial payload.
-          // Keep a single shared 'vendor' chunk for the rest of node_modules to avoid
-          // circular chunk dependencies that can cause TDZ runtime errors.
-          if (id.includes('/echarts/') || id.includes('echarts-for-react')) return 'echarts';
-          if (id.includes('/xlsx/')) return 'xlsx';
-          if (id.includes('/html2canvas/')) return 'html2canvas';
-
-          return 'vendor';
-        }
-      }
-    }
+    // Let Rollup decide chunk splitting automatically to avoid TDZ circular dependency issues.
+    // Previously we tried manualChunks but it caused "Cannot access 'X' before initialization" errors.
+    chunkSizeWarningLimit: 1200
   },
   server: {
     proxy: {

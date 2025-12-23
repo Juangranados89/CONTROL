@@ -2,6 +2,7 @@ import { useState, useRef } from 'react';
 import { Download, FileText, FileSpreadsheet, X, Check, Loader2, Database, Upload } from 'lucide-react';
 import * as XLSX from 'xlsx';
 import { useDialog } from './DialogProvider.jsx';
+import safeLocalStorage from '../utils/safeStorage';
 
 export default function ExportMenu({ fleet, workOrders, variableHistory, dashboardStats, setFleet, setWorkOrders, setVariableHistory }) {
   const dialog = useDialog();
@@ -135,15 +136,15 @@ export default function ExportMenu({ fleet, workOrders, variableHistory, dashboa
 
         if (backup.data.fleet) {
           setFleet(backup.data.fleet);
-          localStorage.setItem('fleet_data', JSON.stringify(backup.data.fleet));
+          safeLocalStorage.setItem('fleet_data', JSON.stringify(backup.data.fleet));
         }
         if (backup.data.workOrders) {
           setWorkOrders(backup.data.workOrders);
-          localStorage.setItem('work_orders', JSON.stringify(backup.data.workOrders));
+          safeLocalStorage.setItem('work_orders', JSON.stringify(backup.data.workOrders));
         }
         if (backup.data.variableHistory) {
           setVariableHistory(backup.data.variableHistory);
-          localStorage.setItem('variable_history', JSON.stringify(backup.data.variableHistory));
+          safeLocalStorage.setItem('variable_history', JSON.stringify(backup.data.variableHistory));
         }
 
         await dialog.alert({

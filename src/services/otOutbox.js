@@ -1,10 +1,12 @@
+import safeLocalStorage from '../utils/safeStorage';
+
 const OUTBOX_KEY = 'ot_outbox_v1';
 
 const nowIso = () => new Date().toISOString();
 
 const load = () => {
   try {
-    const raw = localStorage.getItem(OUTBOX_KEY);
+    const raw = safeLocalStorage.getItem(OUTBOX_KEY);
     if (!raw) return [];
     const parsed = JSON.parse(raw);
     return Array.isArray(parsed) ? parsed : [];
@@ -15,7 +17,7 @@ const load = () => {
 
 const save = (queue) => {
   try {
-    localStorage.setItem(OUTBOX_KEY, JSON.stringify(Array.isArray(queue) ? queue : []));
+    safeLocalStorage.setItem(OUTBOX_KEY, JSON.stringify(Array.isArray(queue) ? queue : []));
   } catch {
     // ignore
   }
