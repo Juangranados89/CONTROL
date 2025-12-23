@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 
-export default function UserInfoHeader({ compact = false, horizontal = false, userName = 'Usuario' }) {
+export default function UserInfoHeader({ compact = false, horizontal = false, userName = 'Usuario', connection = null }) {
   const [currentTime, setCurrentTime] = useState(new Date());
   const [sessionStart] = useState(new Date());
   const [userInfo, setUserInfo] = useState({
@@ -94,6 +94,19 @@ export default function UserInfoHeader({ compact = false, horizontal = false, us
           <span>⏱️</span>
           <span className="font-mono">{getSessionDuration()}</span>
         </div>
+
+        {connection?.label ? (
+          <>
+            <span className="text-slate-300">|</span>
+            <div className="flex items-center gap-1">
+              <span>📡</span>
+              <span className="font-medium text-slate-700">{connection.label}</span>
+              {typeof connection.pending === 'number' && connection.pending > 0 ? (
+                <span className="text-slate-500">({connection.pending})</span>
+              ) : null}
+            </div>
+          </>
+        ) : null}
       </div>
     );
   }

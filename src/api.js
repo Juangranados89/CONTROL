@@ -34,7 +34,23 @@ class ApiClient {
     try {
       const response = await fetch(url, config);
       if (!response.ok) {
-        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        let body = null;
+        try {
+          const contentType = response.headers.get('content-type') || '';
+          if (contentType.includes('application/json')) {
+            body = await response.json();
+          } else {
+            body = await response.text();
+          }
+        } catch {
+          body = null;
+        }
+
+        const err = new Error(`HTTP ${response.status}: ${response.statusText}`);
+        err.status = response.status;
+        err.endpoint = endpoint;
+        err.body = body;
+        throw err;
       }
       return await response.json();
     } catch (error) {
@@ -119,6 +135,22 @@ class ApiClient {
     return this.request(`/api/workorders/${id}`, {
       method: 'DELETE'
     });
+  }
+
+  async ping() {
+    // Production: call /health on API host (no auth needed)
+    if (this.baseURL) {
+      const res = await fetch(`${this.baseURL}/health`);
+      if (!res.ok) {
+        const err = new Error(`HTTP ${res.status}: ${res.statusText}`);
+        err.status = res.status;
+        throw err;
+      }
+      return await res.json();
+    }
+
+    // Dev/same-origin: use a lightweight authed call via proxy
+    return this.request('/api/workorders');
   }
 
   // ========== WORK ORDER AUDIT / BITACORA ==========

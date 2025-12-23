@@ -1,13 +1,28 @@
 import { useState, useEffect } from 'react';
 import { AlertTriangle, AlertCircle, Clock, X, Bell, BellOff } from 'lucide-react';
 
-export default function NotificationBadge({ fleet, workOrders }) {
+export default function NotificationBadge({ fleet, workOrders, syncPendingCount = 0, syncStatus = 'unknown', onSyncNow }) {
   const [notifications, setNotifications] = useState([]);
   const [isOpen, setIsOpen] = useState(false);
   const [soundEnabled, setSoundEnabled] = useState(false);
 
   useEffect(() => {
     const alerts = [];
+
+    // 0. Sincronización pendiente (OT/acciones offline)
+    if (syncPendingCount > 0) {
+      const isAuth = syncStatus === 'auth';
+      alerts.push({
+        id: 'sync-pending',
+        type: isAuth ? 'error' : 'warning',
+        title: isAuth ? 'Sesión requerida para sincronizar' : 'Sincronización pendiente',
+        message: isAuth
+          ? `Hay ${syncPendingCount} cambio(s) pendiente(s). Inicia sesión para sincronizar.`
+          : `Hay ${syncPendingCount} cambio(s) pendiente(s). ¿Deseas sincronizarlos?`,
+        vehicle: 'OT / Offline',
+        priority: 'high'
+      });
+    }
     
     // 1. Vehículos próximos a mantenimiento (< 500km)
     fleet.forEach(vehicle => {
@@ -74,7 +89,7 @@ export default function NotificationBadge({ fleet, workOrders }) {
     if (soundEnabled && alerts.some(a => a.priority === 'high')) {
       playNotificationSound();
     }
-  }, [fleet, workOrders, soundEnabled]);
+  }, [fleet, workOrders, soundEnabled, syncPendingCount, syncStatus]);
 
   const playNotificationSound = () => {
     // Beep simple con Web Audio API
@@ -197,6 +212,19 @@ export default function NotificationBadge({ fleet, workOrders }) {
                           <p className="text-xs text-slate-400 mt-2">
                             {notification.vehicle}
                           </p>
+
+                          {notification.id === 'sync-pending' && syncStatus !== 'auth' && typeof onSyncNow === 'function' && (
+                            <div className="mt-3">
+                              <button
+                                onClick={async () => {
+                                  await onSyncNow();
+                                }}
+                                className="px-3 py-2 text-xs font-bold bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                              >
+                                Sincronizar ahora
+                              </button>
+                            </div>
+                          )}
                         </div>
                       </div>
                     </div>

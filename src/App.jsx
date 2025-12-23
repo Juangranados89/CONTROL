@@ -72,6 +72,7 @@ import useFleetMetrics from './hooks/useFleetMetrics';
 import { generatePDF as generatePDFService, generatePDFBlobUrl as generatePDFBlobUrlService } from './services/pdfService';
 import PdfViewerModal from './components/PdfViewerModal';
 import WorkOrderHistoryModal from './components/WorkOrderHistoryModal';
+import { enqueueOtOp, flushOtOutbox, getOutboxPendingCount } from './services/otOutbox';
 
 // --- Helper Functions ---
 
@@ -4451,6 +4452,26 @@ const MaintenanceAdminView = ({ workOrders, setWorkOrders, fleet, setFleet, rout
         console.log('✅ OT cerrada en BD:', closedOT.id);
     } catch (error) {
         console.error('Error cerrando OT en BD (Offline Mode):', error);
+
+        const { isAuth, isNetwork, isServer, status } = classifyApiError(error);
+        if (isAuth) setSyncStatus('auth');
+        else if (isNetwork || isServer) setSyncStatus('offline');
+
+        if (isAuth || isNetwork || isServer || !status) {
+          enqueueOtOp({
+            type: 'OT_UPDATE',
+            workOrderId: closedOT.id,
+            updates: {
+              status: closedOT.status,
+              closedDate: closedOT.closedDate,
+              closedTime: closedOT.closedTime,
+              executionKm: closedOT.executionKm,
+              signatures: closedOT.signatures
+            }
+          });
+          refreshOutboxCount();
+        }
+
         // Fallback: update localStorage
         const currentOrders = JSON.parse(localStorage.getItem('work_orders') || '[]');
         const updatedOrders = currentOrders.map(ot => ot.id === closedOT.id ? closedOT : ot);
@@ -4532,6 +4553,20 @@ const MaintenanceAdminView = ({ workOrders, setWorkOrders, fleet, setFleet, rout
         await api.updateWorkOrder(otId, updates);
       } catch (error) {
         console.error('Error anulando OT en BD (Offline Mode):', error);
+
+        const { isAuth, isNetwork, isServer, status } = classifyApiError(error);
+        if (isAuth) setSyncStatus('auth');
+        else if (isNetwork || isServer) setSyncStatus('offline');
+
+        if (isAuth || isNetwork || isServer || !status) {
+          enqueueOtOp({
+            type: 'OT_UPDATE',
+            workOrderId: otId,
+            updates
+          });
+          refreshOutboxCount();
+        }
+
         const currentOrders = JSON.parse(localStorage.getItem('work_orders') || '[]');
         const updatedOrders = currentOrders.map(ot => ot.id === otId ? { ...ot, ...updates } : ot);
         localStorage.setItem('work_orders', JSON.stringify(updatedOrders));
@@ -4561,6 +4596,19 @@ const MaintenanceAdminView = ({ workOrders, setWorkOrders, fleet, setFleet, rout
       updatedVehicle = result?.updatedVehicle || null;
     } catch (error) {
       console.error('Error eliminando OT en BD (Offline Mode):', error);
+
+      const { isAuth, isNetwork, isServer, status } = classifyApiError(error);
+      if (isAuth) setSyncStatus('auth');
+      else if (isNetwork || isServer) setSyncStatus('offline');
+
+      // 404 => ya no existe en backend, no requiere encolar
+      if ((isAuth || isNetwork || isServer || !status) && status !== 404) {
+        enqueueOtOp({
+          type: 'OT_DELETE',
+          workOrderId: otId
+        });
+        refreshOutboxCount();
+      }
     }
 
     // UI/state removal
@@ -6475,6 +6523,128 @@ function App() {
   const [isLoading, setIsLoading] = useState(true);
   const [apiError, setApiError] = useState(null);
 
+  // Outbox / Sync (OT offline ops)
+  const [syncStatus, setSyncStatus] = useState('unknown'); // unknown | online | offline | auth | syncing
+  const [syncPendingCount, setSyncPendingCount] = useState(0);
+  const syncInFlightRef = useRef(false);
+
+  const classifyApiError = useCallback((error) => {
+    const status = error?.status;
+    const isAuth = status === 401 || status === 403;
+    const msg = String(error?.message || '').toLowerCase();
+    const isNetwork = !status && (error?.name === 'TypeError' || msg.includes('failed to fetch'));
+    const isServer = typeof status === 'number' && status >= 500;
+    return { status, isAuth, isNetwork, isServer };
+  }, []);
+
+  const refreshOutboxCount = useCallback(() => {
+    try {
+      setSyncPendingCount(getOutboxPendingCount());
+    } catch {
+      setSyncPendingCount(0);
+    }
+  }, []);
+
+  const safeParseArray = useCallback((value, fallback = []) => {
+    if (value == null) return fallback;
+    if (Array.isArray(value)) return value;
+    if (typeof value === 'string') {
+      try {
+        const parsed = JSON.parse(value);
+        return Array.isArray(parsed) ? parsed : fallback;
+      } catch {
+        return fallback;
+      }
+    }
+    return fallback;
+  }, []);
+
+  const syncNow = useCallback(
+    async ({ silent = false } = {}) => {
+      if (syncInFlightRef.current) return;
+
+      const pending = getOutboxPendingCount();
+      if (pending <= 0) {
+        refreshOutboxCount();
+        return;
+      }
+
+      syncInFlightRef.current = true;
+      setSyncStatus('syncing');
+
+      try {
+        await api.ping();
+
+        const result = await flushOtOutbox({
+          api,
+          onCreated: ({ tempId, savedOT }) => {
+            if (!savedOT) return;
+
+            const normalizedSaved = {
+              ...savedOT,
+              items: safeParseArray(savedOT?.items, []),
+              supplies: normalizeSuppliesUnits(safeParseArray(savedOT?.supplies, []))
+            };
+
+            if (tempId) {
+              setWorkOrders((prev) => {
+                const list = Array.isArray(prev) ? prev : [];
+                const found = list.some((ot) => String(ot?.id) === String(tempId));
+                const next = found
+                  ? list.map((ot) => (String(ot?.id) === String(tempId) ? normalizedSaved : ot))
+                  : [normalizedSaved, ...list];
+
+                try {
+                  localStorage.setItem('work_orders', JSON.stringify(next));
+                } catch {
+                  // ignore
+                }
+
+                return next;
+              });
+            } else {
+              setWorkOrders((prev) => {
+                const list = Array.isArray(prev) ? prev : [];
+                const exists = list.some((ot) => String(ot?.id) === String(normalizedSaved?.id));
+                return exists ? list : [normalizedSaved, ...list];
+              });
+            }
+          }
+        });
+
+        refreshOutboxCount();
+        setSyncStatus(result?.needsAuth ? 'auth' : 'online');
+
+        if (!silent && (result?.succeeded || 0) > 0) {
+          toast.success(`Sincronización completada (${result.succeeded}).`);
+        }
+      } catch (error) {
+        const { isAuth, isNetwork, isServer } = classifyApiError(error);
+        refreshOutboxCount();
+        if (isAuth) setSyncStatus('auth');
+        else if (isNetwork || isServer) setSyncStatus('offline');
+        else setSyncStatus('online');
+
+        if (!silent) {
+          if (isAuth) toast.error('Sesión requerida para sincronizar.');
+          else toast.warning('No se pudo sincronizar. Reintentaremos automáticamente.');
+        }
+      } finally {
+        syncInFlightRef.current = false;
+      }
+    },
+    [classifyApiError, refreshOutboxCount, safeParseArray]
+  );
+
+  const connectionInfo = useMemo(() => {
+    const pending = syncPendingCount;
+    if (syncStatus === 'auth') return { label: 'Sesión requerida', pending };
+    if (syncStatus === 'offline') return { label: 'Sin conexión', pending };
+    if (syncStatus === 'syncing') return { label: 'Sincronizando…', pending };
+    if (syncStatus === 'online') return { label: 'Conectado', pending };
+    return { label: 'Verificando…', pending };
+  }, [syncPendingCount, syncStatus]);
+
   // Check for existing session on mount
   useEffect(() => {
     const savedUser = localStorage.getItem('authenticated_user');
@@ -6498,6 +6668,8 @@ function App() {
     if (user.token) localStorage.setItem('auth_token', user.token);
     setCurrentUser(sessionUser);
     setIsAuthenticated(Boolean(user.token));
+    setSyncStatus('unknown');
+    refreshOutboxCount();
   };
 
   const handleLogout = () => {
@@ -6508,7 +6680,54 @@ function App() {
     setFleet([]);
     setWorkOrders([]);
     setVariableHistory([]);
+    setSyncStatus('unknown');
+    setSyncPendingCount(0);
   };
+
+  // Keep sync status + outbox count updated
+  useEffect(() => {
+    if (!isAuthenticated) return;
+
+    refreshOutboxCount();
+
+    const onOnline = () => {
+      setSyncStatus('unknown');
+      syncNow({ silent: true });
+    };
+    const onOffline = () => {
+      setSyncStatus('offline');
+    };
+
+    window.addEventListener('online', onOnline);
+    window.addEventListener('offline', onOffline);
+
+    const interval = setInterval(async () => {
+      try {
+        const pending = getOutboxPendingCount();
+        if (pending > 0) {
+          await syncNow({ silent: true });
+          return;
+        }
+
+        await api.ping();
+        setSyncStatus('online');
+      } catch (e) {
+        const { isAuth, isNetwork, isServer } = classifyApiError(e);
+        if (isAuth) setSyncStatus('auth');
+        else if (isNetwork || isServer) setSyncStatus('offline');
+        else setSyncStatus('online');
+      }
+    }, 30000);
+
+    // Initial attempt
+    syncNow({ silent: true });
+
+    return () => {
+      window.removeEventListener('online', onOnline);
+      window.removeEventListener('offline', onOffline);
+      clearInterval(interval);
+    };
+  }, [classifyApiError, isAuthenticated, refreshOutboxCount, syncNow]);
 
   // Load initial data from API (only after authentication)
   useEffect(() => {
@@ -6856,15 +7075,38 @@ function App() {
       return savedOT;
     } catch (error) {
       console.error('Error guardando OT en BD:', error);
-      // Fallback: guardar solo en estado local
+
+      const { isAuth, isNetwork, isServer, status } = classifyApiError(error);
+      if (!(isAuth || isNetwork || isServer || !status)) {
+        toast.error('No se pudo crear la OT. Revisa los datos e intenta nuevamente.');
+        throw error;
+      }
+
+      if (isAuth) setSyncStatus('auth');
+      else setSyncStatus('offline');
+
+      // Fallback: guardar local + encolar
       const offlineOT = {
         ...newOT,
         supplies: normalizeSuppliesUnits(newOT?.supplies || []),
         // Ensure we always have a stable identifier in offline mode
         id: newOT?.id || `offline-${Date.now()}`
       };
-      setWorkOrders(prev => [offlineOT, ...prev]);
-      localStorage.setItem('work_orders', JSON.stringify([offlineOT, ...workOrders]));
+
+      enqueueOtOp({ type: 'OT_CREATE', payload: offlineOT });
+      refreshOutboxCount();
+
+      setWorkOrders(prev => {
+        const next = [offlineOT, ...(Array.isArray(prev) ? prev : [])];
+        try {
+          localStorage.setItem('work_orders', JSON.stringify(next));
+        } catch {
+          // ignore
+        }
+        return next;
+      });
+
+      toast.warning('OT guardada localmente. Pendiente sincronización.');
       return offlineOT;
     }
   };
@@ -7074,7 +7316,7 @@ function App() {
           
           {/* User Info Header - Horizontal Layout */}
           <div className="flex items-center gap-2">
-            <UserInfoHeader horizontal={true} userName={currentUser?.name} />
+            <UserInfoHeader horizontal={true} userName={currentUser?.name} connection={connectionInfo} />
             <div className="h-6 w-px bg-slate-200 mx-1"></div>
             <ExportMenu 
               fleet={fleet}
@@ -7092,7 +7334,13 @@ function App() {
                 avgKm: fleet.length > 0 ? Math.round(fleet.reduce((sum, v) => sum + (v.currentKm || 0), 0) / fleet.length) : 0
               }}
             />
-            <NotificationBadge fleet={fleet} workOrders={workOrders} />
+            <NotificationBadge
+              fleet={fleet}
+              workOrders={workOrders}
+              syncPendingCount={syncPendingCount}
+              syncStatus={syncStatus}
+              onSyncNow={() => syncNow({ silent: false })}
+            />
             <button
               onClick={handleLogout}
               className="p-2 hover:bg-slate-100 rounded-lg transition-colors"
