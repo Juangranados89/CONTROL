@@ -213,6 +213,67 @@ const getNextRoutine = (mileage, vehicleModel = '') => {
   };
 };
 
+const calculateForecasting = (vehicle, history) => {
+  if (!vehicle || !Array.isArray(history) || history.length < 2) {
+    return { avgDailyKm: 0, estimatedDays: null, estimatedDate: null };
+  }
+
+  // Filtrar historial para este vehículo y ordenar por fecha descendente
+  const vehicleHistory = history
+    .filter(h => h.vehicleId === vehicle.id || h.plate === vehicle.plate || h.code === vehicle.code)
+    .map(h => {
+      // Intentar parsear fecha flexible (DD/MM/YYYY HH:mm:ss o YYYY-MM-DD)
+      let date;
+      const raw = String(h.date || '').trim();
+      const m = raw.match(/^([0-3]?\d)\/([01]?\d)\/(\d{4})/);
+      if (m) {
+        date = new Date(Number(m[3]), Number(m[2]) - 1, Number(m[1]));
+      } else {
+        date = new Date(raw);
+      }
+      return { ...h, parsedDate: date };
+    })
+    .filter(h => !isNaN(h.parsedDate.getTime()))
+    .sort((a, b) => b.parsedDate - a.parsedDate);
+
+  if (vehicleHistory.length < 2) {
+    return { avgDailyKm: 0, estimatedDays: null, estimatedDate: null };
+  }
+
+  // Tomar los últimos 5 registros para el promedio
+  const recentHistory = vehicleHistory.slice(0, 5);
+  const newest = recentHistory[0];
+  const oldest = recentHistory[recentHistory.length - 1];
+
+  const kmDiff = newest.km - oldest.km;
+  const timeDiffMs = newest.parsedDate - oldest.parsedDate;
+  const daysDiff = timeDiffMs / (1000 * 60 * 60 * 24);
+
+  if (daysDiff <= 0 || kmDiff <= 0) {
+    return { avgDailyKm: 0, estimatedDays: null, estimatedDate: null };
+  }
+
+  const avgDailyKm = kmDiff / daysDiff;
+  
+  const nextRoutine = getNextRoutine(vehicle.mileage, vehicle.model);
+  const kmSinceLastMtto = vehicle.mileage - (vehicle.lastMaintenance || 0);
+  const kmRemaining = nextRoutine.km - kmSinceLastMtto;
+
+  if (kmRemaining <= 0) {
+    return { avgDailyKm, estimatedDays: 0, estimatedDate: new Date() };
+  }
+
+  const estimatedDays = Math.ceil(kmRemaining / avgDailyKm);
+  const estimatedDate = new Date();
+  estimatedDate.setDate(estimatedDate.getDate() + estimatedDays);
+
+  return {
+    avgDailyKm: parseFloat(avgDailyKm.toFixed(2)),
+    estimatedDays,
+    estimatedDate
+  };
+};
+
 const generateTaskCode = (description) => {
   const upperDesc = description.toUpperCase();
   
@@ -1402,6 +1463,7 @@ const PlanningView = ({ fleet, setFleet, onCreateOT, workOrders = [], setWorkOrd
   const [showWeeklyPlan, setShowWeeklyPlan] = useState(false);
   const [showManualUpdate, setShowManualUpdate] = useState(false);
   const [showGanttChart, setShowGanttChart] = useState(false);
+  const [ganttSearch, setGanttSearch] = useState('');
   const [showBulkLoad, setShowBulkLoad] = useState(false);
   const [statusFilter, setStatusFilter] = useState('ALL'); // ALL, VENCIDO, PROXIMO, OK
   const [closingOT, setClosingOT] = useState(null);
@@ -1929,23 +1991,37 @@ const PlanningView = ({ fleet, setFleet, onCreateOT, workOrders = [], setWorkOrd
   };
 
   const weeklyPlan = useMemo(() => {
-    // 1. Identify candidates (Remaining < 3000km or Vencido)
+    // 1. Identify candidates and calculate priority
     const candidates = pickups.map(v => {
         const next = getNextRoutineLocal(v.mileage, v.model, v.lastMaintenance, v.maintenanceCycle);
-        return { ...v, nextRoutine: next, remaining: next.km - v.mileage };
-    }).filter(v => v.remaining < 3000);
+        const remaining = next.km - v.mileage;
+        const forecast = calculateForecasting(v, variableHistory);
+        
+        return { 
+          ...v, 
+          nextRoutine: next, 
+          remaining,
+          forecast,
+          // Priority score: lower is more urgent
+          // We use remaining KM as primary, but if we have forecast days, it's even better
+          priorityScore: forecast.estimatedDays !== null ? forecast.estimatedDays : (remaining / 250) // fallback to approx days if no history
+        };
+    })
+    .filter(v => v.remaining < 3000 || (v.forecast.estimatedDays !== null && v.forecast.estimatedDays < 15))
+    .sort((a, b) => a.priorityScore - b.priorityScore);
 
-    // 2. Distribute Mon-Fri
+    // 2. Distribute Mon-Fri intelligently
     const days = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes'];
     const plan = { Lunes: [], Martes: [], Miércoles: [], Jueves: [], Viernes: [] };
     
+    // Simple but effective: most urgent first
     candidates.forEach((v, i) => {
-        const dayIndex = i % 5; 
+        const dayIndex = Math.min(Math.floor(i / Math.max(1, Math.ceil(candidates.length / 5))), 4);
         plan[days[dayIndex]].push(v);
     });
     
     return plan;
-  }, [pickups, routines, fleet]);
+  }, [pickups, routines, fleet, variableHistory]);
 
   return (
     <div className="p-6 space-y-6 relative">
@@ -2097,21 +2173,14 @@ const PlanningView = ({ fleet, setFleet, onCreateOT, workOrders = [], setWorkOrd
                           </span>
                         </div>
                         <div className="text-xs text-slate-500 mt-1">{v.nextRoutine.name}</div>
-                        <button 
-                          onClick={(e) => handleQuickGenerateClick(e, v)}
-                          disabled={v.remaining >= 3000}
-                          className={`mt-2 text-xs px-2 py-1 rounded w-full ${
-                            v.remaining >= 3000
-                              ? 'bg-slate-200 text-slate-400 cursor-not-allowed'
-                              : 'bg-blue-50 text-blue-600 hover:bg-blue-100'
-                          }`}
-                          title={v.remaining >= 3000 ? 'No requiere atención' : 'Generar OT'}
-                        >
-                          Generar OT
-                        </button>
+                        {v.forecast.estimatedDate && (
+                          <div className="text-[10px] text-purple-600 font-bold mt-1 flex items-center gap-1">
+                            <Clock size={10} /> Est: {v.forecast.estimatedDate.toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit' })}
+                          </div>
+                        )}
                       </div>
                     )) : (
-                      <div className="text-center text-slate-400 text-xs italic py-4">Sin asignaciones</div>
+                      <div className="text-center text-slate-400 text-xs py-4 italic">Sin mantenimientos</div>
                     )}
                   </div>
                 </div>
@@ -2121,164 +2190,212 @@ const PlanningView = ({ fleet, setFleet, onCreateOT, workOrders = [], setWorkOrd
         </div>
       )}
 
-      {/* Modal Cronograma Gantt */}
+      {/* Modal for Gantt Chart / Execution Schedule */}
       {showGanttChart && (
-        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 backdrop-blur-sm">
-          <div className="bg-white rounded-xl shadow-2xl w-[95vw] h-[90vh] flex flex-col overflow-hidden">
-            {/* Header minimalista */}
-            <div className="flex justify-between items-center px-6 py-4 bg-slate-800 text-white">
+        <div className="fixed inset-0 bg-slate-900/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-[95vw] max-h-[95vh] flex flex-col overflow-hidden border border-slate-200 animate-in fade-in zoom-in duration-200">
+            {/* Header Estilo Dark */}
+            <div className="bg-slate-800 px-6 py-4 flex justify-between items-center text-white">
               <div className="flex items-center gap-4">
-                <BarChart3 size={22} />
+                <div className="bg-purple-600 p-2 rounded-lg shadow-lg shadow-purple-900/20">
+                  <BarChart3 size={24} />
+                </div>
                 <div>
-                  <h3 className="text-lg font-semibold">Cronograma de Ejecución</h3>
-                  <p className="text-xs text-slate-400">Historial y proyección de mantenimientos preventivos</p>
+                  <h3 className="text-xl font-bold tracking-tight">Cronograma de Ejecución</h3>
+                  <p className="text-xs text-slate-400 font-medium">Historial y proyección de mantenimientos preventivos</p>
                 </div>
               </div>
+              
               <div className="flex items-center gap-3">
-                <button className="px-3 py-1.5 bg-slate-700 hover:bg-slate-600 rounded text-xs font-medium flex items-center gap-1.5 transition-colors">
-                  <Download size={14} /> Exportar
-                </button>
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
+                  <input 
+                    type="text"
+                    placeholder="Buscar placa o código..."
+                    className="bg-slate-700 border-none text-sm text-white pl-10 pr-4 py-2 rounded-xl focus:ring-2 focus:ring-purple-500 w-64 transition-all"
+                    value={ganttSearch}
+                    onChange={(e) => setGanttSearch(e.target.value)}
+                  />
+                </div>
                 <button 
-                  onClick={() => setShowGanttChart(false)} 
-                  className="p-1.5 hover:bg-slate-700 rounded-lg transition-colors"
+                  onClick={() => {
+                    const headers = ['Placa', 'Código', 'Variable', 'Ciclo', 'Últ. Mtto', 'Proyección', 'PM1', 'PM2', 'PM3', 'PM4', 'PM5', 'PM6'];
+                    const rows = pickups
+                      .filter(v => v.plate.toLowerCase().includes(ganttSearch.toLowerCase()) || v.code.toLowerCase().includes(ganttSearch.toLowerCase()))
+                      .map(v => {
+                        const cycle = v.maintenanceCycle || 5000;
+                        const lastM = v.lastMaintenance || 0;
+                        const completed = lastM > 0 ? Math.floor(lastM / cycle) : 0;
+                        const startPM = Math.max(1, completed - 2);
+                        return [
+                          v.plate, v.code, v.mileage, cycle, lastM, 
+                          calculateForecasting(v, variableHistory).estimatedDate?.toLocaleDateString() || 'N/A',
+                          ...Array.from({ length: 6 }, (_, i) => (startPM + i) * cycle)
+                        ];
+                      });
+                    const csvContent = [headers, ...rows].map(e => e.join(",")).join("\n");
+                    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+                    const link = document.createElement("a");
+                    link.href = URL.createObjectURL(blob);
+                    link.download = `Cronograma_Ejecucion_${new Date().toISOString().split('T')[0]}.csv`;
+                    link.click();
+                  }}
+                  className="bg-slate-700 hover:bg-slate-600 text-white px-4 py-2 rounded-xl text-sm font-bold flex items-center gap-2 transition-colors border border-slate-600"
                 >
-                  <X size={20} />
+                  <Download size={16} /> Exportar
+                </button>
+                <button onClick={() => setShowGanttChart(false)} className="text-slate-400 hover:text-white transition-colors p-1">
+                  <X size={24} />
                 </button>
               </div>
             </div>
             
-            <div className="flex-1 flex flex-col overflow-hidden bg-slate-50">
-              {/* Tabla estilo ROOMS RACK */}
-              <div className="flex-1 overflow-auto">
-                <table className="w-full border-collapse min-w-max">
-                  <thead className="sticky top-0 z-20">
-                    {/* Fila de encabezados PM */}
-                    <tr className="bg-slate-700 text-white text-[11px]">
-                      <th className="py-2 px-3 text-left font-semibold border-r border-slate-600 sticky left-0 bg-slate-700 z-30 min-w-[100px]">VEHÍCULO</th>
-                      <th className="py-2 px-2 text-center font-semibold border-r border-slate-600 min-w-[70px]">VARIABLE</th>
-                      <th className="py-2 px-2 text-center font-semibold border-r border-slate-600 min-w-[55px]">CICLO</th>
-                      <th className="py-2 px-2 text-center font-semibold border-r border-slate-600 min-w-[60px]">ÚLT.MTTO</th>
-                      {Array.from({ length: 6 }, (_, i) => (
-                        <th key={i} className="py-2 px-1 text-center font-semibold border-r border-slate-600 min-w-[70px]">
-                          PM{i + 1}
-                        </th>
-                      ))}
-                    </tr>
-                  </thead>
-                  <tbody className="text-[11px]">
-                    {pickups.slice(0, 40).map((vehicle, idx) => {
-                      const cycle = vehicle.maintenanceCycle || 5000;
-                      const currentMileage = vehicle.mileage || 0;
-                      const lastMaintenance = vehicle.lastMaintenance || 0;
-                      
-                      // Calcular el número de PM ejecutado basado en lastMaintenance
-                      const completedPMs = lastMaintenance > 0 ? Math.floor(lastMaintenance / cycle) : 0;
-                      
-                      // Calcular próximo PM
-                      const nextPMNumber = completedPMs + 1;
-                      const nextPMKm = nextPMNumber * cycle;
-                      
-                      // Verificar si está vencido (solo el próximo PM puede estar vencido)
-                      const isNextOverdue = currentMileage >= nextPMKm;
-                      
-                      // Generar los 6 PMs a mostrar (3 ejecutados + 3 futuros aproximadamente)
-                      const startPM = Math.max(1, completedPMs - 2);
-                      const pms = [];
-                      for (let i = 0; i < 6; i++) {
-                        const pmNum = startPM + i;
-                        const targetKm = pmNum * cycle;
-                        const isExecuted = pmNum <= completedPMs;
-                        const isNext = pmNum === nextPMNumber;
-                        const isOverdue = isNext && isNextOverdue;
-                        
-                        pms.push({
-                          num: pmNum,
-                          targetKm,
-                          isExecuted,
-                          isNext,
-                          isOverdue,
-                          executedKm: isExecuted ? (pmNum === completedPMs ? lastMaintenance : targetKm) : null
-                        });
-                      }
-                      
-                      return (
-                        <tr key={vehicle.id} className={`border-b border-slate-100 hover:bg-blue-50/30 ${idx % 2 === 0 ? 'bg-white' : 'bg-slate-50/30'}`}>
-                          {/* Columna Vehículo */}
-                          <td className="py-1.5 px-3 border-r border-slate-200 sticky left-0 bg-inherit z-10">
+            <div className="flex-1 overflow-auto">
+              <table className="w-full border-collapse bg-white">
+                <thead className="sticky top-0 bg-slate-800 text-slate-300 text-[10px] uppercase tracking-widest z-20">
+                  <tr>
+                    <th className="py-3 px-4 text-left font-bold border-r border-slate-700 sticky left-0 bg-slate-800 z-30 min-w-[120px]">Vehículo</th>
+                    <th className="py-3 px-2 text-center font-bold border-r border-slate-700 min-w-[90px]">Variable</th>
+                    <th className="py-3 px-2 text-center font-bold border-r border-slate-700 min-w-[80px]">Ciclo</th>
+                    <th className="py-3 px-2 text-center font-bold border-r border-slate-700 min-w-[90px]">Últ. Mtto</th>
+                    <th className="py-3 px-2 text-center font-bold border-r border-slate-700 min-w-[100px] text-purple-400">Proyección</th>
+                    {Array.from({ length: 6 }, (_, i) => (
+                      <th key={i} className="py-3 px-1 text-center font-bold border-r border-slate-700 min-w-[80px]">
+                        PM{i + 1}
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody className="text-[11px]">
+                  {pickups
+                    .filter(v => v.plate.toLowerCase().includes(ganttSearch.toLowerCase()) || v.code.toLowerCase().includes(ganttSearch.toLowerCase()))
+                    .slice(0, 50).map((vehicle, idx) => {
+                    const cycle = vehicle.maintenanceCycle || 5000;
+                    const currentMileage = vehicle.mileage || 0;
+                    const lastMaintenance = vehicle.lastMaintenance || 0;
+                    const forecast = calculateForecasting(vehicle, variableHistory);
+                    const completedPMs = lastMaintenance > 0 ? Math.floor(lastMaintenance / cycle) : 0;
+                    const nextPMNumber = completedPMs + 1;
+                    const nextPMKm = nextPMNumber * cycle;
+                    const isNextOverdue = currentMileage >= nextPMKm;
+                    const startPM = Math.max(1, completedPMs - 2);
+                    const pms = [];
+                    for (let i = 0; i < 6; i++) {
+                      const pmNum = startPM + i;
+                      const targetKm = pmNum * cycle;
+                      const isExecuted = pmNum <= completedPMs;
+                      const isNext = pmNum === nextPMNumber;
+                      const isOverdue = isNext && isNextOverdue;
+                      pms.push({
+                        num: pmNum,
+                        targetKm,
+                        isExecuted,
+                        isNext,
+                        isOverdue,
+                        executedKm: isExecuted ? (pmNum === completedPMs ? lastMaintenance : targetKm) : null
+                      });
+                    }
+                    return (
+                      <tr key={vehicle.id} className={`border-b border-slate-100 hover:bg-blue-50/50 transition-colors ${idx % 2 === 0 ? 'bg-white' : 'bg-slate-50/30'}`}>
+                        <td className="py-2 px-4 border-r border-slate-200 sticky left-0 bg-inherit z-10 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.05)]">
+                          <div className="flex flex-col leading-tight">
+                            <span className="font-bold text-slate-800 text-[12px]">{vehicle.plate}</span>
+                            <span className="text-[10px] text-slate-400 font-medium">{vehicle.code}</span>
+                          </div>
+                        </td>
+                        <td className="py-2 px-2 text-center border-r border-slate-200">
+                          <span className="font-bold text-blue-600 text-[12px]">{currentMileage.toLocaleString()}</span>
+                        </td>
+                        <td className="py-2 px-2 text-center border-r border-slate-200 text-slate-500 font-medium">
+                          {cycle.toLocaleString()}
+                        </td>
+                        <td className="py-2 px-2 text-center border-r border-slate-200">
+                          <span className={`font-bold ${lastMaintenance > 0 ? 'text-emerald-600' : 'text-slate-300'}`}>
+                            {lastMaintenance > 0 ? lastMaintenance.toLocaleString() : '—'}
+                          </span>
+                        </td>
+                        <td className="py-2 px-2 text-center border-r border-slate-200 bg-purple-50/30">
+                          {forecast.estimatedDate ? (
                             <div className="flex flex-col leading-tight">
-                              <span className="font-bold text-slate-800 text-[11px]">{vehicle.plate}</span>
-                              <span className="text-[9px] text-slate-400">{vehicle.code}</span>
+                              <span className="font-bold text-purple-600 text-[12px]">
+                                {forecast.estimatedDate.toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit' })}
+                              </span>
+                              <span className="text-[9px] text-purple-400 font-bold">
+                                {forecast.avgDailyKm} km/d
+                              </span>
+                            </div>
+                          ) : (
+                            <span className="text-slate-300">—</span>
+                          )}
+                        </td>
+                        {pms.map((pm) => (
+                          <td 
+                            key={pm.num} 
+                            onClick={() => {
+                              if (!pm.isExecuted) {
+                                setSelectedVehicle(vehicle);
+                                setWorkshop('TALLER EL HATO');
+                                setShowGanttChart(false);
+                              }
+                            }}
+                            className={`py-2 px-1 text-center border-r border-slate-200 cursor-pointer transition-all ${
+                              pm.isExecuted ? 'bg-emerald-50/50' : 
+                              pm.isOverdue ? 'bg-red-50 hover:bg-red-100' : 
+                              pm.isNext ? 'bg-amber-50 hover:bg-amber-100' : 
+                              'hover:bg-slate-100'
+                            }`}
+                          >
+                            <div className="flex flex-col items-center leading-tight gap-1">
+                              {pm.isExecuted ? (
+                                <CheckCircle2 size={16} className="text-emerald-500" />
+                              ) : pm.isOverdue ? (
+                                <AlertCircle size={16} className="text-red-500 animate-pulse" />
+                              ) : pm.isNext ? (
+                                <Clock size={16} className="text-amber-500" />
+                              ) : (
+                                <Circle size={14} className="text-slate-200" />
+                              )}
+                              <span className={`text-[10px] font-bold ${
+                                pm.isExecuted ? 'text-emerald-700' : 
+                                pm.isOverdue ? 'text-red-700' : 
+                                pm.isNext ? 'text-amber-700' : 
+                                'text-slate-400'
+                              }`}>
+                                {pm.isExecuted && pm.executedKm ? pm.executedKm.toLocaleString() : pm.targetKm.toLocaleString()}
+                              </span>
                             </div>
                           </td>
-                          {/* Variable */}
-                          <td className="py-1.5 px-2 text-center border-r border-slate-200">
-                            <span className="font-bold text-blue-600">{currentMileage.toLocaleString()}</span>
-                          </td>
-                          {/* Ciclo */}
-                          <td className="py-1.5 px-2 text-center border-r border-slate-200 text-slate-500">
-                            {cycle.toLocaleString()}
-                          </td>
-                          {/* Último Mtto */}
-                          <td className="py-1.5 px-2 text-center border-r border-slate-200">
-                            <span className={`font-medium ${lastMaintenance > 0 ? 'text-emerald-600' : 'text-slate-300'}`}>
-                              {lastMaintenance > 0 ? lastMaintenance.toLocaleString() : '—'}
-                            </span>
-                          </td>
-                          {/* PMs dinámicos */}
-                          {pms.map((pm) => (
-                            <td key={pm.num} className={`py-1 px-1 text-center border-r border-slate-200 ${
-                              pm.isExecuted ? 'bg-emerald-50' : 
-                              pm.isOverdue ? 'bg-red-50' : 
-                              pm.isNext ? 'bg-amber-50' : 
-                              ''
-                            }`}>
-                              <div className="flex flex-col items-center leading-tight">
-                                {pm.isExecuted ? (
-                                  <CheckCircle2 size={14} className="text-emerald-500" />
-                                ) : pm.isOverdue ? (
-                                  <AlertCircle size={14} className="text-red-500" />
-                                ) : pm.isNext ? (
-                                  <Clock size={14} className="text-amber-500" />
-                                ) : (
-                                  <Circle size={12} className="text-slate-300" />
-                                )}
-                                <span className={`text-[9px] font-medium ${
-                                  pm.isExecuted ? 'text-emerald-700' : 
-                                  pm.isOverdue ? 'text-red-700' : 
-                                  pm.isNext ? 'text-amber-700' : 
-                                  'text-slate-400'
-                                }`}>
-                                  {pm.isExecuted && pm.executedKm ? pm.executedKm.toLocaleString() : pm.targetKm.toLocaleString()}
-                                </span>
-                              </div>
-                            </td>
-                          ))}
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
-              </div>
+                        ))}
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
 
-              {/* Footer con leyenda */}
-              <div className="bg-white border-t border-slate-200 px-6 py-2.5 flex items-center gap-6 text-xs">
-                <span className="font-semibold text-slate-700">Estados:</span>
-                <div className="flex items-center gap-1.5">
+            {/* Footer con leyenda */}
+            <div className="bg-slate-50 border-t border-slate-200 px-6 py-3 flex items-center justify-between text-xs">
+              <div className="flex items-center gap-6">
+                <span className="font-bold text-slate-700 uppercase tracking-wider text-[10px]">Estados:</span>
+                <div className="flex items-center gap-2 bg-white px-3 py-1 rounded-lg border border-slate-200 shadow-sm">
                   <CheckCircle2 size={14} className="text-emerald-500" />
-                  <span className="text-slate-600">Ejecutado</span>
+                  <span className="text-slate-600 font-medium">Ejecutado</span>
                 </div>
-                <div className="flex items-center gap-1.5">
+                <div className="flex items-center gap-2 bg-white px-3 py-1 rounded-lg border border-slate-200 shadow-sm">
                   <AlertCircle size={14} className="text-red-500" />
-                  <span className="text-slate-600">Vencido</span>
+                  <span className="text-slate-600 font-medium">Vencido</span>
                 </div>
-                <div className="flex items-center gap-1.5">
+                <div className="flex items-center gap-2 bg-white px-3 py-1 rounded-lg border border-slate-200 shadow-sm">
                   <Clock size={14} className="text-amber-500" />
-                  <span className="text-slate-600">Próximo</span>
+                  <span className="text-slate-600 font-medium">Próximo</span>
                 </div>
-                <div className="flex items-center gap-1.5">
+                <div className="flex items-center gap-2 bg-white px-3 py-1 rounded-lg border border-slate-200 shadow-sm">
                   <Circle size={14} className="text-slate-300" />
-                  <span className="text-slate-600">Futuro</span>
+                  <span className="text-slate-600 font-medium">Futuro</span>
                 </div>
+              </div>
+              <div className="text-slate-400 font-medium italic">
+                * Haz clic en un mantenimiento pendiente para generar la OT
               </div>
             </div>
           </div>
