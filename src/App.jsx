@@ -69,7 +69,8 @@ import useDashboardFilters from './dashboard/useDashboardFilters';
 import BIFleetStatusDonut from './components/BIFleetStatusDonut';
 import BIFleetTable from './components/BIFleetTable';
 import useFleetMetrics from './hooks/useFleetMetrics';
-import { generatePDF as generatePDFService } from './services/pdfService';
+import { generatePDF as generatePDFService, generatePDFBlobUrl as generatePDFBlobUrlService } from './services/pdfService';
+import PdfViewerModal from './components/PdfViewerModal';
 
 // --- Helper Functions ---
 
@@ -1139,6 +1140,35 @@ const PlanningView = ({ fleet, setFleet, onCreateOT, workOrders = [], setWorkOrd
   const [showBulkLoad, setShowBulkLoad] = useState(false);
   const [statusFilter, setStatusFilter] = useState('ALL'); // ALL, VENCIDO, PROXIMO, OK
   const [closingOT, setClosingOT] = useState(null);
+
+  const [pdfPreview, setPdfPreview] = useState(null); // { url, filename, title }
+
+  const closePdfPreview = useCallback(() => {
+    setPdfPreview(prev => {
+      if (prev?.url && String(prev.url).startsWith('blob:')) {
+        try {
+          URL.revokeObjectURL(prev.url);
+        } catch {
+          // ignore
+        }
+      }
+      return null;
+    });
+  }, []);
+
+  const openPdfPreview = useCallback(
+    async (ot) => {
+      closePdfPreview();
+      const result = await generatePDFBlobUrlService(ot, alert);
+      if (!result?.url) return;
+      setPdfPreview({
+        url: result.url,
+        filename: result.filename,
+        title: `OT #${ot.otNumber ?? ot.id} — ${ot.plate || ''}`
+      });
+    },
+    [alert, closePdfPreview]
+  );
 
   const closingVehicle = useMemo(() => {
     if (!closingOT) return null;
@@ -2358,6 +2388,15 @@ const PlanningView = ({ fleet, setFleet, onCreateOT, workOrders = [], setWorkOrd
                             >
                               <FileText size={16} />
                             </button>
+                            {ot.status !== 'ABIERTA' && (
+                              <button
+                                onClick={() => openPdfPreview(ot)}
+                                className="text-slate-600 hover:text-emerald-600"
+                                title="Ver PDF (vista previa)"
+                              >
+                                <Search size={16} />
+                              </button>
+                            )}
                             {ot.status === 'ABIERTA' && (
                               <button
                                 onClick={() => setClosingOT(ot)}
@@ -2382,6 +2421,14 @@ const PlanningView = ({ fleet, setFleet, onCreateOT, workOrders = [], setWorkOrd
           </div>
         </div>
       )}
+
+      <PdfViewerModal
+        open={!!pdfPreview}
+        title={pdfPreview?.title}
+        url={pdfPreview?.url}
+        filename={pdfPreview?.filename}
+        onClose={closePdfPreview}
+      />
 
       {/* Modal de Edición de Variables y Mantenimiento */}
       {editingVehicle && (

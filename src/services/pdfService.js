@@ -107,15 +107,7 @@ export const getBase64ImageFromURL = (url) => {
   });
 };
 
-export const generatePDF = async (workOrder, notify) => {
-  const notifyFn = typeof notify === 'function' ? notify : null;
-  if (!window.jspdf) {
-    if (notifyFn) {
-      await notifyFn('La librería jsPDF no está cargada.', { title: 'Error', variant: 'danger' });
-    }
-    return;
-  }
-
+const buildWorkOrderPdfDocument = async (workOrder) => {
   const formatMonthYear = (value) => {
     const months = ['ENE', 'FEB', 'MAR', 'ABR', 'MAY', 'JUN', 'JUL', 'AGO', 'SEP', 'OCT', 'NOV', 'DIC'];
 
@@ -304,5 +296,51 @@ export const generatePDF = async (workOrder, notify) => {
     margin: { left: 10, right: 10 }
   });
 
-  doc.save(`OT_${workOrder.otNumber ?? workOrder.id}_${workOrder.plate || ''}.pdf`);
+  const filename = `OT_${workOrder.otNumber ?? workOrder.id}_${workOrder.plate || ''}.pdf`;
+  return { doc, filename };
+};
+
+export const generatePDF = async (workOrder, notify) => {
+  const notifyFn = typeof notify === 'function' ? notify : null;
+  if (!window.jspdf) {
+    if (notifyFn) {
+      await notifyFn('La librería jsPDF no está cargada.', { title: 'Error', variant: 'danger' });
+    }
+    return;
+  }
+
+  try {
+    const built = await buildWorkOrderPdfDocument(workOrder);
+    if (!built?.doc) return;
+    built.doc.save(built.filename);
+  } catch (e) {
+    console.error('Error generating PDF:', e);
+    if (notifyFn) {
+      await notifyFn('Error generando el PDF de la OT.', { title: 'Error', variant: 'danger' });
+    }
+  }
+};
+
+export const generatePDFBlobUrl = async (workOrder, notify) => {
+  const notifyFn = typeof notify === 'function' ? notify : null;
+  if (!window.jspdf) {
+    if (notifyFn) {
+      await notifyFn('La librería jsPDF no está cargada.', { title: 'Error', variant: 'danger' });
+    }
+    return null;
+  }
+
+  try {
+    const built = await buildWorkOrderPdfDocument(workOrder);
+    if (!built?.doc) return null;
+    const blob = built.doc.output('blob');
+    const url = URL.createObjectURL(blob);
+    return { url, filename: built.filename };
+  } catch (e) {
+    console.error('Error generating PDF blob:', e);
+    if (notifyFn) {
+      await notifyFn('Error preparando la vista previa del PDF.', { title: 'Error', variant: 'danger' });
+    }
+    return null;
+  }
 };
