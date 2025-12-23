@@ -4294,6 +4294,29 @@ const MaintenanceAdminView = ({ workOrders, setWorkOrders, fleet, setFleet, rout
   const [historyOT, setHistoryOT] = useState(null);
   const [historyEntries, setHistoryEntries] = useState([]);
   const [historyLoading, setHistoryLoading] = useState(false);
+  const [actionsMenuOtId, setActionsMenuOtId] = useState(null);
+
+  useEffect(() => {
+    if (!actionsMenuOtId) return;
+
+    const onKeyDown = (e) => {
+      if (e.key === 'Escape') setActionsMenuOtId(null);
+    };
+
+    const onPointerDown = () => {
+      setActionsMenuOtId(null);
+    };
+
+    window.addEventListener('keydown', onKeyDown);
+    document.addEventListener('mousedown', onPointerDown);
+    document.addEventListener('touchstart', onPointerDown, { passive: true });
+
+    return () => {
+      window.removeEventListener('keydown', onKeyDown);
+      document.removeEventListener('mousedown', onPointerDown);
+      document.removeEventListener('touchstart', onPointerDown);
+    };
+  }, [actionsMenuOtId]);
 
   const closePdfPreview = useCallback(() => {
     setPdfPreview(prev => {
@@ -4801,7 +4824,7 @@ const MaintenanceAdminView = ({ workOrders, setWorkOrders, fleet, setFleet, rout
                             <td className="p-4 text-slate-600">{ot.workshop}</td>
                             <td className="p-4">{ot.creationDate || ot.createdAt || '—'}</td>
                             <td className="p-4">
-                              <div className="flex flex-wrap gap-2">
+                              <div className="relative flex flex-wrap gap-2">
                                 <button
                                   onClick={() => generatePDFService(ot, alert)}
                                   className="px-2 py-1 bg-blue-50 text-blue-600 rounded hover:bg-blue-100 text-xs font-medium border border-blue-200"
@@ -4828,38 +4851,76 @@ const MaintenanceAdminView = ({ workOrders, setWorkOrders, fleet, setFleet, rout
                                   Historial
                                 </button>
 
-                                {ot.status === 'ABIERTA' && (
-                                  <button
-                                    onClick={() => setClosingOT(ot)}
-                                    className="px-2 py-1 bg-green-50 text-green-600 rounded hover:bg-green-100 text-xs font-medium border border-green-200"
-                                  >
-                                    Cerrar OT
-                                  </button>
-                                )}
-
                                 <button
-                                  onClick={() => alert('Funcionalidad de Editar OT en desarrollo', { title: 'En desarrollo', variant: 'info' })}
-                                  className="px-2 py-1 bg-amber-50 text-amber-600 rounded hover:bg-amber-100 text-xs font-medium border border-amber-200"
+                                  type="button"
+                                  onMouseDown={(e) => e.stopPropagation()}
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    setActionsMenuOtId(prev => (prev === ot.id ? null : ot.id));
+                                  }}
+                                  className="px-2 py-1 bg-white text-slate-700 rounded hover:bg-slate-50 text-xs font-black border border-slate-200"
+                                  title="Más acciones"
                                 >
-                                  Editar OT
+                                  ...
                                 </button>
 
-                                {ot.status !== 'ANULADA' && (
-                                  <button
-                                    onClick={() => handleAnularOT(ot.id)}
-                                    className="px-2 py-1 bg-red-50 text-red-600 rounded hover:bg-red-100 text-xs font-medium border border-red-200"
+                                {actionsMenuOtId === ot.id && (
+                                  <div
+                                    className="absolute right-0 top-9 z-10 w-44 bg-white border border-slate-200 rounded-lg shadow"
+                                    onMouseDown={(e) => e.stopPropagation()}
+                                    onClick={(e) => e.stopPropagation()}
                                   >
-                                    Anular OT
-                                  </button>
-                                )}
+                                    <div className="py-1">
+                                      {ot.status === 'ABIERTA' && (
+                                        <button
+                                          type="button"
+                                          onClick={() => {
+                                            setActionsMenuOtId(null);
+                                            setClosingOT(ot);
+                                          }}
+                                          className="w-full text-left px-3 py-2 text-xs text-slate-700 hover:bg-slate-50"
+                                        >
+                                          Cerrar OT
+                                        </button>
+                                      )}
 
-                                <button
-                                  onClick={() => handleEliminarOT(ot.id)}
-                                  className="px-2 py-1 bg-red-600 text-white rounded hover:bg-red-700 text-xs font-medium"
-                                  title="Eliminar definitivamente"
-                                >
-                                  Eliminar OT
-                                </button>
+                                      <button
+                                        type="button"
+                                        onClick={() => {
+                                          setActionsMenuOtId(null);
+                                          alert('Funcionalidad de Editar OT en desarrollo', { title: 'En desarrollo', variant: 'info' });
+                                        }}
+                                        className="w-full text-left px-3 py-2 text-xs text-slate-700 hover:bg-slate-50"
+                                      >
+                                        Editar OT
+                                      </button>
+
+                                      {ot.status !== 'ANULADA' && (
+                                        <button
+                                          type="button"
+                                          onClick={() => {
+                                            setActionsMenuOtId(null);
+                                            handleAnularOT(ot.id);
+                                          }}
+                                          className="w-full text-left px-3 py-2 text-xs text-slate-700 hover:bg-slate-50"
+                                        >
+                                          Anular OT
+                                        </button>
+                                      )}
+
+                                      <button
+                                        type="button"
+                                        onClick={() => {
+                                          setActionsMenuOtId(null);
+                                          handleEliminarOT(ot.id);
+                                        }}
+                                        className="w-full text-left px-3 py-2 text-xs text-red-700 hover:bg-red-50"
+                                      >
+                                        Eliminar OT
+                                      </button>
+                                    </div>
+                                  </div>
+                                )}
                               </div>
                             </td>
                           </tr>
