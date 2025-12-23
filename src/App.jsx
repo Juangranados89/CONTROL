@@ -32,7 +32,10 @@ import {
   MapPin,
   CircleDot,
   Fuel,
-  Printer
+  Printer,
+  Trash2,
+  GripVertical,
+  PlusCircle
 } from 'lucide-react';
 import { 
   LineChart, 
@@ -1461,6 +1464,9 @@ const PlanningView = ({ fleet, setFleet, onCreateOT, workOrders = [], setWorkOrd
   const [workshop, setWorkshop] = useState('');
   const [viewingHistoryVehicle, setViewingHistoryVehicle] = useState(null);
   const [showWeeklyPlan, setShowWeeklyPlan] = useState(false);
+  const [plannedAssignments, setPlannedAssignments] = useState({
+    Lunes: [], Martes: [], Miércoles: [], Jueves: [], Viernes: []
+  });
   const [showManualUpdate, setShowManualUpdate] = useState(false);
   const [showGanttChart, setShowGanttChart] = useState(false);
   const [ganttSearch, setGanttSearch] = useState('');
@@ -1545,6 +1551,89 @@ const PlanningView = ({ fleet, setFleet, onCreateOT, workOrders = [], setWorkOrd
 
   // Estado para edición completa de vehículo
   const [editingVehicle, setEditingVehicle] = useState(null);
+
+  // Initialize weekly plan with automatic suggestion if empty
+  useEffect(() => {
+    if (showWeeklyPlan && Object.values(plannedAssignments).every(arr => arr.length === 0)) {
+      // 1. Identify candidates and calculate priority
+      const candidates = pickups.map(v => {
+          const next = getNextRoutineLocal(v.mileage, v.model, v.lastMaintenance, v.maintenanceCycle);
+          const remaining = next.km - v.mileage;
+          const forecast = calculateForecasting(v, variableHistory);
+          
+          return { 
+            ...v, 
+            nextRoutine: next, 
+            remaining,
+            forecast,
+            priorityScore: forecast.estimatedDays !== null ? forecast.estimatedDays : (remaining / 250)
+          };
+      })
+      .filter(v => v.remaining < 3000 || (v.forecast.estimatedDays !== null && v.forecast.estimatedDays < 15))
+      .sort((a, b) => a.priorityScore - b.priorityScore);
+
+      const days = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes'];
+      const initialPlan = { Lunes: [], Martes: [], Miércoles: [], Jueves: [], Viernes: [] };
+      
+      candidates.forEach((v, i) => {
+          const dayIndex = Math.min(Math.floor(i / Math.max(1, Math.ceil(candidates.length / 5))), 4);
+          initialPlan[days[dayIndex]].push(v);
+      });
+      
+      setPlannedAssignments(initialPlan);
+    }
+  }, [showWeeklyPlan, pickups, variableHistory]);
+
+  const handleDragStart = (e, vehicle) => {
+    e.dataTransfer.setData("vehicleId", vehicle.id);
+  };
+
+  const handleDrop = (e, day) => {
+    e.preventDefault();
+    const vehicleId = e.dataTransfer.getData("vehicleId");
+    const vehicle = pickups.find(v => String(v.id) === String(vehicleId));
+    if (!vehicle) return;
+
+    setPlannedAssignments(prev => {
+      const newAssignments = { ...prev };
+      Object.keys(newAssignments).forEach(d => {
+        newAssignments[d] = newAssignments[d].filter(v => String(v.id) !== String(vehicleId));
+      });
+      
+      const next = getNextRoutineLocal(vehicle.mileage, vehicle.model, vehicle.lastMaintenance, vehicle.maintenanceCycle);
+      newAssignments[day] = [...newAssignments[day], {
+        ...vehicle,
+        nextRoutine: next,
+        remaining: next.km - vehicle.mileage,
+        forecast: calculateForecasting(vehicle, variableHistory)
+      }];
+      return newAssignments;
+    });
+  };
+
+  const removeFromPlan = (vehicleId, day) => {
+    setPlannedAssignments(prev => ({
+      ...prev,
+      [day]: prev[day].filter(v => String(v.id) !== String(vehicleId))
+    }));
+  };
+
+  const unassignedCandidates = useMemo(() => {
+    const assignedIds = new Set(Object.values(plannedAssignments).flat().map(v => String(v.id)));
+    return pickups
+      .map(v => {
+        const next = getNextRoutineLocal(v.mileage, v.model, v.lastMaintenance, v.maintenanceCycle);
+        return { 
+          ...v, 
+          nextRoutine: next, 
+          remaining: next.km - v.mileage,
+          forecast: calculateForecasting(v, variableHistory)
+        };
+      })
+      .filter(v => !assignedIds.has(String(v.id)))
+      .filter(v => v.remaining < 5000)
+      .sort((a, b) => a.remaining - b.remaining);
+  }, [pickups, plannedAssignments, variableHistory]);
   const [vehicleEditData, setVehicleEditData] = useState({});
 
   // Abrir modal de edición
@@ -2143,48 +2232,184 @@ const PlanningView = ({ fleet, setFleet, onCreateOT, workOrders = [], setWorkOrd
         </div>
       )}
 
-      {/* Modal for Weekly Plan */}
+      {/* Modal for Weekly Plan (Drag & Drop) */}
       {showWeeklyPlan && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-white p-6 rounded-lg shadow-xl w-[90vw] max-h-[90vh] flex flex-col">
-            <div className="flex justify-between items-center mb-6 border-b pb-4">
-              <div>
-                <h3 className="text-2xl font-bold text-slate-800 flex items-center gap-2">
-                  <Calendar className="text-blue-600" /> Planeación Semanal Sugerida
-                </h3>
-                <p className="text-sm text-slate-500">Distribución automática basada en prioridad (KM Restante)</p>
+        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-md flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-3xl shadow-2xl w-full max-w-[95vw] h-[90vh] flex flex-col overflow-hidden border border-white/20 animate-in fade-in zoom-in duration-300">
+            
+            {/* Header */}
+            <div className="bg-gradient-to-r from-blue-600 to-blue-800 px-8 py-5 flex justify-between items-center text-white shadow-lg">
+              <div className="flex items-center gap-4">
+                <div className="bg-white/20 p-3 rounded-2xl backdrop-blur-sm">
+                  <Calendar size={28} className="text-white" />
+                </div>
+                <div>
+                  <h3 className="text-2xl font-black tracking-tight">Planeación Semanal Inteligente</h3>
+                  <p className="text-blue-100 text-sm font-medium opacity-90">Arrastra los vehículos para organizar la semana de mantenimiento</p>
+                </div>
               </div>
-              <button onClick={() => setShowWeeklyPlan(false)} className="text-slate-400 hover:text-slate-600">
-                <X size={24} />
-              </button>
+              
+              <div className="flex items-center gap-4">
+                <button 
+                  onClick={() => setPlannedAssignments({ Lunes: [], Martes: [], Miércoles: [], Jueves: [], Viernes: [] })}
+                  className="bg-white/10 hover:bg-white/20 text-white px-4 py-2 rounded-xl text-sm font-bold transition-all flex items-center gap-2 border border-white/20"
+                >
+                  <Trash2 size={16} /> Limpiar Plan
+                </button>
+                <button 
+                  onClick={() => setShowWeeklyPlan(false)}
+                  className="bg-white text-blue-700 hover:bg-blue-50 px-6 py-2 rounded-xl text-sm font-black transition-all shadow-lg"
+                >
+                  Guardar Cambios
+                </button>
+                <button onClick={() => setShowWeeklyPlan(false)} className="text-white/60 hover:text-white transition-colors p-1">
+                  <X size={28} />
+                </button>
+              </div>
             </div>
             
-            <div className="flex-1 overflow-auto grid grid-cols-5 gap-4">
-              {Object.entries(weeklyPlan).map(([day, vehicles]) => (
-                <div key={day} className="bg-slate-50 rounded-lg p-4 border border-slate-200 flex flex-col">
-                  <h4 className="font-bold text-center text-slate-700 mb-4 border-b pb-2">{day}</h4>
-                  <div className="space-y-3 flex-1">
-                    {vehicles.length > 0 ? vehicles.map(v => (
-                      <div key={v.id} className="bg-white p-3 rounded shadow-sm border-l-4 border-blue-500">
-                        <div className="flex justify-between items-start">
-                          <span className="font-bold text-sm">{v.plate}</span>
-                          <span className={`text-xs font-bold px-1.5 py-0.5 rounded ${v.remaining < 0 ? 'bg-red-100 text-red-700' : 'bg-yellow-100 text-yellow-700'}`}>
-                            {v.remaining} km
-                          </span>
-                        </div>
-                        <div className="text-xs text-slate-500 mt-1">{v.nextRoutine.name}</div>
-                        {v.forecast.estimatedDate && (
-                          <div className="text-[10px] text-purple-600 font-bold mt-1 flex items-center gap-1">
-                            <Clock size={10} /> Est: {v.forecast.estimatedDate.toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit' })}
+            <div className="flex-1 flex flex-col overflow-hidden bg-slate-50/50">
+              
+              {/* TOP SECTION: DROP ZONES (CALENDAR) */}
+              <div className="p-6 grid grid-cols-5 gap-4 h-[45%] min-h-[300px]">
+                {['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes'].map(day => (
+                  <div 
+                    key={day}
+                    onDragOver={(e) => e.preventDefault()}
+                    onDrop={(e) => handleDrop(e, day)}
+                    className="bg-white rounded-2xl border-2 border-dashed border-slate-200 flex flex-col overflow-hidden hover:border-blue-400 hover:bg-blue-50/30 transition-all group shadow-sm"
+                  >
+                    <div className="bg-slate-100 px-4 py-3 border-b border-slate-200 flex justify-between items-center group-hover:bg-blue-100/50 transition-colors">
+                      <span className="font-black text-slate-700 uppercase tracking-wider text-xs">{day}</span>
+                      <span className="bg-white px-2 py-0.5 rounded-lg text-[10px] font-bold text-slate-500 shadow-sm border border-slate-200">
+                        {plannedAssignments[day]?.length || 0} Veh.
+                      </span>
+                    </div>
+                    
+                    <div className="flex-1 overflow-y-auto p-3 space-y-2 custom-scrollbar">
+                      {plannedAssignments[day]?.map(v => (
+                        <div 
+                          key={v.id}
+                          className="bg-white p-3 rounded-xl shadow-sm border border-slate-100 flex flex-col gap-1 relative group/item hover:shadow-md transition-all border-l-4 border-l-blue-500"
+                        >
+                          <button 
+                            onClick={() => removeFromPlan(v.id, day)}
+                            className="absolute top-2 right-2 text-slate-300 hover:text-red-500 opacity-0 group-hover/item:opacity-100 transition-opacity"
+                          >
+                            <X size={14} />
+                          </button>
+                          <div className="flex justify-between items-start pr-4">
+                            <span className="font-black text-slate-800 text-sm">{v.plate}</span>
+                            <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-lg ${v.remaining < 0 ? 'bg-red-100 text-red-700' : 'bg-amber-100 text-amber-700'}`}>
+                              {v.remaining.toLocaleString()} km
+                            </span>
                           </div>
-                        )}
-                      </div>
-                    )) : (
-                      <div className="text-center text-slate-400 text-xs py-4 italic">Sin mantenimientos</div>
-                    )}
+                          <div className="text-[10px] text-slate-500 font-bold truncate">{v.nextRoutine.name}</div>
+                          {v.forecast.estimatedDate && (
+                            <div className="text-[9px] text-purple-600 font-black flex items-center gap-1 mt-1">
+                              <Clock size={10} /> {v.forecast.estimatedDate.toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit' })}
+                            </div>
+                          )}
+                        </div>
+                      ))}
+                      {(!plannedAssignments[day] || plannedAssignments[day].length === 0) && (
+                        <div className="h-full flex flex-col items-center justify-center text-slate-300 gap-2 opacity-50">
+                          <PlusCircle size={24} />
+                          <span className="text-[10px] font-bold uppercase tracking-tighter">Arrastra aquí</span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* DIVIDER */}
+              <div className="px-8 flex items-center gap-4">
+                <div className="h-[1px] flex-1 bg-slate-200"></div>
+                <span className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Pool de Candidatos (Arrastra hacia arriba)</span>
+                <div className="h-[1px] flex-1 bg-slate-200"></div>
+              </div>
+
+              {/* BOTTOM SECTION: SOURCE TABLE */}
+              <div className="flex-1 p-6 overflow-hidden">
+                <div className="bg-white rounded-2xl border border-slate-200 shadow-sm h-full flex flex-col overflow-hidden">
+                  <div className="overflow-y-auto flex-1 custom-scrollbar">
+                    <table className="w-full border-collapse">
+                      <thead className="sticky top-0 bg-slate-50 text-slate-500 text-[10px] font-black uppercase tracking-wider border-b border-slate-200 z-10">
+                        <tr>
+                          <th className="py-3 px-6 text-left">Vehículo</th>
+                          <th className="py-3 px-4 text-center">Kilometraje</th>
+                          <th className="py-3 px-4 text-center">Próxima Rutina</th>
+                          <th className="py-3 px-4 text-center">KM Restantes</th>
+                          <th className="py-3 px-4 text-center">Proyección</th>
+                          <th className="py-3 px-4 text-center">Acción</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-slate-100">
+                        {unassignedCandidates.map((v, idx) => (
+                          <tr 
+                            key={v.id}
+                            draggable="true"
+                            onDragStart={(e) => handleDragStart(e, v)}
+                            className="hover:bg-blue-50/50 cursor-grab active:cursor-grabbing transition-colors group"
+                          >
+                            <td className="py-3 px-6">
+                              <div className="flex items-center gap-3">
+                                <div className="bg-slate-100 p-2 rounded-lg text-slate-400 group-hover:bg-blue-100 group-hover:text-blue-600 transition-colors">
+                                  <GripVertical size={16} />
+                                </div>
+                                <div className="flex flex-col">
+                                  <span className="font-black text-slate-800 text-sm">{v.plate}</span>
+                                  <span className="text-[10px] text-slate-400 font-bold">{v.code}</span>
+                                </div>
+                              </div>
+                            </td>
+                            <td className="py-3 px-4 text-center font-bold text-slate-600 text-sm">
+                              {v.mileage.toLocaleString()}
+                            </td>
+                            <td className="py-3 px-4 text-center">
+                              <span className="bg-slate-100 text-slate-600 px-2 py-1 rounded-lg text-[10px] font-black uppercase">
+                                {v.nextRoutine.name}
+                              </span>
+                            </td>
+                            <td className="py-3 px-4 text-center">
+                              <span className={`font-black text-sm ${v.remaining < 1000 ? 'text-red-600' : 'text-amber-600'}`}>
+                                {v.remaining.toLocaleString()} km
+                              </span>
+                            </td>
+                            <td className="py-3 px-4 text-center">
+                              {v.forecast.estimatedDate ? (
+                                <div className="flex flex-col items-center">
+                                  <span className="font-black text-purple-600 text-sm">
+                                    {v.forecast.estimatedDate.toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit' })}
+                                  </span>
+                                  <span className="text-[9px] text-slate-400 font-bold">{v.forecast.avgDailyKm} km/día</span>
+                                </div>
+                              ) : (
+                                <span className="text-slate-300">—</span>
+                              )}
+                            </td>
+                            <td className="py-3 px-4 text-center">
+                              <div className="flex justify-center gap-2">
+                                {['L', 'M', 'X', 'J', 'V'].map((d, i) => (
+                                  <button
+                                    key={d}
+                                    onClick={() => handleDrop({ preventDefault: () => {}, dataTransfer: { getData: () => String(v.id) } }, ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes'][i])}
+                                    className="w-6 h-6 rounded-md bg-slate-100 text-slate-400 text-[10px] font-black hover:bg-blue-600 hover:text-white transition-all"
+                                    title={`Asignar a ${['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes'][i]}`}
+                                  >
+                                    {d}
+                                  </button>
+                                ))}
+                              </div>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
                   </div>
                 </div>
-              ))}
+              </div>
             </div>
           </div>
         </div>
