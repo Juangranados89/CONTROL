@@ -1555,8 +1555,13 @@ const PlanningView = ({ fleet, setFleet, onCreateOT, workOrders = [], setWorkOrd
   // Initialize weekly plan with automatic suggestion if empty
   useEffect(() => {
     if (showWeeklyPlan && Object.values(plannedAssignments).every(arr => arr.length === 0)) {
+      const pickupsList = fleet.filter(v =>
+        String(v?.code || '').startsWith('PVHC') ||
+        String(v?.model || '').toUpperCase().includes('CAMIONETA')
+      );
+
       // 1. Identify candidates and calculate priority
-      const candidates = pickups.map(v => {
+      const candidates = pickupsList.map(v => {
           const next = getNextRoutineLocal(v.mileage, v.model, v.lastMaintenance, v.maintenanceCycle);
           const remaining = next.km - v.mileage;
           const forecast = calculateForecasting(v, variableHistory);
@@ -1582,10 +1587,10 @@ const PlanningView = ({ fleet, setFleet, onCreateOT, workOrders = [], setWorkOrd
       
       setPlannedAssignments(initialPlan);
     }
-  }, [showWeeklyPlan, pickups, variableHistory]);
+  }, [showWeeklyPlan, fleet, variableHistory, plannedAssignments]);
 
   const handleDragStart = (e, vehicle) => {
-    e.dataTransfer.setData("vehicleId", vehicle.id);
+    e.dataTransfer.setData("vehicleId", String(vehicle.id));
   };
 
   const handleDrop = (e, day) => {
@@ -1620,7 +1625,12 @@ const PlanningView = ({ fleet, setFleet, onCreateOT, workOrders = [], setWorkOrd
 
   const unassignedCandidates = useMemo(() => {
     const assignedIds = new Set(Object.values(plannedAssignments).flat().map(v => String(v.id)));
-    return pickups
+    const pickupsList = fleet.filter(v =>
+      String(v?.code || '').startsWith('PVHC') ||
+      String(v?.model || '').toUpperCase().includes('CAMIONETA')
+    );
+
+    return pickupsList
       .map(v => {
         const next = getNextRoutineLocal(v.mileage, v.model, v.lastMaintenance, v.maintenanceCycle);
         return { 
@@ -1633,7 +1643,7 @@ const PlanningView = ({ fleet, setFleet, onCreateOT, workOrders = [], setWorkOrd
       .filter(v => !assignedIds.has(String(v.id)))
       .filter(v => v.remaining < 5000)
       .sort((a, b) => a.remaining - b.remaining);
-  }, [pickups, plannedAssignments, variableHistory]);
+  }, [fleet, plannedAssignments, variableHistory]);
   const [vehicleEditData, setVehicleEditData] = useState({});
 
   // Abrir modal de edición
