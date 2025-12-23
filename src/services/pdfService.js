@@ -210,6 +210,111 @@ const buildWorkOrderPdfDocument = async (workOrder) => {
     margin: { left: 10, right: 10 }
   });
 
+  const getSignatureImage = (value) => {
+    if (!value) return null;
+    if (typeof value === 'string') return value;
+    if (typeof value === 'object') return value.image || value.dataUrl || value.dataURL || null;
+    return null;
+  };
+
+  const getSignatureName = (value) => {
+    if (!value || typeof value !== 'object') return '';
+    return String(value.name || '').trim();
+  };
+
+  const getSignaturePosition = (value) => {
+    if (!value || typeof value !== 'object') return '';
+    return String(value.position || value.cargo || '').trim();
+  };
+
+  const ensureSpace = (y, neededHeight = 0) => {
+    const pageHeight = doc.internal?.pageSize?.getHeight?.() ?? 297;
+    const bottomMargin = 10;
+    if (y + neededHeight > pageHeight - bottomMargin) {
+      doc.addPage();
+      return 20;
+    }
+    return y;
+  };
+
+  const signatures = workOrder?.signatures || null;
+  const responsibleSig = signatures?.responsible ?? workOrder?.signatureResponsible ?? null;
+  const receivedSig = signatures?.received ?? workOrder?.signatureReceived ?? null;
+  const approverName = signatures?.approver ?? workOrder?.signatureApprover ?? '';
+
+  const responsibleImg = getSignatureImage(responsibleSig);
+  const receivedImg = getSignatureImage(receivedSig);
+  const hasAnySignature = Boolean(responsibleImg || receivedImg || approverName);
+
+  if (hasAnySignature) {
+    let y = doc.lastAutoTable?.finalY ? doc.lastAutoTable.finalY + 10 : 260;
+    y = ensureSpace(y, 60);
+
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(9);
+    doc.setTextColor(0, 0, 0);
+    doc.text('FIRMAS', 14, y);
+
+    const boxY = y + 4;
+    const boxH = 22;
+    const boxW = 88;
+    const leftX = 10;
+    const rightX = 112;
+
+    doc.setDrawColor(0);
+    doc.setLineWidth(0.1);
+    doc.rect(leftX, boxY, boxW, boxH);
+    doc.rect(rightX, boxY, boxW, boxH);
+
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(8);
+    doc.text('RESPONSABLE', leftX + 2, boxY - 1);
+    doc.text('RECIBE A SATISFACCION', rightX + 2, boxY - 1);
+
+    const imgPadding = 2;
+    const imgY = boxY + imgPadding;
+    const imgH = boxH - imgPadding * 2;
+    const imgW = boxW - imgPadding * 2;
+
+    if (responsibleImg) {
+      try {
+        doc.addImage(responsibleImg, 'PNG', leftX + imgPadding, imgY, imgW, imgH);
+      } catch (e) {
+        console.warn('No se pudo insertar firma responsable en PDF:', e);
+      }
+    }
+
+    if (receivedImg) {
+      try {
+        doc.addImage(receivedImg, 'PNG', rightX + imgPadding, imgY, imgW, imgH);
+      } catch (e) {
+        console.warn('No se pudo insertar firma recibe en PDF:', e);
+      }
+    }
+
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(8);
+    const respName = getSignatureName(responsibleSig);
+    const respPos = getSignaturePosition(responsibleSig);
+    const recvName = getSignatureName(receivedSig);
+    const recvPos = getSignaturePosition(receivedSig);
+
+    const textY = boxY + boxH + 5;
+    if (respName || respPos) {
+      doc.text([respName, respPos].filter(Boolean).join(' — '), leftX, textY);
+    }
+    if (recvName || recvPos) {
+      doc.text([recvName, recvPos].filter(Boolean).join(' — '), rightX, textY);
+    }
+
+    if (approverName) {
+      doc.setFont('helvetica', 'bold');
+      doc.text(`APROBO:`, 14, textY + 8);
+      doc.setFont('helvetica', 'normal');
+      doc.text(String(approverName), 32, textY + 8);
+    }
+  }
+
   const finalY = doc.lastAutoTable.finalY;
 
   const ensureArray = (value) => {
