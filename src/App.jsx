@@ -1488,7 +1488,7 @@ const PlanningView = ({ fleet, setFleet, onCreateOT, workOrders = [], setWorkOrd
   };
 
   // Helper to get next routine using the passed routines prop
-  const getNextRoutineLocal = (mileage, vehicleModel = '', lastMaintenance = 0, maintenanceCycle = null) => {
+  function getNextRoutineLocal(mileage, vehicleModel = '', lastMaintenance = 0, maintenanceCycle = null) {
     let intervals = Object.keys(routines).map(Number).sort((a, b) => a - b);
 
     // Filter intervals based on model availability
@@ -1547,7 +1547,7 @@ const PlanningView = ({ fleet, setFleet, onCreateOT, workOrders = [], setWorkOrd
       km: targetKm,
       ...finalRoutine
     };
-  };
+  }
 
   // Filter for Pickups (Camionetas) - PVHC or Model containing "Camioneta"
   const pickups = useMemo(() => {
