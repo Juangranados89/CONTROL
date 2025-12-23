@@ -13,15 +13,14 @@ export default defineConfig({
         manualChunks(id) {
           if (!id.includes('node_modules')) return;
 
-          // Split only the heaviest libraries to reduce initial payload,
-          // but avoid forcing a global vendor/react split (can create circular chunk deps).
+          // Split only the heaviest libraries to reduce initial payload.
+          // Keep a single shared 'vendor' chunk for the rest of node_modules to avoid
+          // circular chunk dependencies that can cause TDZ runtime errors.
           if (id.includes('/echarts/') || id.includes('echarts-for-react')) return 'echarts';
           if (id.includes('/xlsx/')) return 'xlsx';
           if (id.includes('/html2canvas/')) return 'html2canvas';
-          if (id.includes('/recharts/') || id.includes('/d3-')) return 'charts';
 
-          // Let Rollup decide the rest.
-          return;
+          return 'vendor';
         }
       }
     }

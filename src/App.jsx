@@ -6907,6 +6907,11 @@ function App() {
           orders = await api.getWorkOrders();
           history = await api.getVariables();
         } catch (apiError) {
+          const status = apiError?.status;
+          if (status === 401 || status === 403) {
+            throw apiError;
+          }
+
           apiFailed = true;
           console.warn('API not available, using localStorage (offline fallback):', apiError.message);
         }
@@ -6988,6 +6993,13 @@ function App() {
         
       } catch (error) {
         console.error('Error loading data:', error);
+        const status = error?.status;
+        if (status === 401 || status === 403) {
+          setApiError('Sesión requerida. Inicia sesión nuevamente.');
+          handleLogout();
+          return;
+        }
+
         setApiError(error.message);
         
         // Fallback to localStorage if everything fails
