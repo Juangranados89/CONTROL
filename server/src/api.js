@@ -890,6 +890,486 @@ router.post('/vehicles/sync-maintenance', async (req, res) => {
   }
 });
 
+// ============ TIRES (CONTROL DE LLANTAS) ============
+
+const normalizeTireMarking = (value) => String(value || '').trim().toUpperCase();
+
+const resolveVehicleByIdentifier = async (identifier) => {
+  const raw = String(identifier || '').trim();
+  if (!raw) return null;
+
+  return prisma.vehicle.findFirst({
+    where: {
+      OR: [
+        { id: raw },
+        { code: raw },
+        { plate: raw }
+      ]
+    }
+  });
+};
+
+const normalizeLayout = (value) => {
+  const n = Number(value);
+  if (n === 5 || n === 11 || n === 13) return n;
+  return 5;
+};
+
+const buildPositionLabels = (layout) => {
+  const result = [];
+  for (let p = 1; p <= layout; p++) {
+    const label = p === layout ? 'RE' : String(p);
+    result.push({ position: p, label });
+  }
+  return result;
+};
+
+router.get('/tires/vehicles/:identifier/overview', async (req, res) => {
+  try {
+    const layout = normalizeLayout(req.query.layout);
+    const vehicle = await resolveVehicleByIdentifier(req.params.identifier);
+    if (!vehicle) return res.status(404).json({ error: 'Vehicle not found' });
+
+    const [mounts, recentInspections] = await Promise.all([
+      prisma.tireMount.findMany({
+        where: { vehicleId: vehicle.id, unmountedAt: null },
+        include: { tire: true }
+      }),
+      prisma.tireInspection.findMany({
+        where: { vehicleId: vehicle.id },
+        orderBy: { inspectedAt: 'desc' },
+        include: { tire: true },
+        take: 500
+      })
+    ]);
+
+    const mountByPosition = new Map();
+    for (const m of mounts) mountByPosition.set(m.position, m);
+
+    const lastInspectionByPosition = new Map();
+    for (const insp of recentInspections) {
+      if (!lastInspectionByPosition.has(insp.position)) {
+        lastInspectionByPosition.set(insp.position, insp);
+      }
+    }
+
+    const positions = buildPositionLabels(layout).map(({ position, label }) => {
+      const mount = mountByPosition.get(position) || null;
+      const lastInspection = lastInspectionByPosition.get(position) || null;
+      return {
+        position,
+        label,
+        mount: mount
+          ? {
+              id: mount.id,
+              mountedAt: mount.mountedAt,
+              tire: mount.tire ? { id: mount.tire.id, marking: mount.tire.marking } : null
+            }
+          : null,
+        lastInspection: lastInspection
+          ? {
+              id: lastInspection.id,
+              inspectedAt: lastInspection.inspectedAt,
+              odometerKm: lastInspection.odometerKm,
+              hours: lastInspection.hours,
+              psiCold: lastInspection.psiCold,
+              depthExt: lastInspection.depthExt,
+              depthCen: lastInspection.depthCen,
+              depthInt: lastInspection.depthInt,
+              wearPct: lastInspection.wearPct,
+              actionRotate: lastInspection.actionRotate,
+              actionAlign: lastInspection.actionAlign,
+              actionRemoveFromService: lastInspection.actionRemoveFromService,
+              notes: lastInspection.notes,
+              tire: lastInspection.tire ? { id: lastInspection.tire.id, marking: lastInspection.tire.marking } : null
+            }
+          : null
+      };
+    });
+
+    res.json({
+      vehicle,
+      layout,
+      positions
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+router.post('/tires/inspections', async (req, res) => {
+  try {
+    const vehicleIdOrIdentifier = req.body?.vehicleId || req.body?.vehicleIdentifier || req.body?.vehicleCode || req.body?.plate;
+    const vehicle = await resolveVehicleByIdentifier(vehicleIdOrIdentifier);
+    if (!vehicle) return res.status(404).json({ error: 'Vehicle not found' });
+
+    const position = Number(req.body?.position);
+    if (!Number.isFinite(position) || position <= 0) {
+      return res.status(400).json({ error: 'position is required' });
+    }
+
+    const marking = normalizeTireMarking(req.body?.tireMarking || req.body?.marking);
+    if (!marking) {
+      return res.status(400).json({ error: 'tireMarking is required' });
+    }
+
+    const inspectedAtRaw = req.body?.inspectedAt;
+    const inspectedAt = inspectedAtRaw ? new Date(inspectedAtRaw) : new Date();
+    if (Number.isNaN(inspectedAt.getTime())) {
+      return res.status(400).json({ error: 'inspectedAt is invalid' });
+    }
+
+    const odometerKm = Number.isFinite(Number(req.body?.odometerKm)) ? Number(req.body.odometerKm) : null;
+    const hours = Number.isFinite(Number(req.body?.hours)) ? Number(req.body.hours) : null;
+    const psiCold = Number.isFinite(Number(req.body?.psiCold)) ? Number(req.body.psiCold) : null;
+    const depthExt = Number.isFinite(Number(req.body?.depthExt)) ? Number(req.body.depthExt) : null;
+    const depthCen = Number.isFinite(Number(req.body?.depthCen)) ? Number(req.body.depthCen) : null;
+    const depthInt = Number.isFinite(Number(req.body?.depthInt)) ? Number(req.body.depthInt) : null;
+    const wearPct = Number.isFinite(Number(req.body?.wearPct)) ? Number(req.body.wearPct) : null;
+
+    const bool = (v) => v === true || v === 1 || v === '1' || String(v || '').toUpperCase() === 'SI' || String(v || '').toUpperCase() === 'X';
+
+    const tire = await prisma.tire.upsert({
+      where: { marking },
+      update: {},
+      create: {
+        marking,
+        brand: req.body?.brand || null,
+        model: req.body?.model || null,
+        dimension: req.body?.dimension || null,
+        dot: req.body?.dot || null,
+        notes: req.body?.tireNotes || null
+      }
+    });
+
+    // Mount handling (best-effort, keeps only one active mount per tire/position at app-level)
+    const existingMountSamePos = await prisma.tireMount.findFirst({
+      where: { vehicleId: vehicle.id, position, unmountedAt: null }
+    });
+
+    if (!existingMountSamePos || existingMountSamePos.tireId !== tire.id) {
+      await prisma.tireMount.updateMany({
+        where: { vehicleId: vehicle.id, position, unmountedAt: null },
+        data: { unmountedAt: inspectedAt, unmountedKm: odometerKm, unmountedHours: hours }
+      });
+
+      await prisma.tireMount.updateMany({
+        where: { tireId: tire.id, unmountedAt: null },
+        data: { unmountedAt: inspectedAt, unmountedKm: odometerKm, unmountedHours: hours }
+      });
+
+      await prisma.tireMount.create({
+        data: {
+          tireId: tire.id,
+          vehicleId: vehicle.id,
+          position,
+          mountedAt: inspectedAt,
+          mountedKm: odometerKm,
+          mountedHours: hours
+        }
+      });
+    }
+
+    const inspection = await prisma.tireInspection.create({
+      data: {
+        tireId: tire.id,
+        vehicleId: vehicle.id,
+        position,
+        inspectedAt,
+        odometerKm,
+        hours,
+        psiCold,
+        depthExt,
+        depthCen,
+        depthInt,
+        wearPct,
+        actionRotate: bool(req.body?.actionRotate),
+        actionAlign: bool(req.body?.actionAlign),
+        actionRemoveFromService: bool(req.body?.actionRemoveFromService),
+        damageCutSidewall: bool(req.body?.damageCutSidewall),
+        damageCutTread: bool(req.body?.damageCutTread),
+        damageWearStepped: bool(req.body?.damageWearStepped),
+        damageRunLowPsi: bool(req.body?.damageRunLowPsi),
+        damageRimHit: bool(req.body?.damageRimHit),
+        damageNotRecap: bool(req.body?.damageNotRecap),
+        damageDualMismatch: bool(req.body?.damageDualMismatch),
+        notes: req.body?.notes || null
+      },
+      include: { tire: true, vehicle: true }
+    });
+
+    await logAction(
+      req.user?.id || null,
+      'CREATE_TIRE_INSPECTION',
+      'TIRE_INSPECTION',
+      inspection.id,
+      { vehicleId: vehicle.id, position, marking: tire.marking, inspectedAt: inspection.inspectedAt }
+    );
+
+    res.json(inspection);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+router.get('/tires/vehicles/:identifier/inspections', async (req, res) => {
+  try {
+    const vehicle = await resolveVehicleByIdentifier(req.params.identifier);
+    if (!vehicle) return res.status(404).json({ error: 'Vehicle not found' });
+
+    const position = req.query.position != null && String(req.query.position).trim() !== ''
+      ? Number(req.query.position)
+      : null;
+
+    const take = Number.isFinite(Number(req.query.take)) ? Math.min(1000, Math.max(1, Number(req.query.take))) : 200;
+    const skip = Number.isFinite(Number(req.query.skip)) ? Math.max(0, Number(req.query.skip)) : 0;
+
+    const where = {
+      vehicleId: vehicle.id,
+      ...(Number.isFinite(position) ? { position } : {})
+    };
+
+    const rows = await prisma.tireInspection.findMany({
+      where,
+      orderBy: { inspectedAt: 'desc' },
+      include: { tire: true },
+      take,
+      skip
+    });
+
+    res.json({ vehicle, count: rows.length, inspections: rows });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+router.get('/tires/tires/:marking/inspections', async (req, res) => {
+  try {
+    const marking = normalizeTireMarking(req.params.marking);
+    if (!marking) return res.status(400).json({ error: 'marking is required' });
+
+    const tire = await prisma.tire.findUnique({ where: { marking } });
+    if (!tire) return res.status(404).json({ error: 'Tire not found' });
+
+    const take = Number.isFinite(Number(req.query.take)) ? Math.min(1000, Math.max(1, Number(req.query.take))) : 200;
+    const skip = Number.isFinite(Number(req.query.skip)) ? Math.max(0, Number(req.query.skip)) : 0;
+
+    const rows = await prisma.tireInspection.findMany({
+      where: { tireId: tire.id },
+      orderBy: { inspectedAt: 'desc' },
+      include: { vehicle: true },
+      take,
+      skip
+    });
+
+    res.json({ tire, count: rows.length, inspections: rows });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+router.post('/tires/mounts/mount', async (req, res) => {
+  try {
+    const vehicleIdOrIdentifier = req.body?.vehicleId || req.body?.vehicleIdentifier || req.body?.vehicleCode || req.body?.plate;
+    const vehicle = await resolveVehicleByIdentifier(vehicleIdOrIdentifier);
+    if (!vehicle) return res.status(404).json({ error: 'Vehicle not found' });
+
+    const position = Number(req.body?.position);
+    if (!Number.isFinite(position) || position <= 0) {
+      return res.status(400).json({ error: 'position is required' });
+    }
+
+    const marking = normalizeTireMarking(req.body?.tireMarking || req.body?.marking);
+    if (!marking) {
+      return res.status(400).json({ error: 'tireMarking is required' });
+    }
+
+    const mountedAtRaw = req.body?.mountedAt;
+    const mountedAt = mountedAtRaw ? new Date(mountedAtRaw) : new Date();
+    if (Number.isNaN(mountedAt.getTime())) {
+      return res.status(400).json({ error: 'mountedAt is invalid' });
+    }
+
+    const mountedKm = Number.isFinite(Number(req.body?.mountedKm)) ? Number(req.body.mountedKm) : null;
+    const mountedHours = Number.isFinite(Number(req.body?.mountedHours)) ? Number(req.body.mountedHours) : null;
+
+    const tire = await prisma.tire.upsert({
+      where: { marking },
+      update: {},
+      create: {
+        marking,
+        brand: req.body?.brand || null,
+        model: req.body?.model || null,
+        dimension: req.body?.dimension || null,
+        dot: req.body?.dot || null,
+        notes: req.body?.tireNotes || null
+      }
+    });
+
+    // Ensure target position is free
+    await prisma.tireMount.updateMany({
+      where: { vehicleId: vehicle.id, position, unmountedAt: null },
+      data: { unmountedAt: mountedAt, unmountedKm: mountedKm, unmountedHours: mountedHours }
+    });
+
+    // Ensure tire is not mounted elsewhere
+    await prisma.tireMount.updateMany({
+      where: { tireId: tire.id, unmountedAt: null },
+      data: { unmountedAt: mountedAt, unmountedKm: mountedKm, unmountedHours: mountedHours }
+    });
+
+    const mount = await prisma.tireMount.create({
+      data: {
+        tireId: tire.id,
+        vehicleId: vehicle.id,
+        position,
+        mountedAt,
+        mountedKm,
+        mountedHours
+      },
+      include: { tire: true, vehicle: true }
+    });
+
+    await logAction(
+      req.user?.id || null,
+      'TIRE_MOUNT',
+      'TIRE_MOUNT',
+      mount.id,
+      { vehicleId: vehicle.id, position, marking: tire.marking, mountedAt },
+      req.user?.email
+    );
+
+    res.json(mount);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+router.post('/tires/mounts/dismount', async (req, res) => {
+  try {
+    const vehicleIdOrIdentifier = req.body?.vehicleId || req.body?.vehicleIdentifier || req.body?.vehicleCode || req.body?.plate;
+    const vehicle = await resolveVehicleByIdentifier(vehicleIdOrIdentifier);
+    if (!vehicle) return res.status(404).json({ error: 'Vehicle not found' });
+
+    const position = Number(req.body?.position);
+    if (!Number.isFinite(position) || position <= 0) {
+      return res.status(400).json({ error: 'position is required' });
+    }
+
+    const unmountedAtRaw = req.body?.unmountedAt;
+    const unmountedAt = unmountedAtRaw ? new Date(unmountedAtRaw) : new Date();
+    if (Number.isNaN(unmountedAt.getTime())) {
+      return res.status(400).json({ error: 'unmountedAt is invalid' });
+    }
+
+    const unmountedKm = Number.isFinite(Number(req.body?.unmountedKm)) ? Number(req.body.unmountedKm) : null;
+    const unmountedHours = Number.isFinite(Number(req.body?.unmountedHours)) ? Number(req.body.unmountedHours) : null;
+
+    const active = await prisma.tireMount.findFirst({
+      where: { vehicleId: vehicle.id, position, unmountedAt: null },
+      include: { tire: true }
+    });
+
+    if (!active) {
+      return res.status(404).json({ error: 'No active mount in this position' });
+    }
+
+    const updated = await prisma.tireMount.update({
+      where: { id: active.id },
+      data: { unmountedAt, unmountedKm, unmountedHours },
+      include: { tire: true, vehicle: true }
+    });
+
+    await logAction(
+      req.user?.id || null,
+      'TIRE_DISMOUNT',
+      'TIRE_MOUNT',
+      updated.id,
+      { vehicleId: vehicle.id, position, marking: active.tire?.marking || null, unmountedAt },
+      req.user?.email
+    );
+
+    res.json(updated);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+router.post('/tires/mounts/move', async (req, res) => {
+  try {
+    const vehicleIdOrIdentifier = req.body?.vehicleId || req.body?.vehicleIdentifier || req.body?.vehicleCode || req.body?.plate;
+    const vehicle = await resolveVehicleByIdentifier(vehicleIdOrIdentifier);
+    if (!vehicle) return res.status(404).json({ error: 'Vehicle not found' });
+
+    const fromPosition = Number(req.body?.fromPosition);
+    const toPosition = Number(req.body?.toPosition);
+    if (!Number.isFinite(fromPosition) || fromPosition <= 0) {
+      return res.status(400).json({ error: 'fromPosition is required' });
+    }
+    if (!Number.isFinite(toPosition) || toPosition <= 0) {
+      return res.status(400).json({ error: 'toPosition is required' });
+    }
+    if (fromPosition === toPosition) {
+      return res.status(400).json({ error: 'toPosition must be different from fromPosition' });
+    }
+
+    const movedAtRaw = req.body?.movedAt;
+    const movedAt = movedAtRaw ? new Date(movedAtRaw) : new Date();
+    if (Number.isNaN(movedAt.getTime())) {
+      return res.status(400).json({ error: 'movedAt is invalid' });
+    }
+
+    const km = Number.isFinite(Number(req.body?.km)) ? Number(req.body.km) : null;
+    const hours = Number.isFinite(Number(req.body?.hours)) ? Number(req.body.hours) : null;
+
+    const activeFrom = await prisma.tireMount.findFirst({
+      where: { vehicleId: vehicle.id, position: fromPosition, unmountedAt: null },
+      include: { tire: true }
+    });
+    if (!activeFrom) {
+      return res.status(404).json({ error: 'No active mount in fromPosition' });
+    }
+
+    // Free destination position
+    await prisma.tireMount.updateMany({
+      where: { vehicleId: vehicle.id, position: toPosition, unmountedAt: null },
+      data: { unmountedAt: movedAt, unmountedKm: km, unmountedHours: hours }
+    });
+
+    // Close from mount
+    await prisma.tireMount.update({
+      where: { id: activeFrom.id },
+      data: { unmountedAt: movedAt, unmountedKm: km, unmountedHours: hours }
+    });
+
+    // Create new mount at destination
+    const newMount = await prisma.tireMount.create({
+      data: {
+        tireId: activeFrom.tireId,
+        vehicleId: vehicle.id,
+        position: toPosition,
+        mountedAt: movedAt,
+        mountedKm: km,
+        mountedHours: hours
+      },
+      include: { tire: true, vehicle: true }
+    });
+
+    await logAction(
+      req.user?.id || null,
+      'TIRE_MOVE',
+      'TIRE_MOUNT',
+      newMount.id,
+      { vehicleId: vehicle.id, fromPosition, toPosition, marking: activeFrom.tire?.marking || null, movedAt },
+      req.user?.email
+    );
+
+    res.json({ from: activeFrom, to: newMount });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 // ============ ADMIN: SEED FLEET ============
 // Endpoint para cargar datos iniciales (INITIAL_FLEET) a la BD
 router.post('/admin/seed-fleet', async (req, res) => {

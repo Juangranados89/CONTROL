@@ -40,6 +40,8 @@ model Vehicle {
   updatedAt            DateTime          @updatedAt
   workOrders           WorkOrder[]
   variableHistory      VariableHistory[]
+  tireMounts           TireMount[]
+  tireInspections      TireInspection[]
   
   @@index([plate])
   @@index([code])
@@ -106,4 +108,79 @@ model AuditLog {
 
   @@index([entity, entityId])
   @@index([userId])
+}
+
+model Tire {
+  id        String   @id @default(cuid())
+  marking   String   @unique // MARCACION
+  brand     String?
+  model     String?
+  dimension String?
+  dot       String?
+  notes     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  mounts      TireMount[]
+  inspections TireInspection[]
+
+  @@index([marking])
+}
+
+model TireMount {
+  id           String   @id @default(cuid())
+  tireId       String
+  vehicleId    String
+  position     Int
+  mountedAt    DateTime @default(now())
+  unmountedAt  DateTime?
+  mountedKm    Int?
+  unmountedKm  Int?
+  mountedHours Int?
+  unmountedHours Int?
+  createdAt    DateTime @default(now())
+
+  tire    Tire    @relation(fields: [tireId], references: [id])
+  vehicle Vehicle @relation(fields: [vehicleId], references: [id])
+
+  @@index([vehicleId, position])
+  @@index([tireId])
+  @@index([unmountedAt])
+}
+
+model TireInspection {
+  id                    String   @id @default(cuid())
+  tireId                String
+  vehicleId             String
+  position              Int
+  inspectedAt           DateTime @default(now())
+  odometerKm            Int?
+  hours                 Int?
+  psiCold               Float?
+  depthExt              Float?
+  depthCen              Float?
+  depthInt              Float?
+  wearPct               Float?
+
+  actionRotate          Boolean  @default(false)
+  actionAlign           Boolean  @default(false)
+  actionRemoveFromService Boolean @default(false)
+
+  damageCutSidewall     Boolean  @default(false)
+  damageCutTread        Boolean  @default(false)
+  damageWearStepped     Boolean  @default(false)
+  damageRunLowPsi       Boolean  @default(false)
+  damageRimHit          Boolean  @default(false)
+  damageNotRecap        Boolean  @default(false)
+  damageDualMismatch    Boolean  @default(false)
+
+  notes                 String?
+  createdAt             DateTime @default(now())
+
+  tire    Tire    @relation(fields: [tireId], references: [id])
+  vehicle Vehicle @relation(fields: [vehicleId], references: [id])
+
+  @@index([vehicleId, inspectedAt])
+  @@index([tireId, inspectedAt])
+  @@index([vehicleId, position, inspectedAt])
 }

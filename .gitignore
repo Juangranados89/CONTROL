@@ -2,3 +2,7 @@ node_modules
 
 # Build output
 dist
+
+# Local Prisma SQLite DB (dev)
+server/prisma/dev.db
+server/prisma/dev.db-journal

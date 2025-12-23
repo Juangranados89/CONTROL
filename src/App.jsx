@@ -73,6 +73,7 @@ import { generatePDF as generatePDFService, generatePDFBlobUrl as generatePDFBlo
 import PdfViewerModal from './components/PdfViewerModal';
 import WorkOrderHistoryModal from './components/WorkOrderHistoryModal';
 import { enqueueOtOp, flushOtOutbox, getOutboxPendingCount } from './services/otOutbox';
+import TiresView from './components/TiresView.jsx';
 
 // --- Helper Functions ---
 
@@ -7127,11 +7128,7 @@ function App() {
         </div>
       );
       case 'tires': return (
-        <div className="p-8 flex flex-col items-center justify-center h-full">
-          <CircleDot size={64} className="text-blue-500 mb-4" />
-          <h2 className="text-2xl font-bold text-slate-700 mb-2">Control de Llantas</h2>
-          <p className="text-slate-500 text-center">Módulo en desarrollo - Próximamente</p>
-        </div>
+        <TiresView fleet={fleet} />
       );
       case 'fuel': return (
         <div className="p-8 flex flex-col items-center justify-center h-full">

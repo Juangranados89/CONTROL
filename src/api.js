@@ -164,6 +164,55 @@ class ApiClient {
       body: JSON.stringify({ message })
     });
   }
+
+  // ========== TIRES (CONTROL DE LLANTAS) ==========
+  async getTireOverview(vehicleIdentifier, layout = 5) {
+    const params = new URLSearchParams({ layout: String(layout) });
+    return this.request(`/api/tires/vehicles/${encodeURIComponent(vehicleIdentifier)}/overview?${params}`);
+  }
+
+  async createTireInspection(payload) {
+    return this.request('/api/tires/inspections', {
+      method: 'POST',
+      body: JSON.stringify(payload)
+    });
+  }
+
+  async getTireInspectionsByVehicle(vehicleIdentifier, options = {}) {
+    const params = new URLSearchParams();
+    if (options.position != null && String(options.position).trim() !== '') params.set('position', String(options.position));
+    if (options.take != null) params.set('take', String(options.take));
+    if (options.skip != null) params.set('skip', String(options.skip));
+    return this.request(`/api/tires/vehicles/${encodeURIComponent(vehicleIdentifier)}/inspections?${params}`);
+  }
+
+  async getTireInspectionsByTireMarking(marking, options = {}) {
+    const params = new URLSearchParams();
+    if (options.take != null) params.set('take', String(options.take));
+    if (options.skip != null) params.set('skip', String(options.skip));
+    return this.request(`/api/tires/tires/${encodeURIComponent(marking)}/inspections?${params}`);
+  }
+
+  async mountTire(payload) {
+    return this.request('/api/tires/mounts/mount', {
+      method: 'POST',
+      body: JSON.stringify(payload)
+    });
+  }
+
+  async dismountTire(payload) {
+    return this.request('/api/tires/mounts/dismount', {
+      method: 'POST',
+      body: JSON.stringify(payload)
+    });
+  }
+
+  async moveTireMount(payload) {
+    return this.request('/api/tires/mounts/move', {
+      method: 'POST',
+      body: JSON.stringify(payload)
+    });
+  }
 }
 
 export const api = new ApiClient(API_URL);
