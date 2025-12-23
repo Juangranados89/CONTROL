@@ -4,18 +4,8 @@ import * as Recharts from 'recharts';
 import api from '../api';
 import { useDialog } from './DialogProvider.jsx';
 
-const {
-  ResponsiveContainer,
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend
-} = Recharts;
-
 export default function TiresView({ fleet }) {
+  // --- Helper Functions (Internalized to avoid TDZ) ---
   const normalizeLayout = (layout) => {
     const n = Number(layout);
     if (n === 5 || n === 11 || n === 13) return n;
@@ -159,6 +149,17 @@ export default function TiresView({ fleet }) {
       lastInspection: byPos.get(position)?.lastInspection || null
     }));
   }, [layout, overview]);
+
+  // --- Derived State (Moved UP to avoid TDZ in callbacks) ---
+  const positionLabel = useMemo(() => {
+    if (!selectedPosition) return '—';
+    return selectedPosition === layout ? 'RE' : String(selectedPosition);
+  }, [layout, selectedPosition]);
+
+  const selectedPositionData = useMemo(() => {
+    if (!selectedPosition) return null;
+    return positions.find((p) => p.position === selectedPosition) || null;
+  }, [positions, selectedPosition]);
 
   const openNewInspection = useCallback((pos) => {
     const existing = positions.find((p) => p.position === pos);
@@ -337,16 +338,6 @@ export default function TiresView({ fleet }) {
       setLoading(false);
     }
   }, [dialog, form, loadOverview, selectedPosition, selectedVehicleIdentifier]);
-
-  const positionLabel = useMemo(() => {
-    if (!selectedPosition) return '—';
-    return selectedPosition === layout ? 'RE' : String(selectedPosition);
-  }, [layout, selectedPosition]);
-
-  const selectedPositionData = useMemo(() => {
-    if (!selectedPosition) return null;
-    return positions.find((p) => p.position === selectedPosition) || null;
-  }, [positions, selectedPosition]);
 
   const loadAnalytics = useCallback(async () => {
     if (!selectedVehicleIdentifier || !selectedPosition) {
@@ -867,18 +858,18 @@ export default function TiresView({ fleet }) {
                     <div className="text-sm text-slate-500">Se requiere más de una inspección para graficar.</div>
                   ) : (
                     <div className="h-[260px]">
-                      <ResponsiveContainer width="100%" height="100%">
-                        <LineChart data={analyticsSeries} margin={{ top: 10, right: 20, left: 0, bottom: 10 }}>
-                          <CartesianGrid strokeDasharray="3 3" />
-                          <XAxis dataKey="dateLabel" />
-                          <YAxis yAxisId="left" domain={['auto', 'auto']} />
-                          <YAxis yAxisId="right" orientation="right" domain={['auto', 'auto']} />
-                          <Tooltip />
-                          <Legend />
-                          <Line yAxisId="left" type="monotone" dataKey="minDepth" name="Min profundidad (mm)" stroke="#2563eb" strokeWidth={2} dot={false} />
-                          <Line yAxisId="right" type="monotone" dataKey="psi" name="PSI (frío)" stroke="#10b981" strokeWidth={2} dot={false} />
-                        </LineChart>
-                      </ResponsiveContainer>
+                      <Recharts.ResponsiveContainer width="100%" height="100%">
+                        <Recharts.LineChart data={analyticsSeries} margin={{ top: 10, right: 20, left: 0, bottom: 10 }}>
+                          <Recharts.CartesianGrid strokeDasharray="3 3" />
+                          <Recharts.XAxis dataKey="dateLabel" />
+                          <Recharts.YAxis yAxisId="left" domain={['auto', 'auto']} />
+                          <Recharts.YAxis yAxisId="right" orientation="right" domain={['auto', 'auto']} />
+                          <Recharts.Tooltip />
+                          <Recharts.Legend />
+                          <Recharts.Line yAxisId="left" type="monotone" dataKey="minDepth" name="Min profundidad (mm)" stroke="#2563eb" strokeWidth={2} dot={false} />
+                          <Recharts.Line yAxisId="right" type="monotone" dataKey="psi" name="PSI (frío)" stroke="#10b981" strokeWidth={2} dot={false} />
+                        </Recharts.LineChart>
+                      </Recharts.ResponsiveContainer>
                     </div>
                   )}
                 </div>

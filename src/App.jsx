@@ -1,5 +1,6 @@
 import React, { useState, useMemo, useEffect, useCallback, useRef } from 'react';
 import html2canvas from 'html2canvas';
+import { jsPDF } from 'jspdf';
 import { Toaster, toast } from 'sonner';
 import { 
   LayoutDashboard, 
@@ -305,7 +306,6 @@ const exportDashboardToPDF = async (dashboardRef) => {
     });
     
     const imgData = canvas.toDataURL('image/png');
-    const { jsPDF } = window.jspdf;
     const pdf = new jsPDF('p', 'mm', 'a4');
     
     const imgProps = pdf.getImageProperties(imgData);

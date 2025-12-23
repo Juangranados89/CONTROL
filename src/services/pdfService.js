@@ -1,5 +1,7 @@
 import { MAINTENANCE_ROUTINES } from '../data';
 import { detectRoutineVariant, pickVariantRoutine } from '../utils/maintenance';
+import { jsPDF } from 'jspdf';
+import 'jspdf-autotable';
 
 const normalizeSupplyUnit = (supply) => {
   if (supply == null) return null;
@@ -134,7 +136,6 @@ const buildWorkOrderPdfDocument = async (workOrder) => {
     return mon && yy ? `${mon}-${yy}` : '';
   };
 
-  const { jsPDF } = window.jspdf;
   const doc = new jsPDF();
 
   const startX = 10;
@@ -407,12 +408,6 @@ const buildWorkOrderPdfDocument = async (workOrder) => {
 
 export const generatePDF = async (workOrder, notify) => {
   const notifyFn = typeof notify === 'function' ? notify : null;
-  if (!window.jspdf) {
-    if (notifyFn) {
-      await notifyFn('La librería jsPDF no está cargada.', { title: 'Error', variant: 'danger' });
-    }
-    return;
-  }
 
   try {
     const built = await buildWorkOrderPdfDocument(workOrder);
@@ -428,12 +423,6 @@ export const generatePDF = async (workOrder, notify) => {
 
 export const generatePDFBlobUrl = async (workOrder, notify) => {
   const notifyFn = typeof notify === 'function' ? notify : null;
-  if (!window.jspdf) {
-    if (notifyFn) {
-      await notifyFn('La librería jsPDF no está cargada.', { title: 'Error', variant: 'danger' });
-    }
-    return null;
-  }
 
   try {
     const built = await buildWorkOrderPdfDocument(workOrder);
