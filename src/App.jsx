@@ -4289,6 +4289,43 @@ const MaintenanceAdminView = ({ workOrders, setWorkOrders, fleet, setFleet, rout
   const [filter, setFilter] = useState('');
   const [activeTab, setActiveTab] = useState('ots'); // 'ots', 'routines', or 'history'
   const [closingOT, setClosingOT] = useState(null);
+  const [pdfPreview, setPdfPreview] = useState(null); // { url, filename, title }
+
+  const closePdfPreview = useCallback(() => {
+    setPdfPreview(prev => {
+      if (prev?.url) URL.revokeObjectURL(prev.url);
+      return null;
+    });
+  }, []);
+
+  const openPdfPreview = useCallback(
+    async (ot) => {
+      if (!ot) return;
+      try {
+        const { url, filename } = await generatePDFBlobUrlService(ot, alert);
+        if (!url) return;
+
+        setPdfPreview(prev => {
+          if (prev?.url) URL.revokeObjectURL(prev.url);
+          return {
+            url,
+            filename: filename || `OT-${ot.otNumber ?? ot.id}.pdf`,
+            title: `OT #${ot.otNumber ?? ot.id} — ${ot.plate || ot.vehicleCode || ''}`.trim()
+          };
+        });
+      } catch (error) {
+        console.error('Error generando vista previa de PDF:', error);
+        alert('No fue posible generar la vista previa del PDF.', { title: 'Error', variant: 'danger' });
+      }
+    },
+    [alert]
+  );
+
+  useEffect(() => {
+    return () => {
+      if (pdfPreview?.url) URL.revokeObjectURL(pdfPreview.url);
+    };
+  }, [pdfPreview]);
 
   const closingVehicle = useMemo(() => {
     if (!closingOT) return null;
@@ -4693,6 +4730,16 @@ const MaintenanceAdminView = ({ workOrders, setWorkOrders, fleet, setFleet, rout
                                   Lanzar OT
                                 </button>
 
+                                {ot.status !== 'ABIERTA' && (
+                                  <button
+                                    onClick={() => openPdfPreview(ot)}
+                                    className="px-2 py-1 bg-slate-50 text-slate-700 rounded hover:bg-slate-100 text-xs font-medium border border-slate-200"
+                                    title="Ver PDF (vista previa)"
+                                  >
+                                    Ver PDF
+                                  </button>
+                                )}
+
                                 {ot.status === 'ABIERTA' && (
                                   <button
                                     onClick={() => setClosingOT(ot)}
@@ -4757,6 +4804,14 @@ const MaintenanceAdminView = ({ workOrders, setWorkOrders, fleet, setFleet, rout
           onSave={handleSaveClosedOT}
         />
       )}
+
+      <PdfViewerModal
+        open={!!pdfPreview}
+        title={pdfPreview?.title}
+        url={pdfPreview?.url}
+        filename={pdfPreview?.filename}
+        onClose={closePdfPreview}
+      />
     </div>
   );
 };
