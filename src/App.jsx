@@ -71,6 +71,7 @@ import BIFleetTable from './components/BIFleetTable';
 import useFleetMetrics from './hooks/useFleetMetrics';
 import { generatePDF as generatePDFService, generatePDFBlobUrl as generatePDFBlobUrlService } from './services/pdfService';
 import PdfViewerModal from './components/PdfViewerModal';
+import WorkOrderHistoryModal from './components/WorkOrderHistoryModal';
 
 // --- Helper Functions ---
 
@@ -4290,6 +4291,9 @@ const MaintenanceAdminView = ({ workOrders, setWorkOrders, fleet, setFleet, rout
   const [activeTab, setActiveTab] = useState('ots'); // 'ots', 'routines', or 'history'
   const [closingOT, setClosingOT] = useState(null);
   const [pdfPreview, setPdfPreview] = useState(null); // { url, filename, title }
+  const [historyOT, setHistoryOT] = useState(null);
+  const [historyEntries, setHistoryEntries] = useState([]);
+  const [historyLoading, setHistoryLoading] = useState(false);
 
   const closePdfPreview = useCallback(() => {
     setPdfPreview(prev => {
@@ -4326,6 +4330,82 @@ const MaintenanceAdminView = ({ workOrders, setWorkOrders, fleet, setFleet, rout
       if (pdfPreview?.url) URL.revokeObjectURL(pdfPreview.url);
     };
   }, [pdfPreview]);
+
+  const historyStorageKey = useCallback((otId) => `workorder_audit_${String(otId)}`, []);
+
+  const loadHistory = useCallback(async (ot) => {
+    if (!ot?.id) return;
+    setHistoryLoading(true);
+    try {
+      const rows = await api.getWorkOrderAudit(ot.id);
+      setHistoryEntries(Array.isArray(rows) ? rows : []);
+      try {
+        localStorage.setItem(historyStorageKey(ot.id), JSON.stringify(Array.isArray(rows) ? rows : []));
+      } catch {
+        // ignore
+      }
+    } catch (error) {
+      console.warn('Audit API no disponible, usando cache local:', error);
+      try {
+        const cached = JSON.parse(localStorage.getItem(historyStorageKey(ot.id)) || '[]');
+        setHistoryEntries(Array.isArray(cached) ? cached : []);
+      } catch {
+        setHistoryEntries([]);
+      }
+    } finally {
+      setHistoryLoading(false);
+    }
+  }, [historyStorageKey]);
+
+  const openHistory = useCallback((ot) => {
+    setHistoryOT(ot || null);
+  }, []);
+
+  useEffect(() => {
+    if (!historyOT?.id) return;
+    loadHistory(historyOT);
+  }, [historyOT, loadHistory]);
+
+  const closeHistory = useCallback(() => {
+    setHistoryOT(null);
+    setHistoryEntries([]);
+    setHistoryLoading(false);
+  }, []);
+
+  const addHistoryNote = useCallback(async (otId, message) => {
+    const text = String(message || '').trim();
+    if (!text) return;
+
+    try {
+      await api.addWorkOrderNote(otId, text);
+      // Refresh from server to keep canonical order/ids
+      if (historyOT?.id === otId) await loadHistory(historyOT);
+      return;
+    } catch (error) {
+      console.warn('No se pudo guardar nota en API, guardando local:', error);
+    }
+
+    // Offline fallback
+    const localEntry = {
+      id: `local-${Date.now()}`,
+      action: 'WORK_ORDER_NOTE',
+      entity: 'WORK_ORDER',
+      entityId: String(otId),
+      userEmail: currentUser?.email || currentUser?.username || currentUser?.name || null,
+      details: JSON.stringify({ message: text }),
+      createdAt: new Date().toISOString()
+    };
+
+    setHistoryEntries(prev => {
+      const next = [localEntry, ...(Array.isArray(prev) ? prev : [])];
+      try {
+        localStorage.setItem(historyStorageKey(otId), JSON.stringify(next));
+      } catch {
+        // ignore
+      }
+      return next;
+    });
+  }, [currentUser?.email, currentUser?.name, currentUser?.username, historyOT, historyStorageKey, loadHistory]);
 
   const closingVehicle = useMemo(() => {
     if (!closingOT) return null;
@@ -4740,6 +4820,14 @@ const MaintenanceAdminView = ({ workOrders, setWorkOrders, fleet, setFleet, rout
                                   </button>
                                 )}
 
+                                <button
+                                  onClick={() => openHistory(ot)}
+                                  className="px-2 py-1 bg-white text-slate-700 rounded hover:bg-slate-50 text-xs font-medium border border-slate-200"
+                                  title="Historial / Bitácora"
+                                >
+                                  Historial
+                                </button>
+
                                 {ot.status === 'ABIERTA' && (
                                   <button
                                     onClick={() => setClosingOT(ot)}
@@ -4811,6 +4899,16 @@ const MaintenanceAdminView = ({ workOrders, setWorkOrders, fleet, setFleet, rout
         url={pdfPreview?.url}
         filename={pdfPreview?.filename}
         onClose={closePdfPreview}
+      />
+
+      <WorkOrderHistoryModal
+        open={!!historyOT}
+        workOrder={historyOT}
+        entries={historyEntries}
+        loading={historyLoading}
+        onRefresh={() => loadHistory(historyOT)}
+        onAddNote={addHistoryNote}
+        onClose={closeHistory}
       />
     </div>
   );

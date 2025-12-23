@@ -120,6 +120,18 @@ class ApiClient {
       method: 'DELETE'
     });
   }
+
+  // ========== WORK ORDER AUDIT / BITACORA ==========
+  async getWorkOrderAudit(id) {
+    return this.request(`/api/workorders/${id}/audit`);
+  }
+
+  async addWorkOrderNote(id, message) {
+    return this.request(`/api/workorders/${id}/notes`, {
+      method: 'POST',
+      body: JSON.stringify({ message })
+    });
+  }
 }
 
 export const api = new ApiClient(API_URL);

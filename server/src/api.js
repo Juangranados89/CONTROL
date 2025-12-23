@@ -7,14 +7,15 @@ import xlsx from 'xlsx';
 const router = express.Router();
 const prisma = new PrismaClient();
 
-const logAction = async (userId, action, entityType, entityId, details) => {
+const logAction = async (userId, action, entityType, entityId, details, userEmail = null) => {
   try {
     await prisma.auditLog.create({
       data: {
         userId,
         action,
-        entityType,
+        entity: entityType,
         entityId: String(entityId),
+        userEmail: userEmail || null,
         details: details ? JSON.stringify(details) : null
       }
     });
@@ -22,6 +23,51 @@ const logAction = async (userId, action, entityType, entityId, details) => {
     console.error('Failed to log action:', e);
   }
 };
+
+// ============ WORK ORDER AUDIT / BITACORA ============
+
+router.get('/workorders/:id/audit', async (req, res) => {
+  try {
+    const workOrderId = String(req.params.id);
+
+    const rows = await prisma.auditLog.findMany({
+      where: {
+        entity: 'WORK_ORDER',
+        entityId: workOrderId
+      },
+      orderBy: { createdAt: 'desc' }
+    });
+
+    res.json(rows);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+router.post('/workorders/:id/notes', async (req, res) => {
+  try {
+    const workOrderId = String(req.params.id);
+    const message = String(req.body?.message || '').trim();
+    if (!message) {
+      return res.status(400).json({ error: 'message is required' });
+    }
+
+    const entry = await prisma.auditLog.create({
+      data: {
+        userId: req.user?.id || null,
+        userEmail: req.user?.email || null,
+        action: 'WORK_ORDER_NOTE',
+        entity: 'WORK_ORDER',
+        entityId: workOrderId,
+        details: JSON.stringify({ message })
+      }
+    });
+
+    res.json(entry);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -560,7 +606,8 @@ router.post('/workorders', async (req, res) => {
       'CREATE_WORK_ORDER',
       'WORK_ORDER',
       workOrder.id,
-      { otNumber: workOrder.otNumber, plate: workOrder.plate, routine: workOrder.routine }
+      { otNumber: workOrder.otNumber, plate: workOrder.plate, routine: workOrder.routine },
+      req.user?.email
     );
 
     // Always return the persisted record (id/otNumber) to keep updates consistent.
@@ -699,7 +746,8 @@ router.patch('/workorders/:id', async (req, res) => {
       'UPDATE_WORK_ORDER',
       'WORK_ORDER',
       workOrder.id,
-      { status: workOrder.status, otNumber: workOrder.otNumber }
+      { status: workOrder.status, otNumber: workOrder.otNumber },
+      req.user?.email
     );
 
     res.json(workOrder);
@@ -759,7 +807,8 @@ router.delete('/workorders/:id', async (req, res) => {
       'DELETE_WORK_ORDER',
       'WORK_ORDER',
       deleted.id,
-      { otNumber: deleted.otNumber, plate: deleted.plate }
+      { otNumber: deleted.otNumber, plate: deleted.plate },
+      req.user?.email
     );
 
     // If this OT affected the vehicle lastMaintenance, recompute from remaining closed OTs
