@@ -8,9 +8,9 @@ export default defineConfig({
     exclude: ['xlsx']
   },
   build: {
-    // Let Rollup decide chunk splitting automatically to avoid TDZ circular dependency issues.
-    // Previously we tried manualChunks but it caused "Cannot access 'X' before initialization" errors.
-    chunkSizeWarningLimit: 1200
+    // Disable manualChunks to let Vite/Rollup handle splitting automatically.
+    // This is often the most stable configuration for complex dependency trees.
+    chunkSizeWarningLimit: 2000
   },
   server: {
     proxy: {

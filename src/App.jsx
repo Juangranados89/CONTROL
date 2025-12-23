@@ -57,6 +57,7 @@ import {
 import { INITIAL_FLEET, MAINTENANCE_ROUTINES } from './data';
 import api from './api';
 import safeLocalStorage from './utils/safeStorage';
+import { detectRoutineVariant, pickVariantRoutine } from './utils/maintenance';
 import UserInfoHeader from './components/UserInfoHeader';
 import Login from './components/Login';
 import NotificationBadge from './components/NotificationBadge';
@@ -79,35 +80,6 @@ import { enqueueOtOp, flushOtOutbox, getOutboxPendingCount } from './services/ot
 const TiresView = React.lazy(() => import('./components/TiresView.jsx'));
 
 // --- Helper Functions ---
-
-const detectRoutineVariant = (vehicleModel = '') => {
-  const modelUpper = String(vehicleModel || '').toUpperCase();
-
-  // Direct brand/model hints
-  if (modelUpper.includes('RAM')) return 'RAM';
-  if (modelUpper.includes('JMC')) return 'JMC';
-
-  // Common internal descriptors: "700" tends to be RAM 700
-  if (/\b700\b/.test(modelUpper) || modelUpper.includes('RAM 700')) return 'RAM';
-
-  return null;
-};
-
-const pickVariantRoutine = (baseRoutine, variantKey) => {
-  if (!baseRoutine || typeof baseRoutine !== 'object') {
-    return { name: 'Mantenimiento Estándar', items: [], supplies: [] };
-  }
-
-  const variants = baseRoutine.variants && typeof baseRoutine.variants === 'object' ? baseRoutine.variants : null;
-  if (!variants) return baseRoutine;
-
-  if (variantKey && variants?.[variantKey]) return variants[variantKey];
-
-  const keys = Object.keys(variants).filter(k => variants[k]);
-  if (keys.length === 1) return variants[keys[0]];
-
-  return baseRoutine;
-};
 
 const normalizeSupplyUnit = (supply) => {
   if (supply == null) return null;

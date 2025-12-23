@@ -1,6 +1,10 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { RefreshCw, Plus, X } from 'lucide-react';
-import {
+import * as Recharts from 'recharts';
+import api from '../api';
+import { useDialog } from './DialogProvider.jsx';
+
+const {
   ResponsiveContainer,
   LineChart,
   Line,
@@ -9,74 +13,72 @@ import {
   CartesianGrid,
   Tooltip,
   Legend
-} from 'recharts';
-import api from '../api';
-import { useDialog } from './DialogProvider.jsx';
-
-const normalizeLayout = (layout) => {
-  const n = Number(layout);
-  if (n === 5 || n === 11 || n === 13) return n;
-  return 5;
-};
-
-const buildPositions = (layout) => {
-  const n = normalizeLayout(layout);
-  const result = [];
-  for (let p = 1; p <= n; p++) {
-    result.push({ position: p, label: p === n ? 'RE' : String(p) });
-  }
-  return result;
-};
-
-const safeDateLabel = (value) => {
-  if (!value) return '—';
-  const d = value instanceof Date ? value : new Date(value);
-  if (Number.isNaN(d.getTime())) return '—';
-  return d.toLocaleDateString('es-CO');
-};
-
-const shortDateLabel = (value) => {
-  if (!value) return '';
-  const d = value instanceof Date ? value : new Date(value);
-  if (Number.isNaN(d.getTime())) return '';
-  return d.toLocaleDateString('es-CO', { month: 'short', day: '2-digit' });
-};
-
-const avg = (values) => {
-  const nums = (Array.isArray(values) ? values : []).map(Number).filter((n) => Number.isFinite(n));
-  if (nums.length === 0) return null;
-  return nums.reduce((a, b) => a + b, 0) / nums.length;
-};
-
-const minDepth = (insp) => {
-  if (!insp) return null;
-  const values = [insp.depthExt, insp.depthCen, insp.depthInt]
-    .map((v) => (Number.isFinite(Number(v)) ? Number(v) : null))
-    .filter((v) => v != null);
-  if (values.length === 0) return null;
-  return Math.min(...values);
-};
-
-const statusFromInspection = (insp) => {
-  if (!insp) {
-    return { dot: 'bg-slate-300', text: 'Sin inspección' };
-  }
-
-  const depth = minDepth(insp);
-  const psi = Number.isFinite(Number(insp.psiCold)) ? Number(insp.psiCold) : null;
-
-  if (insp.actionRemoveFromService || (depth != null && depth <= 3) || (psi != null && psi <= 25)) {
-    return { dot: 'bg-red-500', text: 'Crítico' };
-  }
-
-  if ((depth != null && depth <= 5) || (psi != null && psi <= 30)) {
-    return { dot: 'bg-amber-500', text: 'Atención' };
-  }
-
-  return { dot: 'bg-emerald-500', text: 'OK' };
-};
+} = Recharts;
 
 export default function TiresView({ fleet }) {
+  const normalizeLayout = (layout) => {
+    const n = Number(layout);
+    if (n === 5 || n === 11 || n === 13) return n;
+    return 5;
+  };
+
+  const buildPositions = (layout) => {
+    const n = normalizeLayout(layout);
+    const result = [];
+    for (let p = 1; p <= n; p++) {
+      result.push({ position: p, label: p === n ? 'RE' : String(p) });
+    }
+    return result;
+  };
+
+  const safeDateLabel = (value) => {
+    if (!value) return '—';
+    const d = value instanceof Date ? value : new Date(value);
+    if (Number.isNaN(d.getTime())) return '—';
+    return d.toLocaleDateString('es-CO');
+  };
+
+  const shortDateLabel = (value) => {
+    if (!value) return '';
+    const d = value instanceof Date ? value : new Date(value);
+    if (Number.isNaN(d.getTime())) return '';
+    return d.toLocaleDateString('es-CO', { month: 'short', day: '2-digit' });
+  };
+
+  const avg = (values) => {
+    const nums = (Array.isArray(values) ? values : []).map(Number).filter((n) => Number.isFinite(n));
+    if (nums.length === 0) return null;
+    return nums.reduce((a, b) => a + b, 0) / nums.length;
+  };
+
+  const minDepth = (insp) => {
+    if (!insp) return null;
+    const values = [insp.depthExt, insp.depthCen, insp.depthInt]
+      .map((v) => (Number.isFinite(Number(v)) ? Number(v) : null))
+      .filter((v) => v != null);
+    if (values.length === 0) return null;
+    return Math.min(...values);
+  };
+
+  const statusFromInspection = (insp) => {
+    if (!insp) {
+      return { dot: 'bg-slate-300', text: 'Sin inspección' };
+    }
+
+    const depth = minDepth(insp);
+    const psi = Number.isFinite(Number(insp.psiCold)) ? Number(insp.psiCold) : null;
+
+    if (insp.actionRemoveFromService || (depth != null && depth <= 3) || (psi != null && psi <= 25)) {
+      return { dot: 'bg-red-500', text: 'Crítico' };
+    }
+
+    if ((depth != null && depth <= 5) || (psi != null && psi <= 30)) {
+      return { dot: 'bg-amber-500', text: 'Atención' };
+    }
+
+    return { dot: 'bg-emerald-500', text: 'OK' };
+  };
+
   const dialog = useDialog();
   const vehicles = useMemo(() => (Array.isArray(fleet) ? fleet : []).slice().sort((a, b) => String(a?.code || '').localeCompare(String(b?.code || ''))), [fleet]);
 
