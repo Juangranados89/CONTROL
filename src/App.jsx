@@ -74,7 +74,9 @@ import { generatePDF as generatePDFService, generatePDFBlobUrl as generatePDFBlo
 import PdfViewerModal from './components/PdfViewerModal';
 import WorkOrderHistoryModal from './components/WorkOrderHistoryModal';
 import { enqueueOtOp, flushOtOutbox, getOutboxPendingCount } from './services/otOutbox';
-import TiresView from './components/TiresView.jsx';
+
+// Lazy load TiresView to avoid TDZ circular dependency crash with Recharts
+const TiresView = React.lazy(() => import('./components/TiresView.jsx'));
 
 // --- Helper Functions ---
 
@@ -7141,7 +7143,9 @@ function App() {
         </div>
       );
       case 'tires': return (
-        <TiresView fleet={fleet} />
+        <React.Suspense fallback={<div className="p-8 flex items-center justify-center"><div className="animate-spin h-8 w-8 border-4 border-blue-500 border-t-transparent rounded-full" /></div>}>
+          <TiresView fleet={fleet} />
+        </React.Suspense>
       );
       case 'fuel': return (
         <div className="p-8 flex flex-col items-center justify-center h-full">
