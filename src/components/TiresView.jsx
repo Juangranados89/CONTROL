@@ -1299,48 +1299,6 @@ export default function TiresView({ fleet }) {
           </div>
         </div>
       )}
-
-      {/* Existing Modal for New Inspection (Nested Modal) */}
-      {showModal && selectedPosition ? (
-        <div className="fixed inset-0 z-[110] bg-black/60 flex items-center justify-center p-4">
-          <div className="w-full max-w-2xl bg-white rounded-xl shadow-2xl border border-slate-200">
-            <div className="p-5 border-b border-slate-200 flex items-center justify-between">
-              <div>
-                <div className="text-lg font-bold text-slate-800">Nueva inspección</div>
-                <div className="text-sm text-slate-500">Posición: {positionLabel}</div>
-              </div>
-              <button
-                type="button"
-                onClick={() => setShowModal(false)}
-                className="p-2 rounded-lg hover:bg-slate-50"
-                aria-label="Cerrar"
-              >
-                <X size={18} className="text-slate-600" />
-              </button>
-            </div>
-
-            <div className="p-5">{InspectionFields}</div>
-
-            <div className="p-5 border-t border-slate-200 flex justify-end gap-2">
-              <button
-                type="button"
-                onClick={() => setShowModal(false)}
-                className="px-4 py-2 rounded-lg border border-slate-300 text-slate-700 hover:bg-slate-50 font-semibold"
-              >
-                Cancelar
-              </button>
-              <button
-                type="button"
-                disabled={loading}
-                onClick={saveInspection}
-                className="px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 font-semibold"
-              >
-                Guardar
-              </button>
-            </div>
-          </div>
-        </div>
-      ) : null}
     </>
   );
 }
