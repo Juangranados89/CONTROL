@@ -1449,4 +1449,149 @@ router.post('/admin/seed-fleet', async (req, res) => {
   }
 });
 
+
+// ============ TIRE INSPECTIONS BULK IMPORT ============
+
+router.post('/tires/import-inspections', async (req, res) => {
+  try {
+    const inspections = req.body; // Array of mapped objects
+    if (!Array.isArray(inspections)) {
+      return res.status(400).json({ error: 'Expected an array of inspections' });
+    }
+
+    const results = {
+      processed: 0,
+      created: 0,
+      errors: [],
+      warnings: []
+    };
+
+    for (const row of inspections) {
+      results.processed++;
+      try {
+        // 1. Resolve Vehicle
+        const vehicle = await resolveVehicleByIdentifier(row.vehicleIdentifier); // plate or code
+        if (!vehicle) {
+          results.errors.push({ row, error: `Vehicle not found: ${row.vehicleIdentifier}` });
+          continue;
+        }
+
+        // 2. Resolve Tire (Create if not exists)
+        const marking = String(row.tireMarking || '').trim().toUpperCase();
+        if (!marking) {
+          results.errors.push({ row, error: 'Missing tire marking' });
+          continue;
+        }
+
+        let tire = await prisma.tire.findUnique({ where: { marking } });
+        if (!tire) {
+          tire = await prisma.tire.create({
+            data: {
+              marking,
+              brand: row.brand || 'GENERIC',
+              model: row.model || 'GENERIC',
+              size: row.size || 'GENERIC',
+              condition: 'USED'
+            }
+          });
+        }
+
+        // 3. Handle Mount Logic (Ensure this tire is mounted at this position)
+        const position = Number(row.position);
+        const inspectionDate = row.inspectedAt ? new Date(row.inspectedAt) : new Date();
+        
+        if (!Number.isFinite(position)) {
+           results.errors.push({ row, error: `Invalid position: ${row.position}` });
+           continue;
+        }
+
+        // Check current mount at this position
+        const currentMount = await prisma.tireMount.findFirst({
+          where: {
+            vehicleId: vehicle.id,
+            position: position,
+            unmountedAt: null
+          },
+          include: { tire: true }
+        });
+
+        let mountId = currentMount?.id;
+
+        if (!currentMount) {
+          // No tire mounted here -> Mount this one
+          const newMount = await prisma.tireMount.create({
+            data: {
+              vehicleId: vehicle.id,
+              tireId: tire.id,
+              position: position,
+              mountedAt: inspectionDate, // Assume mounted at inspection time if unknown
+              mountedKm: row.odometerKm || 0
+            }
+          });
+          mountId = newMount.id;
+        } else if (currentMount.tire.marking !== marking) {
+          // Different tire mounted -> Dismount old, Mount new
+          await prisma.tireMount.update({
+            where: { id: currentMount.id },
+            data: { unmountedAt: inspectionDate, unmountedKm: row.odometerKm || 0 }
+          });
+
+          const newMount = await prisma.tireMount.create({
+            data: {
+              vehicleId: vehicle.id,
+              tireId: tire.id,
+              position: position,
+              mountedAt: inspectionDate,
+              mountedKm: row.odometerKm || 0
+            }
+          });
+          mountId = newMount.id;
+        }
+        // If currentMount.tire.marking === marking, we are good.
+
+        // 4. Create Inspection (Avoid duplicates if possible)
+        // Check if inspection exists for this mount at this date (approx)
+        const existingInsp = await prisma.tireInspection.findFirst({
+          where: {
+            mountId: mountId,
+            inspectedAt: inspectionDate
+          }
+        });
+
+        if (!existingInsp) {
+          await prisma.tireInspection.create({
+            data: {
+              mountId: mountId,
+              vehicleId: vehicle.id, // Denormalized for easier querying
+              tireId: tire.id,       // Denormalized
+              inspectedAt: inspectionDate,
+              odometerKm: row.odometerKm ? Number(row.odometerKm) : null,
+              psiCold: row.psiCold ? Number(row.psiCold) : null,
+              depthExt: row.depthExt ? Number(row.depthExt) : null,
+              depthCen: row.depthCen ? Number(row.depthCen) : null,
+              depthInt: row.depthInt ? Number(row.depthInt) : null,
+              actionRotate: !!row.actionRotate,
+              actionAlign: !!row.actionAlign,
+              actionRemoveFromService: !!row.actionRemoveFromService,
+              notes: row.notes || null,
+              inspector: row.inspector || 'Imported'
+            }
+          });
+          results.created++;
+        } else {
+           results.warnings.push({ row, warning: 'Inspection already exists for this date' });
+        }
+
+      } catch (e) {
+        results.errors.push({ row, error: e.message });
+      }
+    }
+
+    res.json(results);
+
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 export default router;

@@ -1,8 +1,9 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { RefreshCw, Plus, X, ArrowLeft } from 'lucide-react';
+import { RefreshCw, Plus, X, ArrowLeft, Upload } from 'lucide-react';
 import * as Recharts from 'recharts';
 import api from '../api';
 import { useDialog } from './DialogProvider.jsx';
+import BulkInspectionImport from './BulkInspectionImport.jsx';
 
 const TireIcon = ({ colorClass, size = 24 }) => {
   // Map tailwind bg classes to fill colors
@@ -169,6 +170,7 @@ const LastInspectionWidget = ({ vehicleIdentifier }) => {
 
 const TiresFleetTable = ({ fleet, onSelect }) => {
   const [filter, setFilter] = useState('');
+  const [showImport, setShowImport] = useState(false);
   
   const filtered = useMemo(() => {
     if (!filter) return fleet;
@@ -182,18 +184,36 @@ const TiresFleetTable = ({ fleet, onSelect }) => {
 
   return (
     <div className="h-full flex flex-col bg-white rounded-lg shadow border border-slate-200 overflow-hidden">
+      {showImport && (
+        <BulkInspectionImport 
+          onClose={() => setShowImport(false)} 
+          onSuccess={() => {
+            setShowImport(false);
+            // Trigger refresh if possible, or just close
+          }} 
+        />
+      )}
       <div className="p-4 border-b border-slate-200 flex justify-between items-center bg-slate-50">
         <div>
            <h2 className="text-lg font-bold text-slate-800">Control de Llantas</h2>
            <p className="text-xs text-slate-500">Seleccione un vehículo para ver detalles</p>
         </div>
-        <input 
-          type="text" 
-          placeholder="Buscar vehículo..." 
-          className="px-3 py-1.5 text-sm border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-          value={filter}
-          onChange={e => setFilter(e.target.value)}
-        />
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => setShowImport(true)}
+            className="px-3 py-1.5 text-sm font-semibold text-slate-700 bg-white border border-slate-300 rounded-lg hover:bg-slate-50 flex items-center gap-2"
+          >
+            <Upload size={16} />
+            Importar Inspecciones
+          </button>
+          <input 
+            type="text" 
+            placeholder="Buscar vehículo..." 
+            className="px-3 py-1.5 text-sm border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            value={filter}
+            onChange={e => setFilter(e.target.value)}
+          />
+        </div>
       </div>
       <div className="flex-1 overflow-auto">
         <table className="w-full border-collapse text-left relative">
