@@ -1470,10 +1470,24 @@ router.post('/tires/import-inspections', async (req, res) => {
       results.processed++;
       try {
         // 1. Resolve Vehicle
-        const vehicle = await resolveVehicleByIdentifier(row.vehicleIdentifier); // plate or code
+        let vehicle = await resolveVehicleByIdentifier(row.vehicleIdentifier); // plate or code
         if (!vehicle) {
+          // Try to create if we have enough info, or fail
+          // For now, fail as before, but maybe we can update it if it exists
           results.errors.push({ row, error: `Vehicle not found: ${row.vehicleIdentifier}` });
           continue;
+        }
+
+        // Update vehicle details if provided
+        if (row.vehicleInternalCode || row.vehicleType || row.vehicleArea) {
+           await prisma.vehicle.update({
+             where: { id: vehicle.id },
+             data: {
+               internalCode: row.vehicleInternalCode || vehicle.internalCode,
+               model: row.vehicleType || vehicle.model, // Map EQUIPO to model
+               area: row.vehicleArea || vehicle.area
+             }
+           });
         }
 
         // 2. Resolve Tire (Create if not exists)
@@ -1491,8 +1505,22 @@ router.post('/tires/import-inspections', async (req, res) => {
               brand: row.brand || 'GENERIC',
               model: row.model || 'GENERIC',
               size: row.size || 'GENERIC',
-              condition: 'USED',
+              condition: row.condition || 'USED',
+              application: row.application || null,
               originalDepth: row.originalDepth ? Number(row.originalDepth) : null
+            }
+          });
+        } else {
+          // Update existing tire with new info if available
+          await prisma.tire.update({
+            where: { id: tire.id },
+            data: {
+              brand: row.brand || tire.brand,
+              model: row.model || tire.model,
+              size: row.size || tire.dimension,
+              condition: row.condition || tire.condition,
+              application: row.application || tire.application,
+              originalDepth: row.originalDepth ? Number(row.originalDepth) : tire.originalDepth
             }
           });
         }
