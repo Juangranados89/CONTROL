@@ -49,11 +49,17 @@ export default function BulkInspectionImport({ onClose, onSuccess }) {
             model: String(row['DISEÑO'] || '').trim(),
             size: String(row['DIMENSION'] || '').trim(),
             inspectedAt: date.toISOString(),
-            odometerKm: row['KILOMETRAJE.1'] || row['KILOMETRAJE'],
+            odometerKm: row['KILOMETRAJE.1'] || row['KILOMETRAJE_1'] || row['KILOMETRAJE'],
             psiCold: row['PSI ENC'],
-            depthExt: row['EXT.1'],
-            depthCen: row['CEN.1'],
-            depthInt: row['INT.1'],
+            // SheetJS handles duplicate headers by appending _1, _2 etc.
+            // The first EXT/CEN/INT (cols 19-21) are mounting depths.
+            // The second EXT/CEN/INT (cols 29-31) are inspection depths.
+            depthExt: row['EXT_1'] || row['EXT.1'] || row['EXT'],
+            depthCen: row['CEN_1'] || row['CEN.1'] || row['CEN'],
+            depthInt: row['INT_1'] || row['INT.1'] || row['INT'],
+            originalDepth: row['RTD ORIG'],
+            remainingMm: row['mm Remanente'],
+            wearPercent: row['% De Desgaste'],
             actionRotate: !!row['Rotar'],
             actionAlign: !!row['Alinear'],
             actionRemoveFromService: !!row['Sacar de Servicio'],
