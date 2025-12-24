@@ -114,6 +114,59 @@ const TireWidget = ({ vehicleIdentifier, model }) => {
   );
 };
 
+const LastInspectionWidget = ({ vehicleIdentifier }) => {
+  const [date, setDate] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let mounted = true;
+    api.getTireOverview(vehicleIdentifier, 5)
+       .then(data => { 
+         if(mounted) {
+            // Find latest inspection date
+            const dates = (data.positions || [])
+              .map(p => p.lastInspection?.inspectedAt)
+              .filter(Boolean)
+              .map(d => new Date(d));
+            
+            if (dates.length > 0) {
+              // Sort desc
+              dates.sort((a,b) => b - a);
+              setDate(dates[0]);
+            } else {
+              setDate(null);
+            }
+         }
+       })
+       .catch(() => {}) 
+       .finally(() => { if(mounted) setLoading(false); });
+    return () => { mounted = false; };
+  }, [vehicleIdentifier]);
+
+  if (loading) return <span className="text-xs text-slate-300">...</span>;
+  if (!date) return <span className="text-xs text-slate-400">Sin inspección</span>;
+
+  const now = new Date();
+  const diffTime = Math.abs(now - date);
+  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
+  const isOutdated = diffDays > 30;
+
+  return (
+    <div className="flex flex-col items-center">
+      <span className={`text-xs font-bold ${isOutdated ? 'text-red-600' : 'text-slate-700'}`}>
+        {date.toLocaleDateString('es-CO')}
+      </span>
+      {isOutdated && (
+        <span className="text-[10px] text-red-500 font-semibold bg-red-50 px-1 rounded">
+          Vencido ({diffDays}d)
+        </span>
+      )}
+    </div>
+  );
+};
+
+
+
 const TiresFleetTable = ({ fleet, onSelect }) => {
   const [filter, setFilter] = useState('');
   
@@ -148,8 +201,10 @@ const TiresFleetTable = ({ fleet, onSelect }) => {
             <tr>
               <th className="px-4 py-3 border-r border-slate-200">Código</th>
               <th className="px-4 py-3 border-r border-slate-200">Placa</th>
-              <th className="px-4 py-3 border-r border-slate-200">Modelo</th>
+              <th className="px-4 py-3 border-r border-slate-200 w-24">Modelo</th>
+              <th className="px-4 py-3 border-r border-slate-200 text-center">KM Actual</th>
               <th className="px-4 py-3 border-r border-slate-200 w-48">Estado Llantas</th>
+              <th className="px-4 py-3 border-r border-slate-200 text-center">Última Insp.</th>
               <th className="px-4 py-3 text-center">Acción</th>
             </tr>
           </thead>
@@ -162,9 +217,15 @@ const TiresFleetTable = ({ fleet, onSelect }) => {
               >
                 <td className="px-4 py-3 font-mono text-sm text-slate-700 border-r border-slate-100">{vehicle.code}</td>
                 <td className="px-4 py-3 font-bold text-sm text-slate-800 border-r border-slate-100">{vehicle.plate}</td>
-                <td className="px-4 py-3 text-sm text-slate-600 border-r border-slate-100">{vehicle.model}</td>
+                <td className="px-4 py-3 text-sm text-slate-600 border-r border-slate-100 truncate max-w-[100px]" title={vehicle.model}>{vehicle.model}</td>
+                <td className="px-4 py-3 text-sm font-mono text-slate-700 border-r border-slate-100 text-center">
+                  {vehicle.mileage ? vehicle.mileage.toLocaleString() : '—'}
+                </td>
                 <td className="px-4 py-2 border-r border-slate-100">
                   <TireWidget vehicleIdentifier={String(vehicle.code || vehicle.plate || vehicle.id)} model={vehicle.model} />
+                </td>
+                <td className="px-4 py-3 border-r border-slate-100 text-center">
+                  <LastInspectionWidget vehicleIdentifier={String(vehicle.code || vehicle.plate || vehicle.id)} />
                 </td>
                 <td className="px-4 py-3 text-center">
                   <button className="text-blue-600 hover:text-blue-800 text-xs font-bold uppercase border border-blue-200 px-2 py-1 rounded bg-blue-50">
@@ -179,6 +240,172 @@ const TiresFleetTable = ({ fleet, onSelect }) => {
       <div className="p-2 border-t border-slate-200 bg-slate-50 text-xs text-slate-400 text-right">
         Total: {filtered.length} vehículos
       </div>
+    </div>
+  );
+};
+
+const VirtualChassis = ({ positions, layout, onSelectPosition, selectedPosition }) => {
+  // Helper to render a tire position
+  const renderTire = (posId, label, isSpare = false) => {
+    const posData = positions.find(p => p.position === posId);
+    const insp = posData?.lastInspection;
+    
+    // Calculate status color
+    let colorClass = 'bg-slate-200';
+    let depth = '-';
+    let psi = '-';
+    
+    if (insp) {
+      const depths = [insp.depthExt, insp.depthCen, insp.depthInt].map(Number).filter(n => Number.isFinite(n));
+      if (depths.length > 0) {
+        const minD = Math.min(...depths);
+        depth = (depths.reduce((a,b)=>a+b,0)/depths.length).toFixed(1);
+        if (minD <= 3) colorClass = 'bg-red-500';
+        else if (minD <= 5) colorClass = 'bg-amber-500';
+        else colorClass = 'bg-emerald-500';
+      }
+      if (insp.psiCold) psi = insp.psiCold;
+    }
+
+    return (
+      <div 
+        key={posId}
+        onClick={() => onSelectPosition(posId)}
+        className={`
+          relative flex flex-col items-center p-2 rounded-lg border-2 cursor-pointer transition-all
+          ${selectedPosition === posId ? 'border-blue-500 bg-blue-50 shadow-md' : 'border-transparent hover:bg-slate-100'}
+        `}
+      >
+        <span className="text-xs font-bold text-slate-500 mb-1">{label}</span>
+        <TireIcon colorClass={colorClass} size={48} />
+        <div className="mt-1 flex flex-col items-center">
+           <span className="text-xs font-bold text-slate-800">{depth} mm</span>
+           <span className="text-[10px] text-slate-500">{psi} PSI</span>
+        </div>
+        {/* Tire Marking Badge */}
+        {posData?.mount?.tire?.marking && (
+          <span className="absolute -top-1 -right-1 bg-slate-800 text-white text-[9px] px-1 rounded">
+            {posData.mount.tire.marking}
+          </span>
+        )}
+      </div>
+    );
+  };
+
+  // Layout rendering logic
+  const renderLayout = () => {
+    if (layout === 13) { // 12 + Spare (Truck)
+      return (
+        <div className="flex flex-col items-center gap-8">
+          {/* Front Axle */}
+          <div className="flex gap-16">
+            {renderTire(1, '1')}
+            {renderTire(2, '2')}
+          </div>
+          {/* Drive Axles */}
+          <div className="flex flex-col gap-2">
+             <div className="flex gap-4">
+                <div className="flex gap-1">{renderTire(3, '3')}{renderTire(4, '4')}</div>
+                <div className="w-8"></div>
+                <div className="flex gap-1">{renderTire(5, '5')}{renderTire(6, '6')}</div>
+             </div>
+             <div className="flex gap-4">
+                <div className="flex gap-1">{renderTire(7, '7')}{renderTire(8, '8')}</div>
+                <div className="w-8"></div>
+                <div className="flex gap-1">{renderTire(9, '9')}{renderTire(10, '10')}</div>
+             </div>
+          </div>
+          {/* Trailer/Rear (if any) or just extra axles - simplified for 12 tires */}
+          <div className="flex gap-4">
+             <div className="flex gap-1">{renderTire(11, '11')}</div>
+             <div className="flex gap-1">{renderTire(12, '12')}</div>
+          </div>
+          {/* Spare */}
+          <div className="mt-4 pt-4 border-t border-slate-200 w-full flex justify-center">
+             {renderTire(13, 'RE', true)}
+          </div>
+        </div>
+      );
+    }
+    
+    // Default 4 + Spare (Car/Van)
+    return (
+      <div className="flex flex-col items-center gap-12">
+        <div className="flex gap-24">
+          {renderTire(1, '1')}
+          {renderTire(2, '2')}
+        </div>
+        <div className="flex gap-24">
+          {renderTire(3, '3')}
+          {renderTire(4, '4')}
+        </div>
+        <div className="mt-4 pt-4 border-t border-slate-200 w-full flex justify-center">
+           {renderTire(5, 'RE', true)}
+        </div>
+      </div>
+    );
+  };
+
+  return (
+    <div className="flex justify-center p-8 bg-slate-50 rounded-xl border border-slate-200">
+      {renderLayout()}
+    </div>
+  );
+};
+
+const HistoryTab = ({ vehicleIdentifier }) => {
+  const [history, setHistory] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    // Mocking history fetch or implementing a real one if API exists
+    // Since I don't have a direct "getHistory" endpoint in the context, I'll simulate or try to fetch inspections
+    // Actually, let's use getTireInspectionsByVehicle which returns a list
+    let mounted = true;
+    api.getTireInspectionsByVehicle(vehicleIdentifier, { take: 50 })
+       .then(data => {
+         if(mounted) setHistory(data.inspections || []);
+       })
+       .catch(() => {})
+       .finally(() => { if(mounted) setLoading(false); });
+    return () => { mounted = false; };
+  }, [vehicleIdentifier]);
+
+  if (loading) return <div className="p-8 text-center text-slate-400">Cargando historial...</div>;
+  if (history.length === 0) return <div className="p-8 text-center text-slate-400">No hay historial registrado.</div>;
+
+  return (
+    <div className="overflow-auto max-h-[500px]">
+      <table className="w-full text-sm text-left">
+        <thead className="bg-slate-50 text-xs uppercase text-slate-500 font-bold sticky top-0">
+          <tr>
+            <th className="px-4 py-3">Fecha</th>
+            <th className="px-4 py-3">Posición</th>
+            <th className="px-4 py-3">Llanta</th>
+            <th className="px-4 py-3">Profundidad</th>
+            <th className="px-4 py-3">PSI</th>
+            <th className="px-4 py-3">Acciones</th>
+          </tr>
+        </thead>
+        <tbody className="divide-y divide-slate-100">
+          {history.map((h, i) => (
+            <tr key={i} className="hover:bg-slate-50">
+              <td className="px-4 py-3 font-mono text-slate-600">{new Date(h.inspectedAt).toLocaleDateString('es-CO')}</td>
+              <td className="px-4 py-3 font-bold text-slate-700">{h.position}</td>
+              <td className="px-4 py-3 text-slate-600">{h.tire?.marking || '—'}</td>
+              <td className="px-4 py-3">
+                {[h.depthExt, h.depthCen, h.depthInt].filter(n=>n!=null).join(' / ')} mm
+              </td>
+              <td className="px-4 py-3">{h.psiCold || '—'}</td>
+              <td className="px-4 py-3 text-xs">
+                {h.actionRotate && <span className="bg-blue-100 text-blue-700 px-1 rounded mr-1">Rotar</span>}
+                {h.actionAlign && <span className="bg-amber-100 text-amber-700 px-1 rounded mr-1">Alinear</span>}
+                {h.actionRemoveFromService && <span className="bg-red-100 text-red-700 px-1 rounded">Baja</span>}
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </div>
   );
 };
@@ -251,15 +478,17 @@ export default function TiresView({ fleet }) {
   const dialog = useDialog();
   const vehicles = useMemo(() => (Array.isArray(fleet) ? fleet : []).slice().sort((a, b) => String(a?.code || '').localeCompare(String(b?.code || ''))), [fleet]);
 
-  const [selectedVehicleIdentifier, setSelectedVehicleIdentifier] = useState(null);
+  const [selectedVehicle, setSelectedVehicle] = useState(null);
+  const selectedVehicleIdentifier = selectedVehicle ? String(selectedVehicle.code || selectedVehicle.plate || selectedVehicle.id) : null;
+
   const [layout, setLayout] = useState(5);
   const [overview, setOverview] = useState(null);
   const [loading, setLoading] = useState(false);
 
-  const [activeTab, setActiveTab] = useState('estado'); // estado | inspeccion | analitica
+  const [activeTab, setActiveTab] = useState('chasis'); // chasis | historial | inspeccion | analitica
 
   const [selectedPosition, setSelectedPosition] = useState(null);
-  const [showModal, setShowModal] = useState(false);
+
 
   const [mountOps, setMountOps] = useState({
     tireMarking: '',
@@ -335,6 +564,27 @@ export default function TiresView({ fleet }) {
     return positions.find((p) => p.position === selectedPosition) || null;
   }, [positions, selectedPosition]);
 
+  // Calculate Global Stats for Header
+  const globalStats = useMemo(() => {
+    const depths = [];
+    
+    positions.forEach(p => {
+      const insp = p.lastInspection;
+      if(insp) {
+        const ds = [insp.depthExt, insp.depthCen, insp.depthInt].map(Number).filter(n => Number.isFinite(n));
+        if(ds.length > 0) {
+          const avgD = ds.reduce((a,b)=>a+b,0)/ds.length;
+          depths.push(avgD);
+        }
+      }
+    });
+
+    const avgDepth = depths.length > 0 ? (depths.reduce((a,b)=>a+b,0)/depths.length).toFixed(1) : '-';
+    const cpk = "0.00"; // Placeholder
+
+    return { avgDepth, cpk };
+  }, [positions]);
+
   const openNewInspection = useCallback((pos) => {
     const existing = positions.find((p) => p.position === pos);
     const marking = existing?.mount?.tire?.marking || existing?.lastInspection?.tire?.marking || '';
@@ -361,9 +611,7 @@ export default function TiresView({ fleet }) {
       notes: ''
     }));
 
-    if (activeTab === 'estado') {
-      setShowModal(true);
-    }
+    setActiveTab('inspeccion');
   }, [positions]);
 
   const doMount = useCallback(async () => {
@@ -500,8 +748,8 @@ export default function TiresView({ fleet }) {
     setLoading(true);
     try {
       await api.createTireInspection(payload);
-      setShowModal(false);
       await loadOverview();
+      await dialog.alert({ title: 'Guardado', variant: 'success', message: 'Inspección registrada.' });
     } catch (e) {
       await dialog.alert({
         title: 'Error',
@@ -709,9 +957,12 @@ export default function TiresView({ fleet }) {
 
   return (
     <>
-      <TiresFleetTable fleet={vehicles} onSelect={(v) => setSelectedVehicleIdentifier(String(v.code || v.plate || v.id || ''))} />
+      <TiresFleetTable fleet={vehicles} onSelect={(v) => {
+        setSelectedVehicle(v);
+        setActiveTab('chasis');
+      }} />
 
-      {selectedVehicleIdentifier && (
+      {selectedVehicle && (
         <div className="fixed inset-0 z-[100] bg-black/60 flex items-center justify-center p-4 backdrop-blur-sm animate-in fade-in duration-200">
           <div className="bg-white w-full max-w-7xl h-[90vh] rounded-xl shadow-2xl overflow-hidden flex flex-col">
             <div className="p-4 border-b border-slate-200 flex justify-between items-center bg-slate-50">
@@ -721,15 +972,29 @@ export default function TiresView({ fleet }) {
                 </div>
                 <div>
                   <h2 className="text-xl font-bold text-slate-800">
-                    {vehicles.find(v => String(v.code || v.plate || v.id) === selectedVehicleIdentifier)?.plate || 'Vehículo'}
+                    {selectedVehicle.plate}
                   </h2>
                   <p className="text-xs text-slate-500">
-                    {vehicles.find(v => String(v.code || v.plate || v.id) === selectedVehicleIdentifier)?.code || selectedVehicleIdentifier} — Control de Llantas
+                    {selectedVehicle.code} — {selectedVehicle.model}
                   </p>
+                </div>
+                <div className="ml-8 flex gap-6 hidden md:flex">
+                   <div className="flex flex-col">
+                      <span className="text-[10px] text-slate-400 uppercase font-bold">KM Actual</span>
+                      <span className="text-sm font-mono font-bold text-slate-700">{selectedVehicle.mileage?.toLocaleString() || '—'}</span>
+                   </div>
+                   <div className="flex flex-col">
+                      <span className="text-[10px] text-slate-400 uppercase font-bold">Prom. Desgaste</span>
+                      <span className="text-sm font-mono font-bold text-slate-700">{globalStats.avgDepth} mm</span>
+                   </div>
+                   <div className="flex flex-col">
+                      <span className="text-[10px] text-slate-400 uppercase font-bold">CPK</span>
+                      <span className="text-sm font-mono font-bold text-slate-700">${globalStats.cpk}</span>
+                   </div>
                 </div>
               </div>
               <button 
-                onClick={() => setSelectedVehicleIdentifier(null)}
+                onClick={() => setSelectedVehicle(null)}
                 className="p-2 hover:bg-red-50 hover:text-red-600 rounded-full transition-colors"
               >
                 <X size={24} />
@@ -760,85 +1025,54 @@ export default function TiresView({ fleet }) {
                </div>
 
                <div className="bg-white rounded-lg shadow border border-slate-200">
-                  <div className="flex gap-2 p-2 border-b border-slate-200">
+                  <div className="flex gap-2 p-2 border-b border-slate-200 overflow-x-auto">
                     <button
                       type="button"
-                      onClick={() => setActiveTab('estado')}
-                      className={`px-4 py-2 text-sm font-bold rounded-lg ${activeTab === 'estado' ? 'bg-blue-50 text-blue-700' : 'text-slate-600 hover:bg-slate-50'}`}
+                      onClick={() => setActiveTab('chasis')}
+                      className={`px-4 py-2 text-sm font-bold rounded-lg whitespace-nowrap ${activeTab === 'chasis' ? 'bg-blue-50 text-blue-700' : 'text-slate-600 hover:bg-slate-50'}`}
                     >
-                      Estado
+                      Chasis Virtual
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setActiveTab('historial')}
+                      className={`px-4 py-2 text-sm font-bold rounded-lg whitespace-nowrap ${activeTab === 'historial' ? 'bg-blue-50 text-blue-700' : 'text-slate-600 hover:bg-slate-50'}`}
+                    >
+                      Historial
                     </button>
                     <button
                       type="button"
                       onClick={() => setActiveTab('inspeccion')}
-                      className={`px-4 py-2 text-sm font-bold rounded-lg ${activeTab === 'inspeccion' ? 'bg-blue-50 text-blue-700' : 'text-slate-600 hover:bg-slate-50'}`}
+                      className={`px-4 py-2 text-sm font-bold rounded-lg whitespace-nowrap ${activeTab === 'inspeccion' ? 'bg-blue-50 text-blue-700' : 'text-slate-600 hover:bg-slate-50'}`}
                     >
                       Inspección
                     </button>
                     <button
                       type="button"
                       onClick={() => setActiveTab('analitica')}
-                      className={`px-4 py-2 text-sm font-bold rounded-lg ${activeTab === 'analitica' ? 'bg-blue-50 text-blue-700' : 'text-slate-600 hover:bg-slate-50'}`}
+                      className={`px-4 py-2 text-sm font-bold rounded-lg whitespace-nowrap ${activeTab === 'analitica' ? 'bg-blue-50 text-blue-700' : 'text-slate-600 hover:bg-slate-50'}`}
                     >
                       Analítica
                     </button>
                   </div>
 
-                  {activeTab === 'estado' ? (
+                  {activeTab === 'chasis' ? (
                     <div className="p-4">
-                      <div className="flex items-center justify-between mb-3">
-                        <div className="text-sm font-semibold text-slate-700">Posiciones</div>
-                        {layout === 13 ? (
-                          <div className="text-xs text-slate-500">En camión 12, pos. 11–12 pertenecen a dual.</div>
-                        ) : null}
+                      <VirtualChassis 
+                        positions={positions} 
+                        layout={layout} 
+                        selectedPosition={selectedPosition}
+                        onSelectPosition={(pos) => {
+                          setSelectedPosition(pos);
+                        }} 
+                      />
+                      <div className="mt-4 text-center text-xs text-slate-400">
+                        Seleccione una llanta para ver detalles o registrar inspección.
                       </div>
-
-                      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
-                        {positions.map((p) => {
-                          const insp = p.lastInspection;
-                          const mount = p.mount;
-                          const status = statusFromInspection(insp);
-                          const tireMark = mount?.tire?.marking || insp?.tire?.marking || '—';
-                          const depth = minDepth(insp);
-                          const isSelected = selectedPosition === p.position;
-
-                          return (
-                            <button
-                              key={p.position}
-                              type="button"
-                              onClick={() => openNewInspection(p.position)}
-                              className={`text-left p-3 rounded-lg border hover:bg-slate-50 ${isSelected ? 'border-blue-300 bg-blue-50/40' : 'border-slate-200'}`}
-                            >
-                              <div className="flex items-center justify-between">
-                                <div className="font-bold text-slate-800">{p.label}</div>
-                                <div className={`w-3 h-3 rounded-full ${status.dot}`} title={status.text} />
-                              </div>
-
-                              <div className="mt-2 text-xs text-slate-500">Llanta</div>
-                              <div className="text-sm font-semibold text-slate-700 truncate">{tireMark}</div>
-
-                              <div className="mt-2 text-xs text-slate-500">Última inspección</div>
-                              <div className="text-sm text-slate-700">{safeDateLabel(insp?.inspectedAt)}</div>
-
-                              <div className="mt-2 grid grid-cols-2 gap-2">
-                                <div>
-                                  <div className="text-xs text-slate-500">PSI</div>
-                                  <div className="text-sm text-slate-700">{insp?.psiCold ?? '—'}</div>
-                                </div>
-                                <div>
-                                  <div className="text-xs text-slate-500">Min mm</div>
-                                  <div className="text-sm text-slate-700">{depth ?? '—'}</div>
-                                </div>
-                              </div>
-
-                              <div className="mt-3 flex items-center gap-2 text-xs text-blue-600 font-semibold">
-                                <Plus size={14} />
-                                Nueva inspección
-                              </div>
-                            </button>
-                          );
-                        })}
-                      </div>
+                    </div>
+                  ) : activeTab === 'historial' ? (
+                    <div className="p-4">
+                      <HistoryTab vehicleIdentifier={selectedVehicleIdentifier} />
                     </div>
                   ) : activeTab === 'inspeccion' ? (
                     <div className="p-4">
