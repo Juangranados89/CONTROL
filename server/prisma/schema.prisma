@@ -117,6 +117,7 @@ model Tire {
   model     String?
   dimension String?
   dot       String?
+  originalDepth Float?
   notes     String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -160,6 +161,7 @@ model TireInspection {
   depthExt              Float?
   depthCen              Float?
   depthInt              Float?
+  remainingMm           Float?
   wearPct               Float?
 
   actionRotate          Boolean  @default(false)

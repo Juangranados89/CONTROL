@@ -1491,7 +1491,8 @@ router.post('/tires/import-inspections', async (req, res) => {
               brand: row.brand || 'GENERIC',
               model: row.model || 'GENERIC',
               size: row.size || 'GENERIC',
-              condition: 'USED'
+              condition: 'USED',
+              originalDepth: row.originalDepth ? Number(row.originalDepth) : null
             }
           });
         }
@@ -1570,6 +1571,8 @@ router.post('/tires/import-inspections', async (req, res) => {
               depthExt: row.depthExt ? Number(row.depthExt) : null,
               depthCen: row.depthCen ? Number(row.depthCen) : null,
               depthInt: row.depthInt ? Number(row.depthInt) : null,
+              remainingMm: row.remainingMm ? Number(row.remainingMm) : null,
+              wearPct: row.wearPercent ? Number(row.wearPercent) : null,
               actionRotate: !!row.actionRotate,
               actionAlign: !!row.actionAlign,
               actionRemoveFromService: !!row.actionRemoveFromService,
