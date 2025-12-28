@@ -4828,7 +4828,7 @@ const MaintenanceAdminView = ({ workOrders, setWorkOrders, fleet, setFleet, rout
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-slate-200">
-                        {group.ots.map((ot) => (
+                        {group.ots.map((ot, index) => (
                           <tr key={ot.id} className="hover:bg-slate-50">
                             <td className="p-4 font-mono font-bold text-blue-600">#{ot.otNumber ?? ot.id}</td>
                             <td className="p-4">
@@ -4890,7 +4890,9 @@ const MaintenanceAdminView = ({ workOrders, setWorkOrders, fleet, setFleet, rout
 
                                 {actionsMenuOtId === ot.id && (
                                   <div
-                                    className="absolute right-0 top-9 z-10 w-44 bg-white border border-slate-200 rounded-lg shadow"
+                                    className={`absolute right-0 z-10 w-44 bg-white border border-slate-200 rounded-lg shadow ${
+                                      index >= group.ots.length - 2 ? 'bottom-full mb-1' : 'top-9'
+                                    }`}
                                     onMouseDown={(e) => e.stopPropagation()}
                                     onClick={(e) => e.stopPropagation()}
                                   >

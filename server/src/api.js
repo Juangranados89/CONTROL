@@ -963,7 +963,13 @@ router.get('/tires/vehicles/:identifier/overview', async (req, res) => {
           ? {
               id: mount.id,
               mountedAt: mount.mountedAt,
-              tire: mount.tire ? { id: mount.tire.id, marking: mount.tire.marking } : null
+              tire: mount.tire ? { 
+                id: mount.tire.id, 
+                marking: mount.tire.marking,
+                dimension: mount.tire.dimension,
+                brand: mount.tire.brand,
+                model: mount.tire.model
+              } : null
             }
           : null,
         lastInspection: lastInspection
@@ -981,7 +987,13 @@ router.get('/tires/vehicles/:identifier/overview', async (req, res) => {
               actionAlign: lastInspection.actionAlign,
               actionRemoveFromService: lastInspection.actionRemoveFromService,
               notes: lastInspection.notes,
-              tire: lastInspection.tire ? { id: lastInspection.tire.id, marking: lastInspection.tire.marking } : null
+              tire: lastInspection.tire ? { 
+                id: lastInspection.tire.id, 
+                marking: lastInspection.tire.marking,
+                dimension: lastInspection.tire.dimension,
+                brand: lastInspection.tire.brand,
+                model: lastInspection.tire.model
+              } : null
             }
           : null
       };

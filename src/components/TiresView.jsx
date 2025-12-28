@@ -97,19 +97,27 @@ const TireWidget = ({ vehicleIdentifier, model }) => {
   // Generate array of positions to render
   const renderPositions = Array.from({ length: layout === 13 ? 12 : 4 }, (_, i) => i + 1);
 
+  const getDepth = (posId) => {
+     const pos = positions.find(p => p.position === posId);
+     if (!pos || !pos.lastInspection) return '-';
+     const values = [pos.lastInspection.depthExt, pos.lastInspection.depthCen, pos.lastInspection.depthInt]
+      .map(Number).filter(Number.isFinite);
+     if (values.length === 0) return '-';
+     return (values.reduce((a,b)=>a+b,0)/values.length).toFixed(1);
+  };
+
   return (
-    <div className="flex items-center gap-4">
-       {/* Horizontal Tire Icons */}
-       <div className="flex items-center gap-1">
-          {renderPositions.map(p => (
-            <div key={p} title={`Posición ${p}`}>
-              <TireIcon colorClass={getColor(p)} size={22} />
-            </div>
-          ))}
-       </div>
-       <div className="flex flex-col border-l border-slate-200 pl-3">
-          <span className="text-xs font-bold text-slate-700">{avgDepth} mm</span>
-          <span className="text-[10px] text-slate-500">Promedio</span>
+    <div className="flex items-center gap-2">
+       <div className={`grid ${layout === 13 ? 'grid-cols-6' : 'flex'} gap-x-2 gap-y-1 items-end`}>
+          {renderPositions.map(p => {
+            const depth = getDepth(p);
+            return (
+              <div key={p} className="flex flex-col items-center" title={`Posición ${p}: ${depth} mm`}>
+                <TireIcon colorClass={getColor(p)} size={20} />
+                <span className="text-[9px] font-bold text-slate-600 leading-none mt-0.5">{depth}</span>
+              </div>
+            );
+          })}
        </div>
     </div>
   );
@@ -166,7 +174,43 @@ const LastInspectionWidget = ({ vehicleIdentifier }) => {
   );
 };
 
+const TireDimensionWidget = ({ vehicleIdentifier, model }) => {
+  const [dimension, setDimension] = useState('—');
+  const [loading, setLoading] = useState(true);
 
+  // Heuristic for layout based on model name
+  const layout = useMemo(() => {
+    const m = (model || '').toUpperCase();
+    if (m.includes('NPR') || m.includes('NHR') || m.includes('FVR') || m.includes('CAMION')) return 13;
+    return 5;
+  }, [model]);
+
+  useEffect(() => {
+    let mounted = true;
+    api.getTireOverview(vehicleIdentifier, layout)
+       .then(data => { 
+         if(mounted) {
+            const dims = new Set();
+            (data.positions || []).forEach(p => {
+              // Check mount tire
+              if (p.mount?.tire?.dimension) dims.add(p.mount.tire.dimension);
+              // Check last inspection tire (fallback)
+              else if (p.lastInspection?.tire?.dimension) dims.add(p.lastInspection.tire.dimension);
+            });
+            
+            if (dims.size === 0) setDimension('—');
+            else if (dims.size === 1) setDimension([...dims][0]);
+            else setDimension('Varios');
+         }
+       })
+       .catch(() => {}) 
+       .finally(() => { if(mounted) setLoading(false); });
+    return () => { mounted = false; };
+  }, [vehicleIdentifier, layout]);
+
+  if (loading) return <span className="text-xs text-slate-300">...</span>;
+  return <span className="text-xs font-mono text-slate-600">{dimension}</span>;
+};
 
 const TiresFleetTable = ({ fleet, onSelect }) => {
   const [filter, setFilter] = useState('');
@@ -222,10 +266,11 @@ const TiresFleetTable = ({ fleet, onSelect }) => {
               <th className="px-4 py-3 border-r border-slate-200">Código</th>
               <th className="px-4 py-3 border-r border-slate-200">Placa</th>
               <th className="px-4 py-3 border-r border-slate-200 w-24">Modelo</th>
+              <th className="px-4 py-3 border-r border-slate-200 text-center">Dimension</th>
               <th className="px-4 py-3 border-r border-slate-200 text-center">KM Actual</th>
-              <th className="px-4 py-3 border-r border-slate-200 w-48">Estado Llantas</th>
-              <th className="px-4 py-3 border-r border-slate-200 text-center">Última Insp.</th>
-              <th className="px-4 py-3 text-center">Acción</th>
+              <th className="px-4 py-3 border-r border-slate-200 w-48">Estado Llantas (mm)</th>
+              <th className="px-2 py-3 border-r border-slate-200 text-center w-24">Última Insp.</th>
+              <th className="px-2 py-3 text-center w-20">Acción</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-100">
@@ -238,18 +283,21 @@ const TiresFleetTable = ({ fleet, onSelect }) => {
                 <td className="px-4 py-3 font-mono text-sm text-slate-700 border-r border-slate-100">{vehicle.code}</td>
                 <td className="px-4 py-3 font-bold text-sm text-slate-800 border-r border-slate-100">{vehicle.plate}</td>
                 <td className="px-4 py-3 text-sm text-slate-600 border-r border-slate-100 truncate max-w-[100px]" title={vehicle.model}>{vehicle.model}</td>
+                <td className="px-4 py-3 text-center border-r border-slate-100">
+                  <TireDimensionWidget vehicleIdentifier={String(vehicle.code || vehicle.plate || vehicle.id)} model={vehicle.model} />
+                </td>
                 <td className="px-4 py-3 text-sm font-mono text-slate-700 border-r border-slate-100 text-center">
                   {vehicle.mileage ? vehicle.mileage.toLocaleString() : '—'}
                 </td>
                 <td className="px-4 py-2 border-r border-slate-100">
                   <TireWidget vehicleIdentifier={String(vehicle.code || vehicle.plate || vehicle.id)} model={vehicle.model} />
                 </td>
-                <td className="px-4 py-3 border-r border-slate-100 text-center">
+                <td className="px-2 py-3 border-r border-slate-100 text-center">
                   <LastInspectionWidget vehicleIdentifier={String(vehicle.code || vehicle.plate || vehicle.id)} />
                 </td>
-                <td className="px-4 py-3 text-center">
+                <td className="px-2 py-3 text-center">
                   <button className="text-blue-600 hover:text-blue-800 text-xs font-bold uppercase border border-blue-200 px-2 py-1 rounded bg-blue-50">
-                    Ver Detalle
+                    Ver
                   </button>
                 </td>
               </tr>
