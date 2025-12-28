@@ -108,11 +108,11 @@ const TireWidget = ({ vehicleIdentifier, model }) => {
 
   return (
     <div className="flex items-center gap-2">
-       <div className={`grid ${layout === 13 ? 'grid-cols-6' : 'flex'} gap-x-2 gap-y-1 items-end`}>
+       <div className="flex gap-2 items-end overflow-x-auto pb-1">
           {renderPositions.map(p => {
             const depth = getDepth(p);
             return (
-              <div key={p} className="flex flex-col items-center" title={`Posición ${p}: ${depth} mm`}>
+              <div key={p} className="flex flex-col items-center min-w-[24px]" title={`Posición ${p}: ${depth} mm`}>
                 <TireIcon colorClass={getColor(p)} size={20} />
                 <span className="text-[9px] font-bold text-slate-600 leading-none mt-0.5">{depth}</span>
               </div>
@@ -268,7 +268,7 @@ const TiresFleetTable = ({ fleet, onSelect }) => {
               <th className="px-4 py-3 border-r border-slate-200 w-24">Modelo</th>
               <th className="px-4 py-3 border-r border-slate-200 text-center">Dimension</th>
               <th className="px-4 py-3 border-r border-slate-200 text-center">KM Actual</th>
-              <th className="px-4 py-3 border-r border-slate-200 w-48">Estado Llantas (mm)</th>
+              <th className="px-4 py-3 border-r border-slate-200">Estado Llantas (mm)</th>
               <th className="px-2 py-3 border-r border-slate-200 text-center w-24">Última Insp.</th>
               <th className="px-2 py-3 text-center w-20">Acción</th>
             </tr>
@@ -447,6 +447,11 @@ const HistoryTab = ({ vehicleIdentifier }) => {
       <table className="w-full text-sm text-left">
         <thead className="bg-slate-50 text-xs uppercase text-slate-500 font-bold sticky top-0">
           <tr>
+  return (
+    <div className="overflow-auto max-h-[500px]">
+      <table className="w-full text-sm text-left">
+        <thead className="bg-slate-50 text-xs uppercase text-slate-500 font-bold sticky top-0">
+          <tr>
             <th className="px-4 py-3">Fecha</th>
             <th className="px-4 py-3">Posición</th>
             <th className="px-4 py-3">Llanta</th>
@@ -472,6 +477,87 @@ const HistoryTab = ({ vehicleIdentifier }) => {
               </td>
             </tr>
           ))}
+        </tbody>
+      </table>
+    </div>
+  );
+};
+
+const InstalledTiresTable = ({ positions }) => {
+  return (
+    <div className="mt-8 overflow-x-auto border-t border-slate-200 pt-6">
+      <h3 className="text-sm font-bold text-slate-700 mb-4 flex items-center gap-2">
+        <FileText size={16} />
+        Detalle de Llantas Instaladas
+      </h3>
+      <table className="w-full text-sm text-left border-collapse">
+        <thead className="bg-slate-50 text-xs uppercase text-slate-500 font-bold border-b border-slate-200">
+          <tr>
+            <th className="px-4 py-3">Posición</th>
+            <th className="px-4 py-3">Marcación</th>
+            <th className="px-4 py-3">Marca / Modelo</th>
+            <th className="px-4 py-3">Dimensión</th>
+            <th className="px-4 py-3">Aplicación</th>
+            <th className="px-4 py-3">Condición</th>
+            <th className="px-4 py-3">DOT</th>
+            <th className="px-4 py-3 text-center">Profundidad (mm)</th>
+            <th className="px-4 py-3 text-center">PSI</th>
+            <th className="px-4 py-3">Última Insp.</th>
+          </tr>
+        </thead>
+        <tbody className="divide-y divide-slate-100">
+          {positions.map((p) => {
+            const tire = p.mount?.tire || p.lastInspection?.tire;
+            const insp = p.lastInspection;
+            
+            // Calculate depth average
+            let depth = '—';
+            if (insp) {
+               const values = [insp.depthExt, insp.depthCen, insp.depthInt].map(Number).filter(Number.isFinite);
+               if (values.length > 0) {
+                 depth = (values.reduce((a,b)=>a+b,0)/values.length).toFixed(1);
+               }
+            }
+
+            const condition = (tire?.condition || '').toUpperCase();
+            const application = (tire?.application || '').toUpperCase();
+
+            return (
+              <tr key={p.position} className="hover:bg-slate-50">
+                <td className="px-4 py-3 font-bold text-slate-700">{p.label}</td>
+                <td className="px-4 py-3 font-mono text-blue-600 font-bold">{tire?.marking || '—'}</td>
+                <td className="px-4 py-3">
+                  <div className="flex flex-col">
+                    <span className="font-semibold text-slate-700">{tire?.brand || '—'}</span>
+                    <span className="text-xs text-slate-500">{tire?.model || ''}</span>
+                  </div>
+                </td>
+                <td className="px-4 py-3 font-mono text-slate-600">{tire?.dimension || '—'}</td>
+                <td className="px-4 py-3">
+                  {application ? (
+                    <span className="px-2 py-1 rounded-full text-[10px] font-bold bg-purple-100 text-purple-700 border border-purple-200">
+                      {application}
+                    </span>
+                  ) : '—'}
+                </td>
+                <td className="px-4 py-3">
+                   {condition === 'NEW' || condition === 'N' ? (
+                     <span className="px-2 py-1 rounded-full text-[10px] font-bold bg-green-100 text-green-700 border border-green-200">NUEVA</span>
+                   ) : condition === 'RETREAD' || condition === 'R' ? (
+                     <span className="px-2 py-1 rounded-full text-[10px] font-bold bg-amber-100 text-amber-700 border border-amber-200">REENCAUCHADA</span>
+                   ) : condition === 'USED' || condition === 'U' ? (
+                     <span className="px-2 py-1 rounded-full text-[10px] font-bold bg-slate-100 text-slate-600 border border-slate-200">USADA</span>
+                   ) : '—'}
+                </td>
+                <td className="px-4 py-3 font-mono text-xs text-slate-500">{tire?.dot || '—'}</td>
+                <td className="px-4 py-3 text-center font-bold text-slate-800">{depth}</td>
+                <td className="px-4 py-3 text-center font-mono text-slate-600">{insp?.psiCold || '—'}</td>
+                <td className="px-4 py-3 text-slate-500 text-xs">
+                  {insp?.inspectedAt ? new Date(insp.inspectedAt).toLocaleDateString('es-CO') : '—'}
+                </td>
+              </tr>
+            );
+          })}
         </tbody>
       </table>
     </div>
@@ -1134,9 +1220,7 @@ export default function TiresView({ fleet }) {
                           setSelectedPosition(pos);
                         }} 
                       />
-                      <div className="mt-4 text-center text-xs text-slate-400">
-                        Seleccione una llanta para ver detalles o registrar inspección.
-                      </div>
+                      <InstalledTiresTable positions={positions} />
                     </div>
                   ) : activeTab === 'historial' ? (
                     <div className="p-4">

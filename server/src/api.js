@@ -968,7 +968,10 @@ router.get('/tires/vehicles/:identifier/overview', async (req, res) => {
                 marking: mount.tire.marking,
                 dimension: mount.tire.dimension,
                 brand: mount.tire.brand,
-                model: mount.tire.model
+                model: mount.tire.model,
+                condition: mount.tire.condition,
+                application: mount.tire.application,
+                dot: mount.tire.dot
               } : null
             }
           : null,
@@ -992,7 +995,10 @@ router.get('/tires/vehicles/:identifier/overview', async (req, res) => {
                 marking: lastInspection.tire.marking,
                 dimension: lastInspection.tire.dimension,
                 brand: lastInspection.tire.brand,
-                model: lastInspection.tire.model
+                model: lastInspection.tire.model,
+                condition: lastInspection.tire.condition,
+                application: lastInspection.tire.application,
+                dot: lastInspection.tire.dot
               } : null
             }
           : null
