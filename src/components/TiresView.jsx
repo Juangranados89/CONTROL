@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { RefreshCw, Plus, X, ArrowLeft, Upload } from 'lucide-react';
+import { RefreshCw, Plus, X, ArrowLeft, Upload, FileText } from 'lucide-react';
 import * as Recharts from 'recharts';
 import api from '../api';
 import { useDialog } from './DialogProvider.jsx';
@@ -265,8 +265,7 @@ const TiresFleetTable = ({ fleet, onSelect }) => {
             <tr>
               <th className="px-4 py-3 border-r border-slate-200">Código</th>
               <th className="px-4 py-3 border-r border-slate-200">Placa</th>
-              <th className="px-4 py-3 border-r border-slate-200 w-24">Modelo</th>
-              <th className="px-4 py-3 border-r border-slate-200 text-center">Dimension</th>
+              <th className="px-4 py-3 border-r border-slate-200 w-32">Modelo / Dimensión</th>
               <th className="px-4 py-3 border-r border-slate-200 text-center">KM Actual</th>
               <th className="px-4 py-3 border-r border-slate-200">Estado Llantas (mm)</th>
               <th className="px-2 py-3 border-r border-slate-200 text-center w-24">Última Insp.</th>
@@ -282,9 +281,11 @@ const TiresFleetTable = ({ fleet, onSelect }) => {
               >
                 <td className="px-4 py-3 font-mono text-sm text-slate-700 border-r border-slate-100">{vehicle.code}</td>
                 <td className="px-4 py-3 font-bold text-sm text-slate-800 border-r border-slate-100">{vehicle.plate}</td>
-                <td className="px-4 py-3 text-sm text-slate-600 border-r border-slate-100 truncate max-w-[100px]" title={vehicle.model}>{vehicle.model}</td>
-                <td className="px-4 py-3 text-center border-r border-slate-100">
-                  <TireDimensionWidget vehicleIdentifier={String(vehicle.code || vehicle.plate || vehicle.id)} model={vehicle.model} />
+                <td className="px-4 py-3 border-r border-slate-100">
+                  <div className="flex flex-col">
+                    <span className="text-sm text-slate-700 font-semibold truncate max-w-[140px]" title={vehicle.model}>{vehicle.model}</span>
+                    <TireDimensionWidget vehicleIdentifier={String(vehicle.code || vehicle.plate || vehicle.id)} model={vehicle.model} />
+                  </div>
                 </td>
                 <td className="px-4 py-3 text-sm font-mono text-slate-700 border-r border-slate-100 text-center">
                   {vehicle.mileage ? vehicle.mileage.toLocaleString() : '—'}
@@ -478,7 +479,7 @@ const HistoryTab = ({ vehicleIdentifier }) => {
   );
 };
 
-const InstalledTiresTable = ({ positions }) => {
+const InstalledTiresTable = ({ positions, currentMileage }) => {
   return (
     <div className="mt-8 overflow-x-auto border-t border-slate-200 pt-6">
       <h3 className="text-sm font-bold text-slate-700 mb-4 flex items-center gap-2">
@@ -491,10 +492,10 @@ const InstalledTiresTable = ({ positions }) => {
             <th className="px-4 py-3">Posición</th>
             <th className="px-4 py-3">Marcación</th>
             <th className="px-4 py-3">Marca / Modelo</th>
-            <th className="px-4 py-3">Dimensión</th>
+            <th className="px-4 py-3">Dimensión / DOT</th>
             <th className="px-4 py-3">Aplicación</th>
             <th className="px-4 py-3">Condición</th>
-            <th className="px-4 py-3">DOT</th>
+            <th className="px-4 py-3">Ciclo de Vida</th>
             <th className="px-4 py-3 text-center">Profundidad (mm)</th>
             <th className="px-4 py-3 text-center">PSI</th>
             <th className="px-4 py-3">Última Insp.</th>
@@ -516,6 +517,11 @@ const InstalledTiresTable = ({ positions }) => {
 
             const condition = (tire?.condition || '').toUpperCase();
             const application = (tire?.application || '').toUpperCase();
+            
+            // Lifecycle metrics
+            const mountedKm = p.mount?.mountedKm;
+            const mountedAt = p.mount?.mountedAt ? new Date(p.mount.mountedAt) : null;
+            const runKm = (currentMileage && mountedKm) ? (currentMileage - mountedKm) : null;
 
             return (
               <tr key={p.position} className="hover:bg-slate-50">
@@ -527,7 +533,12 @@ const InstalledTiresTable = ({ positions }) => {
                     <span className="text-xs text-slate-500">{tire?.model || ''}</span>
                   </div>
                 </td>
-                <td className="px-4 py-3 font-mono text-slate-600">{tire?.dimension || '—'}</td>
+                <td className="px-4 py-3">
+                  <div className="flex flex-col">
+                    <span className="font-mono text-slate-700">{tire?.dimension || '—'}</span>
+                    <span className="text-[10px] text-slate-400 font-mono">DOT: {tire?.dot || '—'}</span>
+                  </div>
+                </td>
                 <td className="px-4 py-3">
                   {application ? (
                     <span className="px-2 py-1 rounded-full text-[10px] font-bold bg-purple-100 text-purple-700 border border-purple-200">
@@ -544,7 +555,16 @@ const InstalledTiresTable = ({ positions }) => {
                      <span className="px-2 py-1 rounded-full text-[10px] font-bold bg-slate-100 text-slate-600 border border-slate-200">USADA</span>
                    ) : '—'}
                 </td>
-                <td className="px-4 py-3 font-mono text-xs text-slate-500">{tire?.dot || '—'}</td>
+                <td className="px-4 py-3">
+                   <div className="flex flex-col">
+                      <span className="font-bold text-slate-700 text-xs">
+                         {runKm ? `${runKm.toLocaleString()} km` : '—'}
+                      </span>
+                      <span className="text-[10px] text-slate-400">
+                         {mountedAt ? mountedAt.toLocaleDateString('es-CO') : '—'}
+                      </span>
+                   </div>
+                </td>
                 <td className="px-4 py-3 text-center font-bold text-slate-800">{depth}</td>
                 <td className="px-4 py-3 text-center font-mono text-slate-600">{insp?.psiCold || '—'}</td>
                 <td className="px-4 py-3 text-slate-500 text-xs">
@@ -1215,7 +1235,7 @@ export default function TiresView({ fleet }) {
                           setSelectedPosition(pos);
                         }} 
                       />
-                      <InstalledTiresTable positions={positions} />
+                      <InstalledTiresTable positions={positions} currentMileage={selectedVehicle?.mileage} />
                     </div>
                   ) : activeTab === 'historial' ? (
                     <div className="p-4">

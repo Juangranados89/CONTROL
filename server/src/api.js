@@ -963,6 +963,7 @@ router.get('/tires/vehicles/:identifier/overview', async (req, res) => {
           ? {
               id: mount.id,
               mountedAt: mount.mountedAt,
+              mountedKm: mount.mountedKm,
               tire: mount.tire ? { 
                 id: mount.tire.id, 
                 marking: mount.tire.marking,
