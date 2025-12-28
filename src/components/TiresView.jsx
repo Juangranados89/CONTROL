@@ -447,11 +447,6 @@ const HistoryTab = ({ vehicleIdentifier }) => {
       <table className="w-full text-sm text-left">
         <thead className="bg-slate-50 text-xs uppercase text-slate-500 font-bold sticky top-0">
           <tr>
-  return (
-    <div className="overflow-auto max-h-[500px]">
-      <table className="w-full text-sm text-left">
-        <thead className="bg-slate-50 text-xs uppercase text-slate-500 font-bold sticky top-0">
-          <tr>
             <th className="px-4 py-3">Fecha</th>
             <th className="px-4 py-3">Posición</th>
             <th className="px-4 py-3">Llanta</th>
